@@ -1,0 +1,1171 @@
+/* Portfolio site. Warm paper by default, warm dark on request. No framework,
+   no webfonts.
+
+   Theme has three states, and the difference matters. An explicit choice
+   stamps data-theme on the root element; the untouched default stamps
+   nothing, so only prefers-color-scheme separates light from dark. Every
+   color therefore gets its light value on bare :root, its dark value in the
+   media query (guarded so an explicit light choice still wins), and the same
+   dark value again under [data-theme="dark"] so the toggle wins in both
+   directions. A color defined only inside one of those blocks is a bug: it
+   leaves one of the three states undefined. */
+
+:root {
+  color-scheme: light;
+  --bg: #f5f2eb;
+  --surface: #fffdf8;
+  --ink: #15191f;
+  --ink-soft: #505965;
+  /* Measured against every surface it lands on, not just --bg: 5.24:1 on
+     --bg, 4.59:1 on --rule-soft, 5.02:1 on --accent-soft. The previous
+     #727984 was 3.93:1 on --bg alone, and it carries section headings,
+     disclosure labels, source captions, figure credits, and prose
+     emphasis. Code chips inherit it over --rule-soft, which is the
+     tightest of the three. */
+  --ink-faint: #5f6570;
+  --rule: #d9d4c9;
+  --rule-soft: #e8e3d9;
+  /* Passes 4.5:1 on --bg and on both tinted surfaces. #16797c cleared the
+     page background but measured 4.43:1 on --accent-soft, which is exactly
+     where the comparison table puts correlate names on a shaded row. */
+  --accent: #156f72;
+  --accent-soft: #e4f0ed;
+  --shadow-card: 0 10px 28px rgba(25, 31, 36, 0.055);
+  --shadow-feature: 0 18px 42px rgba(25, 31, 36, 0.08);
+  /* Charts and measured figures keep a white plate in both themes. Their
+     colors are the content; tinting or inverting them would misreport a
+     measurement on a page that is about measuring color. */
+  --plate: #ffffff;
+  --measure: 40rem;
+  --topbar-clearance: 4.5rem;
+  --sans: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  --display: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #191713;
+    --surface: #221f1a;
+    --ink: #ece7dd;
+    --ink-soft: #b6afa3;
+    /* 4.91:1 on --accent-soft, the tightest dark surface; #8f887c was 3.90. */
+    --ink-faint: #a29a8c;
+    --rule: #38322a;
+    --rule-soft: #2a2620;
+    --accent: #5ac9c2;
+    --accent-soft: #17322f;
+    --shadow-card: 0 10px 28px rgba(0, 0, 0, 0.4);
+    --shadow-feature: 0 18px 42px rgba(0, 0, 0, 0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #191713;
+  --surface: #221f1a;
+  --ink: #ece7dd;
+  --ink-soft: #b6afa3;
+  --ink-faint: #a29a8c;
+  --rule: #38322a;
+  --rule-soft: #2a2620;
+  --accent: #5ac9c2;
+  --accent-soft: #17322f;
+  --shadow-card: 0 10px 28px rgba(0, 0, 0, 0.4);
+  --shadow-feature: 0 18px 42px rgba(0, 0, 0, 0.5);
+}
+
+* { box-sizing: border-box; }
+
+/* The topbar is sticky and currently 51px tall. Without this reserve, an anchored
+   target lands at viewport top and sits underneath it, so a reader following
+   "See the implementation in context" arrives at a heading they cannot see.
+   The same clearance positions the desktop sidebar, keeping both sticky
+   surfaces tied to one layout value. Applies to hash navigation and to
+   scrollIntoView alike. */
+html { scroll-padding-top: var(--topbar-clearance); }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 17px/1.65 var(--sans);
+  -webkit-text-size-adjust: 100%;
+}
+
+body::before {
+  content: "";
+  display: block;
+  height: 5px;
+  background: linear-gradient(90deg, #4176c7, #c64c86 29%, #ef7f45 56%, #f3c75b 76%, #48bfc1);
+}
+
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 1rem;
+  top: 0.5rem;
+  z-index: 20;
+  background: var(--surface);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+
+/* ---------- chrome ---------- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(8px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.topbar-inner {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+}
+
+.wordmark {
+  font-weight: 620;
+  letter-spacing: -0.011em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.topnav { display: flex; gap: 1.1rem; font-size: 0.94rem; }
+.topnav a { color: var(--ink-soft); text-decoration: none; }
+.topnav a:hover, .topnav a.active { color: var(--ink); }
+.topnav a.active { font-weight: 560; }
+
+/* Scripted, so it is written by the same script that reads the stored choice:
+   a control rendered in static markup would be visible and inert wherever
+   JavaScript is off, promising a switch the page cannot honor. */
+.theme-toggle {
+  margin-left: auto;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  cursor: pointer;
+  line-height: 1;
+}
+.theme-toggle:hover { color: var(--ink); border-color: var(--ink-faint); }
+.theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.theme-toggle svg { width: 1.05rem; height: 1.05rem; display: block; }
+
+.sitefoot {
+  border-top: 1px solid var(--rule);
+  margin-top: 5rem;
+  padding: 1.6rem 1.5rem 3rem;
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+  text-align: center;
+}
+.sitefoot p { max-width: none; margin: 0; }
+
+/* ---------- layout ---------- */
+
+.layout-plain {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.layout-with-sidebar {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: 15.5rem minmax(0, 1fr);
+  gap: 3rem;
+  align-items: start;
+}
+
+.sidebar {
+  position: sticky;
+  top: var(--topbar-clearance);
+  max-height: calc(100vh - var(--topbar-clearance) - 1.3rem);
+  overflow-y: auto;
+  padding: 2.5rem 0 2rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.side-title {
+  margin: 0 0 1.1rem;
+  font-weight: 620;
+  color: var(--ink);
+}
+
+.side-overview { margin: 0 0 1.35rem; }
+.side-overview a {
+  display: block;
+  padding: 0.42rem 0.7rem;
+  margin-left: -0.7rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+}
+.side-overview a:hover { color: var(--ink); background: var(--rule-soft); }
+.side-overview a.active {
+  color: var(--ink);
+  font-weight: 560;
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.side-group { margin: 1.4rem 0 0.4rem; }
+.side-group a {
+  color: var(--ink-faint);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.74rem;
+  font-weight: 620;
+}
+.side-group a:hover, .side-group a.active { color: var(--ink); }
+
+.sidebar ul { list-style: none; margin: 0; padding: 0; }
+.sidebar li { margin: 0; }
+.sidebar li a {
+  display: block;
+  padding: 0.28rem 0.6rem 0.28rem 0.7rem;
+  margin-left: -0.7rem;
+  border-left: 2px solid transparent;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-radius: 0 4px 4px 0;
+}
+.sidebar li a:hover { color: var(--ink); background: var(--rule-soft); }
+.sidebar li a.active {
+  color: var(--ink);
+  font-weight: 560;
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.side-details {
+  margin-top: 1.1rem;
+  color: var(--ink-soft);
+}
+.side-details summary {
+  cursor: pointer;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.74rem;
+  font-weight: 620;
+}
+.side-details summary:hover { color: var(--ink); }
+.side-index { margin: 0.25rem 0 0.15rem; }
+.side-index a {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  text-decoration: none;
+}
+.side-index a:hover, .side-index a.active { color: var(--ink); }
+
+.side-secondary {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1.6rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+}
+.side-secondary a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 0.22rem 0;
+}
+.side-secondary a:hover, .side-secondary a.active { color: var(--ink); }
+
+main { padding: 2.5rem 0 1rem; min-width: 0; }
+
+/* ---------- typography ---------- */
+
+h1 {
+  font-family: var(--display);
+  font-size: clamp(1.75rem, 1.3rem + 1.7vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.021em;
+  font-weight: 660;
+  margin: 0 0 1rem;
+  max-width: 22ch;
+}
+
+.landing h1 {
+  max-width: 17ch;
+  font-size: clamp(2.8rem, 2rem + 3vw, 5rem);
+  line-height: 1.02;
+}
+
+.landing > .lede {
+  font-size: clamp(1.14rem, 1rem + 0.5vw, 1.35rem);
+}
+
+.home h1 {
+  max-width: 18ch;
+  font-size: clamp(2.7rem, 1.8rem + 4.5vw, 5.7rem);
+  line-height: 1.02;
+  margin-top: 1.7rem;
+}
+
+/* Keep the opening artwork as part of the introduction without making anyone
+   scroll past a full-page image before reaching the work. At
+   desktop widths the positioning statement and artwork share the opening;
+   the document returns to one column before either side becomes cramped. */
+.home {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(20rem, 0.88fr);
+  column-gap: clamp(2rem, 4vw, 4.5rem);
+  align-items: start;
+}
+.home > * { grid-column: 1 / -1; }
+.home > h1 {
+  grid-column: 1;
+  grid-row: 1;
+}
+.home > p:first-of-type {
+  grid-column: 1;
+  grid-row: 2;
+  margin-bottom: 0;
+}
+.home > .profile-art-hero {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  margin-top: 1.7rem;
+}
+
+.home > p:nth-of-type(-n + 2) {
+  max-width: 47rem;
+  font-size: clamp(1.08rem, 0.98rem + 0.55vw, 1.32rem);
+  line-height: 1.58;
+}
+
+.home > h2 {
+  margin-top: 5rem;
+  font-size: clamp(1.75rem, 1.45rem + 1.4vw, 2.7rem);
+  max-width: 24ch;
+}
+
+/* The first section label completes the opening viewport and signals that the
+   usable work begins on the next scroll. Later sections retain the larger
+   break that separates changes of subject. */
+.home > #selected-work { margin-top: 3rem; }
+
+.home > h3 {
+  margin-top: 2.8rem;
+  font-size: 1.35rem;
+}
+
+h2 {
+  font-family: var(--display);
+  font-size: 1.32rem;
+  line-height: 1.25;
+  letter-spacing: -0.013em;
+  font-weight: 620;
+  margin: 2.8rem 0 0.9rem;
+}
+
+h3 {
+  font-family: var(--display);
+  font-size: 1.08rem;
+  font-weight: 620;
+  margin: 2rem 0 0.6rem;
+}
+
+p, li { max-width: var(--measure); }
+.prose p, .prose li { color: var(--ink-soft); }
+.prose strong { color: var(--ink); font-weight: 620; }
+
+.lede {
+  font-size: 1.12rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 44rem;
+  margin: 0 0 2rem;
+}
+
+.crumb {
+  font-size: 0.86rem;
+  color: var(--ink-faint);
+  margin: 0 0 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.crumb a { color: var(--ink-faint); text-decoration: none; }
+.crumb a:hover { color: var(--ink); }
+
+.prose em { color: var(--ink-faint); }
+
+.prose > p.caption > em {
+  display: block;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--ink-faint);
+  border-left: 2px solid var(--rule);
+  padding-left: 0.9rem;
+  font-style: normal;
+}
+
+.docfoot {
+  margin-top: 3.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.88rem;
+  color: var(--ink-faint);
+}
+
+/* ---------- tables, figures, code ---------- */
+
+.prose table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.6rem 0;
+  font-size: 0.93rem;
+  font-variant-numeric: tabular-nums;
+}
+.prose th, .prose td {
+  border-bottom: 1px solid var(--rule);
+  padding: 0.5rem 0.85rem 0.5rem 0;
+  text-align: left;
+}
+.prose th {
+  font-weight: 620;
+  color: var(--ink);
+  border-bottom-color: var(--ink-faint);
+  white-space: nowrap;
+}
+.prose td { color: var(--ink-soft); }
+
+.tablewrap, .prose table { overflow-x: auto; display: block; }
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.8rem 0 0.6rem;
+  border-radius: 8px;
+}
+
+.prose img[src$=".svg"] {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 0.9rem;
+}
+
+pre {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 0.95rem 1.1rem;
+  font: 400 0.845rem/1.55 var(--mono);
+  margin: 1.3rem 0;
+}
+code { font-family: var(--mono); font-size: 0.9em; }
+p code, li code, td code {
+  background: var(--rule-soft);
+  border-radius: 4px;
+  padding: 0.1em 0.34em;
+}
+pre code { background: none; padding: 0; }
+
+/* ---------- cards ---------- */
+
+.cardgroup { margin: 3.2rem 0 0; }
+.cardgroup h2 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.55rem;
+  margin-bottom: 1.6rem;
+}
+
+.cards { display: grid; gap: 1.1rem; }
+@media (min-width: 60rem) {
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 1.35rem 1.45rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-card);
+}
+.card h3 { margin: 0 0 0.7rem; font-size: 1.06rem; line-height: 1.3; }
+.card h3 a { color: var(--ink); text-decoration: none; }
+.card h3 a:hover { color: var(--accent); }
+.card-result p {
+  margin: 0;
+  font-size: 0.945rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: none;
+}
+.card-result strong { color: var(--ink); font-weight: 620; }
+.card-more { margin: 1.1rem 0 0; padding-top: 0.2rem; font-size: 0.9rem; max-width: none; }
+.card-more a { text-decoration: none; font-weight: 560; }
+.card-more a:hover { text-decoration: underline; }
+
+.card-result { flex: 1 1 auto; }
+
+/* ---------- standalone tool ---------- */
+
+.tool-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  margin: 4.5rem 0 0;
+  padding: clamp(1.6rem, 4vw, 3rem);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-top: 5px solid var(--accent);
+  border-radius: 18px;
+  box-shadow: var(--shadow-feature);
+}
+
+.eyebrow, .example-kicker {
+  margin: 0 0 0.6rem;
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 760;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tool-feature h2 {
+  margin-top: 0;
+  font-size: clamp(1.8rem, 1.35rem + 1.6vw, 3rem);
+}
+
+.tool-feature h3 { margin-top: 0; font-size: 1.35rem; }
+.tool-feature p, .tool-feature li { max-width: none; }
+.tool-copy > p { color: var(--ink-soft); }
+.tool-copy details { margin-top: 1.2rem; color: var(--ink-soft); }
+.tool-copy summary { cursor: pointer; color: var(--ink); font-weight: 620; }
+
+.tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.1rem;
+  margin: 1.5rem 0 0;
+}
+
+.tool-button {
+  display: inline-flex;
+  min-height: 2.7rem;
+  align-items: center;
+  padding: 0.55rem 0.95rem;
+  color: var(--bg);
+  background: var(--ink);
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 650;
+}
+.tool-button:hover { background: var(--accent); }
+
+.model-example {
+  min-width: 0;
+  padding: 1.35rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+}
+.example-input { color: var(--ink-soft); font-size: 0.88rem; }
+.model-table { overflow-x: auto; margin-top: 1.1rem; }
+.model-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+.model-table th, .model-table td {
+  padding: 0.5rem 0.55rem;
+  border-bottom: 1px solid var(--rule-soft);
+  text-align: right;
+  white-space: nowrap;
+}
+.model-table th:first-child { text-align: left; }
+.model-table tbody tr.model-changed { background: var(--accent-soft); }
+.model-table tbody th { font-weight: 560; }
+.model-table tbody th code { color: var(--accent); }
+/* Names the shading so the table does not carry meaning in color alone. */
+.model-key {
+  margin: 0.9rem 0 0;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--accent-soft);
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.model-key code { color: var(--accent); }
+.model-limit {
+  margin: 1rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.model-version { margin: 0.6rem 0 0; color: var(--ink-faint); font-size: 0.75rem; }
+.tool-platform { margin-top: 1rem; font-size: 0.82rem; }
+.tool-figure {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+.tool-figure a { display: block; }
+.tool-figure img {
+  width: 100%;
+  margin: 0;
+  padding: 1rem;
+  background: var(--plate);
+  border: 1px solid var(--rule);
+}
+.tool-figure figcaption {
+  max-width: 60rem;
+  margin-top: 0.8rem;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+
+/* ---------- CAM16 browser calculator ---------- */
+
+.calculator-page main { min-width: 0; }
+
+.calculator-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 1.4rem;
+  align-items: start;
+  margin-top: 2.2rem;
+}
+
+.calculator-form,
+.calculator-results {
+  min-width: 0;
+  padding: clamp(1.2rem, 2.8vw, 1.8rem);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+}
+
+.calculator-form h2,
+.calculator-results h2 { margin-top: 0; }
+.calculator-form > p { color: var(--ink-soft); }
+
+.calculator-form fieldset {
+  min-width: 0;
+  margin: 1.35rem 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.calculator-form legend {
+  padding: 0;
+  color: var(--ink);
+  font-weight: 620;
+}
+
+.calculator-triple,
+.calculator-pair {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.55rem;
+}
+.calculator-triple { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.calculator-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 1.3rem; }
+
+.calculator-form label:not(.calculator-check) {
+  display: grid;
+  min-width: 0;
+  gap: 0.35rem;
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.calculator-form input[type="number"],
+.calculator-form select {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.55rem;
+  padding: 0.55rem 0.65rem;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  font: 500 0.95rem/1.2 var(--sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.calculator-form > label:not(.calculator-check) { margin-top: 1.3rem; }
+.calculator-form input:focus-visible,
+.calculator-form select:focus-visible,
+.calculator-form button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.calculator-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-top: 1.3rem;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.calculator-check input { margin-top: 0.2rem; accent-color: var(--accent); }
+
+.calculator-note {
+  margin: 0.45rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.calculator-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.4rem;
+}
+.calculator-actions button {
+  min-height: 2.6rem;
+  padding: 0.55rem 0.9rem;
+  color: var(--bg);
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  font: 650 0.9rem/1 var(--sans);
+  cursor: pointer;
+}
+.calculator-actions button:hover { background: var(--accent); border-color: var(--accent); }
+.calculator-actions button.secondary {
+  color: var(--ink);
+  background: transparent;
+  border-color: var(--rule);
+}
+.calculator-actions button.secondary:hover { border-color: var(--ink-faint); }
+
+.calculator-status,
+.calculator-noscript {
+  margin: 0.7rem 0 1rem;
+  padding: 0.7rem 0.8rem;
+  color: var(--ink-soft);
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.calculator-status.is-error {
+  color: var(--ink);
+  border-left-color: var(--ink);
+  font-weight: 560;
+}
+.calculator-noscript { border-left-color: var(--ink-faint); }
+
+.calculator-explanation {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.8rem;
+}
+.calculator-explanation section {
+  padding-top: 1rem;
+  border-top: 2px solid var(--rule);
+}
+.calculator-explanation h2 { margin-top: 0; }
+.calculator-explanation p { color: var(--ink-soft); }
+
+.related-tool {
+  max-width: 46rem;
+  margin: 2.2rem 0;
+  padding: 1rem 1.1rem;
+  color: var(--ink-soft);
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.related-tool strong { color: var(--ink); }
+
+/* ---------- landing figures ---------- */
+
+.figures { margin-top: 4rem; }
+
+.landing-figure {
+  margin: 0 0 2.4rem;
+  padding: 0;
+}
+.landing-figure img {
+  width: 100%;
+  margin: 0;
+  background: var(--plate);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 0.9rem;
+}
+.landing-figure figcaption {
+  margin-top: 0.7rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink-faint);
+  max-width: 44rem;
+}
+.landing-figure figcaption a { white-space: nowrap; }
+
+/* ---------- profile home ---------- */
+
+.profile-art {
+  margin: 2.8rem 0 0;
+}
+.profile-art img {
+  margin: 0;
+  width: 100%;
+  object-fit: contain;
+  background: #080b0f;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+}
+.profile-art figcaption {
+  margin-top: 0.65rem;
+  color: var(--ink-faint);
+  font-size: 0.86rem;
+}
+.profile-art-hero { max-width: 52rem; }
+.profile-art-wide { max-width: 54rem; }
+.profile-art-portrait { max-width: 27rem; }
+
+.home-work-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 1.8rem 0 0;
+}
+
+.home-work-card {
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+}
+.home-work-figure {
+  display: block;
+  background: var(--plate);
+  border-bottom: 1px solid var(--rule);
+}
+.home-work-figure img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  margin: 0;
+  padding: 0.45rem;
+  border-radius: 0;
+}
+.home-work-card > div { padding: 1.1rem 1.2rem 1.25rem; }
+.home-work-card h3 { margin: 0 0 0.65rem; font-size: 1.08rem; }
+.home-work-card h3 a { color: var(--ink); text-decoration: none; }
+.home-work-card h3 a:hover { color: var(--accent); }
+.home-work-card p {
+  max-width: none;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+/* ---------- excerpts ---------- */
+
+.codeblock { margin-top: 4rem; }
+
+.study-resources {
+  margin: 1.5rem 0 2.2rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  font-size: 0.9rem;
+}
+.study-resources > strong { display: block; margin-bottom: 0.6rem; }
+.study-resources ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.study-resources li { max-width: none; }
+.resource-kind {
+  color: var(--ink-faint);
+  font-size: 0.72rem;
+  font-weight: 620;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.study-implementation { margin: 2.8rem 0 3.2rem; }
+.study-implementation > h2 { margin-top: 0; }
+.study-code-intro { color: var(--ink-soft); margin-bottom: 0; }
+.study-implementation .excerpt { margin-top: 1rem; }
+.study-implementation .excerpt pre {
+  max-height: 20rem;
+  overflow: auto;
+}
+
+.method-code-pointer {
+  margin: 2.4rem 0 0;
+  padding: 1rem 1.1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--ink-soft);
+  font-size: 0.93rem;
+}
+
+.excerpt {
+  margin: 2rem 0;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.excerpt figcaption {
+  padding: 1rem 1.2rem;
+  font-size: 0.945rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--rule);
+}
+.excerpt pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+.excerpt-src {
+  margin: 0;
+  padding: 0.7rem 1.2rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  max-width: none;
+}
+
+/* Where the code lands. Without this, an excerpt lacks practical context. */
+.excerpt-use {
+  margin: 0;
+  padding: 0.6rem 1.2rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--accent-soft);
+  font-size: 0.87rem;
+  color: var(--ink-soft);
+  max-width: none;
+}
+.excerpt-use a { font-weight: 560; }
+
+/* On the landing page the excerpts are a showcase, not the reference copy.
+   Cap them so two examples cannot become most of the page. Study pages place
+   each excerpt beside the result it produces. */
+.codeblock .excerpt pre {
+  max-height: 20rem;
+  overflow: auto;
+}
+
+.jumpline {
+  margin: -1rem 0 2rem;
+  font-size: 0.92rem;
+}
+.jumpline a { text-decoration: none; font-weight: 560; }
+.jumpline a::after { content: " \2193"; }
+.jumpline a:hover { text-decoration: underline; }
+
+/* ---------- implementation index ---------- */
+
+.impl-index { margin-top: 2.5rem; }
+.impl-index h3 { margin: 0 0 0.4rem; font-size: 1rem; }
+.impl-index > p { color: var(--ink-soft); font-size: 0.95rem; margin: 0 0 1rem; }
+.impl-index ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule-soft);
+  max-width: 44rem;
+}
+.impl-index li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--rule-soft);
+  max-width: none;
+}
+.impl-index li a { text-decoration: none; font-weight: 560; }
+.impl-index li a:hover { text-decoration: underline; }
+.impl-src {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+
+/* ---------- index lists ---------- */
+
+.indexlist { list-style: none; margin: 0; padding: 0; }
+.indexlist li { border-bottom: 1px solid var(--rule-soft); max-width: 44rem; }
+.indexlist li a {
+  display: block;
+  padding: 0.85rem 0;
+  text-decoration: none;
+  color: var(--ink);
+}
+.indexlist li a:hover .idx-title { color: var(--accent); }
+.idx-title { font-weight: 560; }
+
+.deeper { margin-top: 3.5rem; }
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 62rem) {
+  /* Content first: a phone reader should meet the work, not 26 nav links.
+     The track stays minmax(0, 1fr) -- that lower bound is what stops the
+     column from sizing to its widest child and overflowing the viewport. */
+  .layout-with-sidebar { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  main { order: 1; }
+  .sidebar {
+    order: 2;
+    position: static;
+    max-height: none;
+    overflow: visible;
+    margin-top: 2.5rem;
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--rule);
+  }
+  .sidebar ul { display: flex; flex-wrap: wrap; gap: 0.15rem 0.5rem; }
+  .sidebar li a { border-left: 0; margin-left: 0; padding: 0.2rem 0.5rem; }
+  .sidebar li a.active { border-radius: 4px; }
+  .tool-feature { grid-template-columns: minmax(0, 1fr); }
+  .calculator-grid { grid-template-columns: minmax(0, 1fr); }
+  .calculator-explanation { grid-template-columns: minmax(0, 1fr); }
+  .home { display: block; }
+}
+
+@media (max-width: 42rem) {
+  /* The full name and three destinations wrap into a tall mobile header.
+     Keep the navigation, but let it leave with the opening instead of
+     occupying more than a tenth of every screen while the reader scrolls. */
+  .topbar { position: static; }
+  .topbar-inner { padding-inline: 1rem; }
+  .layout-plain, .layout-with-sidebar { padding-inline: 1rem; }
+  .home-work-grid { grid-template-columns: 1fr; }
+  .home h1 { font-size: clamp(2.55rem, 13vw, 4.1rem); }
+  .profile-art { margin-top: 2rem; }
+}
+
+/* ---------- HDR platform ---------- */
+
+.hdr-shot, .hdr-diagram { margin: 2rem 0 2.8rem; max-width: 50rem; }
+.hdr-shot a, .hdr-diagram a { display: block; }
+.hdr-shot img {
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+}
+
+/* Both diagrams are drawn on an opaque white ground. Recolouring them for
+   dark would only move the problem into light, so they keep the same plate
+   the measured figures use and read as printed sheets in either theme. */
+.prose .hdr-diagram img {
+  width: 100%;
+  margin: 0;
+  padding: 1rem;
+  background: var(--plate);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+}
+
+.hdr-shot figcaption, .hdr-diagram figcaption {
+  margin-top: 0.75rem;
+  max-width: 44rem;
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.hdr-detail { margin: 2.2rem 0 2.6rem; }
+.hdr-detail summary {
+  cursor: pointer;
+  font-weight: 560;
+  color: var(--ink);
+}
+.hdr-detail summary:hover { color: var(--accent); }
+.hdr-detail > p { margin-top: 0.9rem; }
+
+/* A single-column page with no sidebar and no full-width grid to balance it
+   leaves half the viewport empty at desktop widths. Narrow the column so the
+   page reads as a document rather than as prose pinned to one edge. */
+.hdr-page .layout-plain { max-width: 54rem; }
+
+/* Product captures lead together in the first row. They drop the white plate
+   used by study charts, which keeps the distinction without giving each
+   product a full-width row of its own. */
+.home-work-feature .home-work-figure { background: transparent; }
+.home-work-feature .home-work-figure img {
+  aspect-ratio: 2 / 1;
+  object-fit: cover;
+  object-position: center top;
+  padding: 0;
+}
+.home-work-feature h3 { font-size: 1.22rem; }
+
+/* The sidebar's one operable item. Reads as a control, not as another
+   document in the list above it. */
+.side-tool { margin: 1.6rem 0 0; }
+.side-tool a {
+  display: block;
+  padding: 0.5rem 0.8rem;
+  color: var(--ink);
+  background: var(--accent-soft);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  text-decoration: none;
+  font-weight: 560;
+}
+.side-tool a:hover { border-color: var(--accent); }
+.side-tool a.active { background: var(--accent-soft); border-left-width: 4px; }

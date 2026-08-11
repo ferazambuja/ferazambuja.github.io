@@ -1,0 +1,88 @@
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # Cross-repository content has no privileged webhook or long-lived token.
+  # A daily reconciliation keeps the public site current even when a content
+  # release did not manually dispatch this workflow.
+  schedule:
+    - cron: '17 6 * * *'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the site
+        uses: actions/checkout@v7
+
+      - name: Check out the imaging content
+        uses: actions/checkout@v7
+        with:
+          repository: ferazambuja/imaging-color-measurement
+          path: _content/imaging
+
+      - name: Check out the public profile assets
+        uses: actions/checkout@v7
+        with:
+          repository: ferazambuja/ferazambuja
+          path: _content/profile
+
+      - name: Check out the CAM16/Hellwig comparator
+        uses: actions/checkout@v7
+        with:
+          repository: ferazambuja/cam16-hellwig-comparator
+          path: _content/comparator
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build
+        run: >
+          python tools/build_site.py
+          --imaging _content/imaging
+          --profile _content/profile
+          --comparator _content/comparator
+          --output _site
+
+      - name: Verify every route, link, and excerpt
+        run: >
+          python tools/test_site.py
+          --site _site
+          --imaging _content/imaging
+          --profile _content/profile
+          --comparator _content/comparator
+
+      # Text checks cannot see whether an anchor lands where a reader can see
+      # it. This one lays the pages out in a browser and measures.
+      - name: Measure the rendered layout
+        run: python tools/test_render.py --site _site --require-browser
+
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
