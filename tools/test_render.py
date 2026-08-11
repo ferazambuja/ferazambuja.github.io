@@ -16,12 +16,14 @@ being enough, not by someone remembering to update a number.
 from __future__ import annotations
 
 import argparse
+import atexit
 import http.server
 import re
 import shutil
 import socketserver
 import subprocess
 import sys
+import tempfile
 import threading
 from contextlib import contextmanager
 from pathlib import Path
@@ -369,7 +371,7 @@ def main() -> int:
         help="fail instead of skipping when Chrome or Chromium is unavailable",
     )
     args = parser.parse_args()
-    root = args.site.resolve()
+    source_root = args.site.resolve()
 
     chrome = find_chrome()
     if chrome is None:
@@ -379,6 +381,17 @@ def main() -> int:
             return 1
         print(message)
         return 0
+
+    # Each probe is injected into a page long enough for Chrome to load it,
+    # then the original bytes are restored. Running two checks against the
+    # same generated tree would therefore let their inject/restore steps race:
+    # one process can read the other probe and report a missing measurement.
+    # Work on a private copy so concurrent local checks cannot interfere with
+    # each other or modify the build being verified.
+    isolated_parent = Path(tempfile.mkdtemp(prefix="portfolio-render-check-"))
+    atexit.register(shutil.rmtree, isolated_parent, ignore_errors=True)
+    root = isolated_parent / "site"
+    shutil.copytree(source_root, root)
 
     failures: list[str] = []
     checks = 0
