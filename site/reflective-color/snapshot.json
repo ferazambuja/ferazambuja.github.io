@@ -1,0 +1,84 @@
+{
+  "files": {
+    "index.html": {
+      "sha256": "b34fb9482f29773914fa83c107a5980662d6387f091a8a18bb0a238fd7dc3470",
+      "source_sha256": "50a5835fb251e0aa62684bacb9f6c26824f4e29831879c1e157a80fec332ee2f"
+    },
+    "measurement-investigation.json": {
+      "sha256": "1ab2c8fa44ee7d0b6c38ab87f6d8346bc60b2c73b67dbe917b87c0ccd974cb18",
+      "source_sha256": "1ab2c8fa44ee7d0b6c38ab87f6d8346bc60b2c73b67dbe917b87c0ccd974cb18"
+    },
+    "measurements/index.html": {
+      "sha256": "514f0d2f1f63a5f88b8e5aa0e1824702f91e4d8319d5e9aa7922920d9e1ccdd9",
+      "source_sha256": "ca7a5a00a939e9d03dbf3dd7ac9edde8cd43845ac8edf15b8bda2e2bda46f4a0"
+    },
+    "measurements/atlas-experiments.json": {
+      "sha256": "a2c661a386a9e658194cd4868964089dde1f91ad9eed997a94a01a4d5f437867",
+      "source_sha256": "a2c661a386a9e658194cd4868964089dde1f91ad9eed997a94a01a4d5f437867"
+    },
+    "measurements/atlas.js": {
+      "sha256": "43bc6481d6ed47ffea9dc54f73393079d601d87b39b00ae1299cf25f16bc0900",
+      "source_sha256": "93162d8423dc4d89608c6d50ae70b2fc08af04db924862a7d86a8166160922f0"
+    },
+    "measurements/atlas-extension.js": {
+      "sha256": "02bbd82893d6cf15d12244ee736370cc8d48ffbbc170ac874a290a17468a74b8",
+      "source_sha256": "02bbd82893d6cf15d12244ee736370cc8d48ffbbc170ac874a290a17468a74b8"
+    },
+    "measurements/atlas-extension.css": {
+      "sha256": "50e44baecd885f7ccec27315ca812360e470682a9dc37ca691affd35234fb2ff",
+      "source_sha256": "50e44baecd885f7ccec27315ca812360e470682a9dc37ca691affd35234fb2ff"
+    },
+    "atlas-site.css": {
+      "sha256": "f9c881bb07cc32faa4a9b130d4fdcb501e5db13b131a16eddda77727dcac5500",
+      "source_sha256": "f9c881bb07cc32faa4a9b130d4fdcb501e5db13b131a16eddda77727dcac5500"
+    },
+    "assets/cypresses-met-source.png": {
+      "sha256": "27a651945cadde36a49d248c8ac63bdab1095e5f382fede8e2cda7dab24497eb",
+      "source_sha256": "27a651945cadde36a49d248c8ac63bdab1095e5f382fede8e2cda7dab24497eb"
+    },
+    "assets/cypresses-met-stock.png": {
+      "sha256": "4ecac2c08cef05c5d23048a91e8402fdd4a3101b67676abb7efb1668aa9bb6c3",
+      "source_sha256": "4ecac2c08cef05c5d23048a91e8402fdd4a3101b67676abb7efb1668aa9bb6c3"
+    },
+    "assets/cypresses-met-dense.png": {
+      "sha256": "3f72d86dca6f6c4220aea201aa5f5093103143a9a91d64c98659fe519c386460",
+      "source_sha256": "3f72d86dca6f6c4220aea201aa5f5093103143a9a91d64c98659fe519c386460"
+    },
+    "assets/the-bedroom-aic-source.png": {
+      "sha256": "072ca47cdd13727aade106822f9b66459151b625fed7394dcfb304a7607ad924",
+      "source_sha256": "072ca47cdd13727aade106822f9b66459151b625fed7394dcfb304a7607ad924"
+    },
+    "assets/the-bedroom-aic-stock.png": {
+      "sha256": "25d13a313038aa4fbfa2e5cc28449a3288187094f9f6ef62be4498ba584a56e9",
+      "source_sha256": "25d13a313038aa4fbfa2e5cc28449a3288187094f9f6ef62be4498ba584a56e9"
+    },
+    "assets/the-bedroom-aic-dense.png": {
+      "sha256": "de9bcdc9f2e7162ff976b5f7457fa5a39bdccdc18a9238ef7a361770147eb8a5",
+      "source_sha256": "de9bcdc9f2e7162ff976b5f7457fa5a39bdccdc18a9238ef7a361770147eb8a5"
+    },
+    "assets/i1pro3-overhead.jpeg": {
+      "sha256": "7ab9bee93e7c6c2dbdb7c945469208175c26b4abb67a5de5d4865fe17d644ec1",
+      "source_sha256": "2f5d16e5c57e1fe4b95e2f2cf76e675c775e8b35fa940681547f10b7b2113e5c"
+    },
+    "assets/cr250-display.jpeg": {
+      "sha256": "cd290d7e44c337e459eb8b8c6a575ec680ec5a486363845795d2b86ed7153aff",
+      "source_sha256": "70d31fc456e4bca6bac566c7ff70697517badd015809d5447fe63d97cbc5d631"
+    },
+    "assets/cypresses-image.png": {
+      "sha256": "07c73d708efeeb048a4ca6f0eeb3b67792cac5ee7ccc206dea8bbfe7ed5d008e",
+      "source_sha256": "07c73d708efeeb048a4ca6f0eeb3b67792cac5ee7ccc206dea8bbfe7ed5d008e"
+    },
+    "assets/cypresses-control.png": {
+      "sha256": "993416ff5a3b05cdf876d950f972ec4096d6a71026668f3e4ef12f488e4c151c",
+      "source_sha256": "993416ff5a3b05cdf876d950f972ec4096d6a71026668f3e4ef12f488e4c151c"
+    },
+    "assets/graphics-image.png": {
+      "sha256": "4d4eb1fc39d936eacbf8502d09f361805ec3d2be8ed24466549bf43b66eb5d69",
+      "source_sha256": "4d4eb1fc39d936eacbf8502d09f361805ec3d2be8ed24466549bf43b66eb5d69"
+    },
+    "assets/graphics-control.png": {
+      "sha256": "8823c1c2917638e43be5771b683bf7a5e917c8f5a49e371381ce764c32191c99",
+      "source_sha256": "8823c1c2917638e43be5771b683bf7a5e917c8f5a49e371381ce764c32191c99"
+    }
+  }
+}

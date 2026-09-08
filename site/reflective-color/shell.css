@@ -1,0 +1,17 @@
+/* The case study keeps its measured-color graphics and dark reading surface.
+   Only this route loads this shell; the surrounding portfolio is unchanged. */
+.topbar { background:#11151a; border-bottom:1px solid #34414b; }
+.topbar .topbar-inner {
+  max-width:1180px; margin:auto; padding:16px 22px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px; flex-wrap:wrap;
+}
+.topbar a { color:#f1f0e8; font-size:16px; text-decoration:none; }
+.topbar .wordmark { font-weight:750; }
+.topbar .topnav { display:flex; flex-wrap:wrap; gap:10px 20px; }
+.topbar .active { color:#e0d52b; text-decoration:underline; text-underline-offset:5px; }
+.topbar a:hover { text-decoration:underline; }
+@media(max-width:640px) {
+  .topbar .topbar-inner { padding:14px 18px; gap:12px; }
+  .topbar a { font-size:14px; }
+}

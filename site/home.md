@@ -1,6 +1,6 @@
 # Imaging Engineering & Color Science
 
-I build C++20, Python, and Swift/Metal tools for camera image quality, color
+I build C++20, Python, and Swift/Metal tools for camera and display image quality, color
 science, and HDR/SDR research. My work combines sensor-level analysis,
 numerical methods, and hands-on color measurement with professional studio
 experience as a Photographic Assistant and Digital Capture Technician.
@@ -54,8 +54,8 @@ and supervising 35+ student employees.
 
 ## Current focus
 
-Camera measurement, color-management algorithms, spectral analysis, HDR/SDR
-experimentation, display-pipeline validation, and modern C++.
+Camera and display measurement, color prediction and rendering, spectral
+analysis, HDR/SDR experimentation, and modern C++.
 
 [GitHub](https://github.com/ferazambuja) ·
 [LinkedIn](https://www.linkedin.com/in/fernando-voltolini-de-azambuja)

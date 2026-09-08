@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Build the account-level portfolio site from source Markdown.
 
-No study, report, or method prose is tracked in this repository. The technical
-repositories remain the single source of truth; this build checks them out and
-renders them. Adding a study is a file drop in the content repository. Adding a
-project is one entry in ``PROJECTS`` plus a landing page under ``site/``.
+Technical studies, reports and methods are rendered from their owning
+repositories. Site-owned case studies and selected delivery assets live under
+``site/``. Adding a technical study is a file drop in its content repository;
+a standalone case study uses its own bounded delivery function.
 
 Source excerpts are located in the tested sources by content marker and copied
 verbatim, so a shown excerpt cannot drift from the code it represents. A
@@ -14,6 +14,7 @@ missing marker fails the build rather than emitting stale code.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import html
 import json
 import re
@@ -38,6 +39,7 @@ COMPARATOR_CI_URL = (
     f"{COMPARATOR_URL}/actions/workflows/test.yml?query=branch%3Amain"
 )
 HDR_ROUTE = "/hdr-platform/"
+REFLECTIVE_ROUTE = "/reflective-color-display/"
 COMPARATOR_ROUTE = "/imaging/cam16-hellwig-comparator/"
 CALCULATOR_PREVIEW = "/assets/social/cam16-calculator.jpg"
 CALCULATOR_PREVIEW_ALT = (
@@ -168,12 +170,6 @@ HOME_SELECTIONS = (
         "spectral-color-fidelity.svg",
         "Dot plot comparing ISO-style color-fidelity scores for five cameras across three chart sets.",
         "Four cameras closed against paired chart captures at 9.5–13.8% RMS per channel; the unpaired fifth remained unscored.",
-    ),
-    HomeSelection(
-        "cfa-flat-field-response",
-        "flat-field-response.svg",
-        "Heatmaps of center-normalized green response and red-to-green chromatic response, with a screening summary.",
-        "Only 3 of 52 sphere frames retained headroom; equal-radius corners still spread by 16.1–20.0%.",
     ),
 )
 
@@ -882,22 +878,12 @@ def parse_cards(readme: str) -> list[Card]:
 # --------------------------------------------------------------------------
 
 
-def page(
-    *,
-    title: str,
-    description: str,
-    body: str,
-    canonical: str,
-    nav_active: str = "",
-    sidebar: str = "",
-    depth_class: str = "",
-    social_image: str = "",
-    social_image_alt: str = "",
-) -> str:
+def topbar(canonical: str, nav_active: str, sidebar: bool = False) -> str:
     nav_items = [
         ("/", "Home", "home"),
         (f"/{IMAGING.key}/", "Imaging", "imaging"),
         (HDR_ROUTE, "HDR platform", "hdr"),
+        (REFLECTIVE_ROUTE, "Reflective display", "reflective"),
     ]
     nav_links = []
     for href, label, key in nav_items:
@@ -912,6 +898,26 @@ def page(
             f"{current}>{label}</a>"
         )
     nav = "".join(nav_links)
+    return (
+        '<header class="topbar"><div class="topbar-inner">'
+        f'<a class="wordmark" href="/">{AUTHOR}</a>'
+        f'<nav class="topnav" aria-label="Portfolio">{nav}</nav>'
+        '</div></header>'
+    )
+
+
+def page(
+    *,
+    title: str,
+    description: str,
+    body: str,
+    canonical: str,
+    nav_active: str = "",
+    sidebar: str = "",
+    depth_class: str = "",
+    social_image: str = "",
+    social_image_alt: str = "",
+) -> str:
     layout = "layout-with-sidebar" if sidebar else "layout-plain"
     aside = f'<aside class="sidebar">{sidebar}</aside>' if sidebar else ""
     social_meta = ""
@@ -951,12 +957,7 @@ def page(
 </head>
 <body class="{depth_class}">
 <a class="skip" href="#main">Skip to content</a>
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="wordmark" href="/">{AUTHOR}</a>
-    <nav class="topnav">{nav}</nav>
-  </div>
-</header>
+{topbar(canonical, nav_active, bool(sidebar))}
 <div class="{layout}">
 {aside}
 <main id="main">
@@ -1075,6 +1076,39 @@ def nav_title(project: Project, section: str, slug: str, title: str) -> str:
 def write(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+
+
+def build_reflective_color(site_dir: Path, output: Path) -> int:
+    """Deliver the selected article and explorer without importing other projects."""
+    source = site_dir / "reflective-color"
+    files = json.loads((source / "snapshot.json").read_text())["files"]
+    for name, record in files.items():
+        path = source / name
+        if not path.resolve().is_relative_to(source.resolve()):
+            raise ValueError("snapshot path escapes the selected project")
+        if hashlib.sha256(path.read_bytes()).hexdigest() != record["sha256"]:
+            raise ValueError(f"selected project file changed: {name}")
+    for name in files:
+        target = output / REFLECTIVE_ROUTE.strip("/") / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if name.endswith(".html"):
+            text = (source / name).read_text()
+            route = REFLECTIVE_ROUTE + ("measurements/" if name.startswith("measurements/") else "")
+            metadata = (
+                f'<link rel="canonical" href="{SITE_URL}{route}">\n'
+                f'<meta property="og:url" content="{SITE_URL}{route}">\n'
+                '<link rel="stylesheet" href="/assets/reflective-shell.css">\n'
+                + THEME_BOOTSTRAP
+            )
+            if 'name="twitter:card"' not in text:
+                metadata += '<meta name="twitter:card" content="summary">'
+            text = text.replace("</head>", metadata + "</head>", 1)
+            text = re.sub(r"(<body\b[^>]*>)", lambda m: m[0] + topbar(route, "reflective"), text, count=1)
+            write(target, text)
+        else:
+            shutil.copyfile(source / name, target)
+    shutil.copyfile(source / "shell.css", output / "assets/reflective-shell.css")
+    return 2
 
 
 def build(
@@ -1317,6 +1351,7 @@ def build(
     pages_written += 1
     write(output / HDR_ROUTE.strip("/") / "index.html", hdr_page(site_dir))
     pages_written += 1
+    pages_written += build_reflective_color(site_dir, output)
     hdr_output = output / "assets" / "hdr"
     shutil.copytree(site_dir / "hdr", hdr_output)
     # The digest list controls the build and is not published as a site asset.
@@ -1834,14 +1869,10 @@ def selected_work(cards: list[Card]) -> str:
             f"<p>{html.escape(selection.summary)}</p></div>"
             "</article>"
         )
-    # The platform leads: it is the only application and the only Swift/Metal
-    # work here, so it is what distinguishes this portfolio from a folder of
-    # studies. Full width because a dark application window inside a
-    # half-width card built for light chart artwork reads as the odd one out,
-    # and because five cards in two columns strand the fifth beside a hole.
+    # The application and display case study lead as larger features.
     hero = HDR_FIGURES["STIMULUS_SHOT"]
     feature = (
-        '<article class="home-work-card home-work-feature">'
+        '<article class="home-work-card home-work-feature home-work-flagship">'
         f'<a class="home-work-figure" href="{HDR_ROUTE}">'
         "<picture>"
         f'<source srcset="/assets/hdr/{hero.stem}.webp" type="image/webp">'
@@ -1855,10 +1886,7 @@ def selected_work(cards: list[Card]) -> str:
         "records.</p></div>"
         "</article>"
     )
-    # The two things here a reader can use rather than read lead the section
-    # together, then the four investigations follow. Their shared visual
-    # treatment separates products from studies without turning each product
-    # into a full-width row before the investigations.
+    # The interactive calculator and selected studies follow the two features.
     calculator = (
         '<article class="home-work-card home-work-feature">'
         f'<a class="home-work-figure" href="{COMPARATOR_ROUTE}">'
@@ -1875,9 +1903,27 @@ def selected_work(cards: list[Card]) -> str:
     return (
         '<div class="home-work-grid">'
         + feature
+        + reflective_feature()
         + calculator
         + "".join(items)
         + "</div>"
+    )
+
+
+def reflective_feature() -> str:
+    return (
+        '<article class="home-work-card home-work-feature home-work-flagship reflective-feature">'
+        f'<a class="home-work-figure" href="{REFLECTIVE_ROUTE}">'
+        f'<img src="{REFLECTIVE_ROUTE}assets/cr250-display.jpeg" width="768" height="1024" '
+        'alt="A non-contact spectroradiometer aimed at a reflective display, with a reference disk nearby." loading="lazy"></a>'
+        '<div><p class="project-kind">Display color · measurement · rendering</p>'
+        f'<h3><a href="{REFLECTIVE_ROUTE}">Reflective Color Display Engineering</a></h3>'
+        '<p>An experimental ICC route lowered average color error on a 133-color test grid, '
+        'then exact native-pattern measurements showed that spatial arrangement could change color '
+        'even when pixel-state counts were unchanged. The ongoing work tests when those outputs can '
+        'be predicted reliably and used to improve rendering.</p>'
+        f'<p class="project-action"><a href="{REFLECTIVE_ROUTE}">Read the visual case study →</a></p>'
+        '</div></article>'
     )
 
 
@@ -1974,7 +2020,7 @@ def home_page(site_dir: Path, cards: list[Card]) -> str:
     return page(
         title=f"{AUTHOR} · Imaging Engineering & Color Science",
         description=(
-            "Camera image quality, color science, HDR/SDR research, and "
+            "Camera and display image quality, color science, HDR/SDR research, and "
             "photographic systems work by Fernando Voltolini de Azambuja."
         ),
         body=f'<div class="prose home">{body_html}</div>',
@@ -1989,6 +2035,8 @@ def home_page(site_dir: Path, cards: list[Card]) -> str:
 def sitemap(output: Path) -> str:
     urls = []
     for path in sorted(output.rglob("index.html")):
+        if re.search(r'<meta\b[^>]*name="robots"[^>]*content="[^"]*noindex', path.read_text()):
+            continue
         route = "/" + str(path.parent.relative_to(output)).replace(".", "").strip("/")
         route = "/" if route in ("/", "//") else route.rstrip("/") + "/"
         if route == COMPARATOR_LEGACY_ROUTE:
