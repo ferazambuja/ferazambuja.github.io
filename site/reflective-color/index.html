@@ -323,6 +323,8 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 .technical-details{margin:18px 0}.technical-details>summary{font-size:16px}.technical-body p{font-size:15px}
 .prediction-questions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:0;list-style:none;margin:28px 0}.prediction-questions li{border-top:2px solid var(--accent);padding-top:14px}.prediction-questions a{font-size:19px;font-weight:700}.prediction-questions p{font-size:15px;color:var(--muted);margin-bottom:0}
 .context-examples{margin:28px 0}.context-example{margin:24px 0}.context-example h4{margin-bottom:12px}.context-pair{display:grid;grid-template-columns:1fr 1fr;gap:20px}.context-pair figure{margin:0;min-width:0}.context-pair figcaption{margin-top:8px}.context-pixels{position:relative;aspect-ratio:800/480;background:#000}.context-pixels img{display:block;width:100%;height:auto;border:0;border-radius:0;image-rendering:pixelated}.context-center{position:absolute;left:46%;top:32.9166666667%;width:8%;height:13.3333333333%;outline:2px solid #fff;box-shadow:0 0 0 4px #111;pointer-events:none}
+.context-enlargement{width:min(1440px,calc(100% - 32px));max-width:none;max-height:calc(100dvh - 32px);box-sizing:border-box;padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--bg);color:var(--text);overflow:auto}
+.context-enlargement::backdrop{background:#000c}.context-dialog-head{display:flex;align-items:start;justify-content:space-between;gap:16px}.context-dialog-head h2{margin:0;font-size:clamp(22px,3vw,32px)}.context-dialog-head button{font:inherit;min-height:44px;padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer}.context-enlargement p{font-size:16px;line-height:1.6}.context-enlargement figcaption{font-size:16px;color:var(--text)}.context-enlargement .context-pair{margin:24px 0}.context-modal-open{overflow:hidden}.domain-context[data-context-enlarge]{cursor:zoom-in}
 .question-step{margin:28px 0 14px;border-left:3px solid var(--accent);padding-left:18px}.question-step strong{color:var(--text)}
 @media(max-width:640px){.prediction-questions{grid-template-columns:1fr;gap:18px}.context-pair{grid-template-columns:1fr;gap:18px}}
 .metric-example{margin-top:28px}.metric-roles,.metric-comparison-native,.model-anatomy,.future-system-grid{margin-bottom:26px}.story-bridge{margin:28px 0 0;font-size:18px;color:var(--text);max-width:960px}.chapter-intro{max-width:960px;margin-bottom:24px}
@@ -337,6 +339,7 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 .measured-color-card span,.comparison-result span{font-size:14px;color:var(--muted);margin-top:6px}
 .comparison-results{grid-template-columns:1fr 1fr}.comparison-result b{display:block;font-size:28px;margin:9px 0;color:var(--text)}
 .measured-comparison figcaption{margin-top:18px}.measured-comparison table{min-width:720px}
+.correction-comparison{margin:26px 0}.correction-comparison table{font-size:16px;table-layout:fixed}.correction-comparison th,.correction-comparison td{text-align:left;padding:12px 8px;vertical-align:top}.correction-comparison caption{text-align:left;color:var(--muted);margin-bottom:10px}.correction-comparison td strong,.correction-comparison td span{display:block}.correction-comparison td span{font-size:14px;color:var(--muted)}
 @media(max-width:640px){.chronology-strip,.reading-orders,.measured-color-grid,.comparison-results{grid-template-columns:1fr}.measured-color-card i{height:54px}.measured-comparison{padding:16px}}
 .triad-update{padding:20px;border:1px solid var(--line);border-radius:16px}.triad-metrics article p{font-size:14px}
 .held-meter-sequence{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;list-style:none;padding:0;margin:22px 0}.held-meter-sequence li{border-top:2px solid var(--accent);padding:12px 0}.held-meter-sequence strong,.held-meter-sequence span{display:block}.held-meter-sequence span{font-size:14px;color:var(--muted);margin-top:5px}
@@ -655,8 +658,8 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
       <div><h3><a href="/reflective-color-display/measurements/?experiment=arrangement-matrix-4abf610cd9d0&amp;comparison=BLACK-YELLOW-BLUE-P4-P0-H-CYCLIC-MINUS-ADJACENCY-ALT">Three-color arrangements</a></h3><p><strong>Measured finding:</strong> regrouping black, yellow and blue rows changed the measured color even with every row horizontal.</p><p><strong>Prediction question:</strong> can a model distinguish different organizations of the same ingredients?</p></div>
     </article>
     <article data-prediction-domain="image-region-context">
-      <div class="domain-visual domain-context" role="group" aria-label="Exact Cypresses native-state image and its white-surround control"><span><img src="/reflective-color-display/assets/cypresses-image.png" width="800" height="480" loading="lazy" alt="Exact six-state Cypresses pixel map"></span><span><img src="/reflective-color-display/assets/cypresses-control.png" width="800" height="480" loading="lazy" alt="The same central pixels surrounded by native white"></span></div>
-      <div><h3><a href="/reflective-color-display/measurements/?experiment=center-context8&amp;comparison=CYPRESSES_IMAGE_MINUS_CONTROL">A region inside an image</a></h3><p><strong>Measured finding:</strong> identical central pixels measured differently when their exterior was replaced with white.</p><p><strong>Prediction question:</strong> what surrounding information and optical footprint need to be considered?</p></div>
+      <a class="domain-visual domain-context" href="#context-pixel-examples" data-context-enlarge aria-label="Enlarge the Cypresses image and its white-surround control"><span><img src="/reflective-color-display/assets/cypresses-image.png" width="800" height="480" loading="lazy" alt="Exact six-state Cypresses pixel map"></span><span><img src="/reflective-color-display/assets/cypresses-control.png" width="800" height="480" loading="lazy" alt="The same central pixels surrounded by native white"></span></a>
+      <div><h3><a href="#context-pixel-examples" data-context-enlarge>A region inside an image</a></h3><p><strong>Measured finding:</strong> identical central pixels measured differently when their exterior was replaced with white.</p><p><strong>Prediction question:</strong> what surrounding information and optical footprint need to be considered?</p><p><a href="/reflective-color-display/measurements/?experiment=center-context8&amp;comparison=CYPRESSES_IMAGE_MINUS_CONTROL">Inspect the measurements →</a></p></div>
     </article>
     <article data-prediction-domain="return-condition">
       <div class="domain-visual domain-returns" role="img" aria-label="The same exact buffer measured at an earlier and later occurrence"><span><strong>Same buffer</strong><small>earlier occurrence</small></span><b aria-hidden="true">→</b><span><strong>Same buffer</strong><small>later occurrence</small></span></div>
@@ -919,21 +922,35 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 <figure><div class="context-pixels"><img src="/reflective-color-display/assets/cypresses-control.png" width="800" height="480" loading="lazy" alt="The identical outlined Cypresses pixels, with the surrounding pixels replaced by native white."/><span class="context-center" aria-hidden="true"></span></div><figcaption>Control: identical central pixels, a different exterior.</figcaption></figure>
 </div>
 <p class="caption">Both views are exact native-state buffers from an earlier Cypresses image/control comparison that motivated the context question; the prospective pilot above used six regions from three different images. The outlined 64×64 pixels are byte-identical; only the surrounding buffer changes. The outline marks the digital comparison region, while the meter samples a larger optical footprint. The measurements do not separate an effect of the surroundings from optical weighting or presentation history.</p>
+<a href="#context-pixel-examples" data-context-enlarge>Enlarge the image comparison →</a>
 </div>
 </section>
 
 <section class="research-question" id="prediction-transfer" aria-labelledby="transfer-title">
 <h3 id="transfer-title">3 · Can predictions help reproduce the requested image?</h3>
-<p>The practical goal is to use a trustworthy output model to choose native pixels that bring measured colors closer to the image's requested colors, while preserving tone, detail, texture and edges.</p>
+<p>The practical goal is to use what we learn about the display to choose native pixels that bring measured colors closer to the image's requested colors, while preserving tone, detail, texture and edges.</p>
+<section class="correction-comparison" id="fixed-adjustment-example" aria-labelledby="fixed-adjustment-title" data-result-sha256="224085c999428cd9476bebee02e764881a40f323910ff2f168eefd2a3d59a748">
+<h4 id="fixed-adjustment-title">A fixed adjustment helped the warm color but worsened the neutral</h4>
+<p>In an earlier two-color experiment, I used previous measurements to adjust the renderer's input for a warm tone and a neutral gray. This was a fixed, case-specific adjustment, not a general predictor choosing pixels.</p>
+<table>
+<caption>Distance from the original desired color, in DeltaE00. Each range covers four fresh readings; lower is closer.</caption>
+<thead><tr><th scope="col">Test color</th><th scope="col">Baseline rendering</th><th scope="col">Adjusted rendering</th></tr></thead>
+<tbody>
+<tr data-correction-case="warm-light"><th scope="row">Warm tone</th><td id="warm-baseline-range" data-arm="B">6.24–6.65</td><td id="warm-adjustment-range" data-arm="D"><strong>2.86–2.98</strong><span>Closer on every reading</span></td></tr>
+<tr data-correction-case="neutral128"><th scope="row">Neutral gray</th><td id="neutral-baseline-range" data-arm="B">5.51–5.87</td><td id="neutral-adjustment-range" data-arm="D"><strong>6.17–6.51</strong><span>Farther on every reading</span></td></tr>
+</tbody></table>
+<p><strong>The adjustment did not improve both colors.</strong> Its saved output forecasts also missed the chosen limit on all eight readings. Every adjusted result remained above the test's original-color error limit of 1. The warm improvement was useful, but it did not establish a dependable correction for other colors.</p>
+<p class="caption">Both versions were compared with the same original desired color for each case. These patterned test patches did not test whole-image quality or establish the closest colors the display could reproduce. <a href="/reflective-color-display/measurements/?experiment=bcd&amp;comparison=bcd">Inspect the readings and forecasts.</a></p>
+</section>
 <figure class="measured-comparison" id="measured-prediction-example"
   aria-labelledby="measured-prediction-title" aria-describedby="measured-prediction-caption"
   data-result-sha256="224085c999428cd9476bebee02e764881a40f323910ff2f168eefd2a3d59a748"
   data-source-id="RENDERER-BC-WARM-LIGHT-C">
-  <h4 id="measured-prediction-title">One measured result makes the distinction concrete</h4>
-  <p>A forecast for one warm-color six-state construction was saved before four fresh measurements. The first reading in acquisition order is shown here.</p>
+  <h4 id="measured-prediction-title">Predicting a color is not the same as reproducing it</h4>
+  <p>A separate construction in that experiment had an accurate output forecast but still missed the desired color. Its forecast was saved before four fresh measurements; the first reading is shown here.</p>
   <div class="measured-color-grid">
     <div class="measured-color-card" data-color-role="requested" data-xyz-d50="16.48454729033974,15.564632033519056,7.727523807314165">
-      <strong>Requested color</strong><i style="--measured-preview:#836852" aria-hidden="true"></i><span>D50 XYZ: 16.485 · 15.565 · 7.728</span>
+      <strong>Original desired color</strong><i style="--measured-preview:#836852" aria-hidden="true"></i><span>D50 XYZ: 16.485 · 15.565 · 7.728</span>
     </div>
     <div class="measured-color-card" data-color-role="forecast" data-xyz-d50="14.10692773053848,12.416873903444351,5.240211235593386">
       <strong>Saved output forecast</strong><i style="--measured-preview:#805a43" aria-hidden="true"></i><span>D50 XYZ: 14.107 · 12.417 · 5.240</span>
@@ -962,13 +979,8 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
   </div></details>
 </figure>
 
-<dl class="research-readout">
-<div data-question-part="why"><dt>Why we tested it</dt><dd>Predicting what a pattern produces is only part of the job. The renderer must use that knowledge to select a better construction for the desired color.</dd></div>
-<div data-question-part="observed"><dt>What we saw</dt><dd>For the warm-color construction above, the saved forecast met the chosen prediction limit on all four fresh readings, but every measured result remained far outside that limit from the requested color.</dd></div>
-<div data-question-part="meaning"><dt>What it tells us</dt><dd>Two checks are needed: forecast versus measured output, and measured output versus requested color. Success on the first does not establish success on the second.</dd></div>
-<div data-question-part="limit" id="renderer-current-answer"><dt>What remains open</dt><dd><strong>Broadly useful prediction-guided color reproduction has not yet been demonstrated.</strong> No candidate has yet improved requested color across a sufficiently broad, fresh image set.</dd></div>
-<div data-question-part="next"><dt>Next test</dt><dd>For a new candidate with a clear reason to improve, fix the baseline, forecasts and comparison rule before testing fresh colors and images. Score requested-color error alongside tone, detail, texture and edges.</dd></div>
-</dl>
+<p id="renderer-current-answer">A useful renderer needs both checks: <strong>forecast versus measured output</strong>, and <strong>measured output versus requested color</strong>. Dependable prediction-guided reproduction across new images has not yet been demonstrated.</p>
+<p id="renderer-next-question"><strong>What comes next?</strong> Test whether a selected correction helps on fresh colors and images, with its forecasts fixed in advance. Evaluate requested-color error alongside tone, detail, texture and edges.</p>
 </section>
 </section>
 
@@ -1002,9 +1014,33 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 
 <section class="story-chapter" id="all-pair-explorer" aria-labelledby="all-pair-title"><h2 id="all-pair-title">Explore the measurements behind the investigation</h2><p>For a closer technical look, the atlas keeps the individual spectra, color coordinates, forecasts and experiment history. Browse stripe width, proportions, arrangement, surroundings, instruments or prediction; this depth is optional, not a prerequisite for following the three questions.</p><a class="atlas-link" data-atlas-link href="/reflective-color-display/measurements/">Open the interactive measurement atlas →</a><p class="caption">The original 75 stripe comparisons remain available by color pair, width and reading order. The topic selector opens the broader experiments and later prediction tests.</p></section>
 <footer id="portfolio-contact"><nav class="hero-actions" aria-label="More from Fernando"><a href="https://ferazambuja.github.io/">Portfolio home</a><a href="https://www.linkedin.com/in/fernando-voltolini-de-azambuja">Connect on LinkedIn</a></nav></footer>
-</main><div id="tooltip"></div>
+</main>
+<dialog class="context-enlargement" id="context-enlargement" aria-labelledby="context-dialog-title" aria-describedby="context-dialog-intro">
+<div class="context-dialog-head"><h2 id="context-dialog-title">Same central pixels, different surroundings</h2><button type="button" id="context-dialog-close" autofocus>Close</button></div>
+<p id="context-dialog-intro">The outlined 64 × 64 pixels are byte-identical in these two images. Only the surrounding pixels change.</p>
+<div class="context-pair">
+<figure><div class="context-pixels"><img src="/reflective-color-display/assets/cypresses-image.png" width="800" height="480" loading="lazy" alt="Cypresses native-pixel image with the unchanged central square outlined in the tree."/><span class="context-center" aria-hidden="true"></span></div><figcaption>The region within the image</figcaption></figure>
+<figure><div class="context-pixels"><img src="/reflective-color-display/assets/cypresses-control.png" width="800" height="480" loading="lazy" alt="The same outlined central square with every exterior pixel replaced by native white."/><span class="context-center" aria-hidden="true"></span></div><figcaption>The same region surrounded by white</figcaption></figure>
+</div>
+<p>These are exact digital pixel maps, not photographs or simulations of the measured colors. The outline marks the digital comparison region; the meter samples a larger optical footprint. The readings differed, but this comparison did not separate surrounding-image effects from optical weighting or presentation history.</p>
+<p><a href="/reflective-color-display/measurements/?experiment=center-context8&amp;comparison=CYPRESSES_IMAGE_MINUS_CONTROL">Inspect the measurements in the atlas →</a></p>
+</dialog>
+<div id="tooltip"></div>
 <script>
 "use strict";
+function setupContextEnlargement(){
+  const dialog=document.getElementById("context-enlargement");
+  if(!dialog||typeof dialog.showModal!=="function")return;
+  let opener=null;
+  document.querySelectorAll("[data-context-enlarge]").forEach(link=>{
+    link.setAttribute("aria-haspopup","dialog");link.setAttribute("aria-controls",dialog.id);
+    link.addEventListener("click",event=>{event.preventDefault();opener=link;dialog.showModal();document.documentElement.classList.add("context-modal-open");});
+  });
+  document.getElementById("context-dialog-close").addEventListener("click",()=>dialog.close());
+  dialog.addEventListener("close",()=>{document.documentElement.classList.remove("context-modal-open");opener?.focus({preventScroll:true});});
+  dialog.addEventListener("click",event=>{if(event.target!==dialog)return;const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();});
+}
+setupContextEnlargement();
 const C = { h:"#cf7520", v:"#2f96c9", diff:"#948a10", ref:"#7c8790",
   ink:"#f1f0e8", muted:"#a9b0b7", grid:"#27313a" };
 const VIEWS = [

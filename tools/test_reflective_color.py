@@ -86,6 +86,16 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn('src="/reflective-color-display/assets/cypresses-image.png"', self.article)
         self.assertIn('src="/reflective-color-display/assets/cypresses-control.png"', self.article)
 
+    def test_q3_comparison_and_image_enlargement_survive_delivery(self):
+        self.assertIn('id="fixed-adjustment-example"', self.article)
+        for case in ("warm-light", "neutral128"):
+            self.assertIn(f'data-correction-case="{case}"', self.article)
+        self.assertIn('href="/reflective-color-display/measurements/?experiment=bcd&amp;comparison=bcd"', self.article)
+        self.assertIn('<dialog class="context-enlargement" id="context-enlargement"', self.article)
+        self.assertIn('href="#context-pixel-examples" data-context-enlarge', self.article)
+        self.assertIn('id="context-dialog-close"', self.article)
+        self.assertIn('href="/reflective-color-display/measurements/?experiment=center-context8&amp;comparison=CYPRESSES_IMAGE_MINUS_CONTROL"', self.article)
+
     def test_single_document_landmarks_and_current_navigation(self):
         for text in (self.article, self.atlas):
             self.assertEqual(len(re.findall(r"<main\b", text)), 1)
