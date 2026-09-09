@@ -109,9 +109,12 @@ class ReflectiveDeliveryTests(unittest.TestCase):
             else:
                 self.fail("photograph has no compressed image data")
 
-    def test_local_candidate_stays_out_of_sitemap(self):
-        self.assertIn('content="noindex,nofollow"', self.article)
-        self.assertNotIn(REFLECTIVE_ROUTE, sitemap(self.output))
+    def test_public_case_study_is_indexable_while_atlas_stays_unlisted(self):
+        self.assertNotIn('content="noindex', self.article)
+        self.assertIn('content="noindex,nofollow"', self.atlas)
+        site_map = sitemap(self.output)
+        self.assertIn(f"<loc>https://ferazambuja.github.io{REFLECTIVE_ROUTE}</loc>", site_map)
+        self.assertNotIn(f"{REFLECTIVE_ROUTE}measurements/", site_map)
 
     def test_modified_delivery_fails_before_copying(self):
         with tempfile.TemporaryDirectory() as tmp:
