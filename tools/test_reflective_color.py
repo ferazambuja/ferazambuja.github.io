@@ -90,7 +90,9 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertLess(self.article.index('id="prediction-domain-map"'), self.article.index('id="other-constructions"'))
         self.assertLess(self.article.index('id="other-constructions"'), self.article.index('id="pair-susceptibility"'))
         for scope in ('data-scope-unit="native-pairs" data-count="15"',
-                      'data-scope-unit="construction-questions" data-count="8"'):
+                      'data-scope-unit="construction-questions" data-count="8"',
+                      'data-scope-unit="native-patterns" data-count="90"',
+                      'data-scope-unit="optical-readings" data-count="300"'):
             self.assertIn(scope, self.article)
         # Final reader-selected labels must survive the delivery transform.
         for label in (
