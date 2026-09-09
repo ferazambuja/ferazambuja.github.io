@@ -77,6 +77,8 @@ class ReflectiveDeliveryTests(unittest.TestCase):
             "equal-count-stripes",
             "two-color-layout",
             "three-color-arrangement",
+            "error-diffused-organization",
+            "patterned-extent",
             "image-region-context",
             "return-condition",
         ):
@@ -87,18 +89,23 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("comparison=return-stability39&amp;pattern=FIXED-RENDERER-NEXT-COVERAGE39-B-PALE-RED-LIGHT", self.article)
         for identifier in ("pair-comparison-table", "other-constructions"):
             self.assertIn(f'id="{identifier}"', self.article)
-        self.assertLess(self.article.index('id="prediction-domain-map"'), self.article.index('id="other-constructions"'))
+        self.assertLess(self.article.index('id="other-constructions"'), self.article.index('id="prediction-domain-map"'))
         self.assertLess(self.article.index('id="other-constructions"'), self.article.index('id="pair-susceptibility"'))
         for scope in ('data-scope-unit="native-pairs" data-count="15"',
-                      'data-scope-unit="construction-questions" data-count="8"',
                       'data-scope-unit="native-patterns" data-count="90"',
                       'data-scope-unit="optical-readings" data-count="300"'):
             self.assertIn(scope, self.article)
+        questions = re.findall(r'data-construction-result="([^"]+)"', self.article)
+        self.assertEqual(len(questions), len(set(questions)))
+        self.assertIn(f'data-scope-unit="construction-questions" data-count="{len(questions)}"', self.article)
+        self.assertTrue({"organization", "extent"}.issubset(questions))
+        self.assertIn('id="prediction-trials"><summary>', self.article)
+        self.assertIn("Prediction-guided rendering is work in progress, not a completed solution.", self.article)
         # Final reader-selected labels must survive the delivery transform.
         for label in (
-            '<h3 id="pair-susceptibility-title">Explore all 15 exact H/V comparisons</h3>',
+            '<h3 id="pair-susceptibility-title">All 15 pairs within the H/V family</h3>',
             '<th scope="col">H/V measurement sequence</th>',
-            '<h3 id="other-constructions-title">How measured color changed with pixel construction</h3>',
+            '<h3 id="other-constructions-title">What changed, what stayed close, and what repeated</h3>',
         ):
             self.assertIn(label, self.article)
         self.assertIn('src="/reflective-color-display/assets/cypresses-image.png"', self.article)
