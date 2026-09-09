@@ -73,16 +73,27 @@ class ReflectiveDeliveryTests(unittest.TestCase):
             self.assertNotIn(fabricated, self.article)
 
         self.assertIn('id="prediction-domain-map"', self.article)
-        self.assertEqual(self.article.count("data-prediction-domain="), 4)
         for domain in (
+            "equal-count-stripes",
             "two-color-layout",
             "three-color-arrangement",
             "image-region-context",
             "return-condition",
         ):
             self.assertIn(f'data-prediction-domain="{domain}"', self.article)
-        self.assertIn("horizontal and vertical stripes, stripe width, phase, checkerboards and diagonal arrangements", self.article)
-        self.assertIn("same exact buffer did not always return to the same absolute measured color", self.article)
+        for anchor in ("pattern-findings", "renderer-check", "instrument-check", "patterns-to-prediction"):
+            self.assertIn(f'id="{anchor}"', self.article)
+        self.assertIn('id="unchanged-pattern-returns"', self.article)
+        self.assertIn("comparison=return-stability39&amp;pattern=FIXED-RENDERER-NEXT-COVERAGE39-B-PALE-RED-LIGHT", self.article)
+        for identifier in ("pair-comparison-table", "other-constructions"):
+            self.assertIn(f'id="{identifier}"', self.article)
+        # Final reader-selected labels must survive the delivery transform.
+        for label in (
+            '<h3 id="pair-susceptibility-title">Explore all 15 exact H/V comparisons</h3>',
+            '<th scope="col">H/V measurement sequence</th>',
+            '<h3 id="other-constructions-title">How measured color changed with pixel construction</h3>',
+        ):
+            self.assertIn(label, self.article)
         self.assertIn('src="/reflective-color-display/assets/cypresses-image.png"', self.article)
         self.assertIn('src="/reflective-color-display/assets/cypresses-control.png"', self.article)
 
@@ -133,6 +144,10 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("atlas-family", self.atlas)
         self.assertIn("atlas-experiment", self.atlas)
         self.assertIn("atlas-reading-pattern", self.atlas)
+        returns = next(e for e in data["experiments"] if e["id"] == "return-stability39")
+        self.assertIn(
+            "Patterns were selected using earlier results, so this was not a test on new inputs "
+            "and does not demonstrate a general learning curve.", returns["condition"])
 
     def test_photographs_contain_no_exif_xmp_or_iptc(self):
         for path in (self.project / "assets").glob("*.jpeg"):

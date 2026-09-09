@@ -1,28 +1,28 @@
 {
   "files": {
     "index.html": {
-      "sha256": "db40e0346b916e20f79134a536035e260633e2dba30b47c57e54bbabc0aceb3d",
-      "source_sha256": "c195ccc2a5fcc7a8400122ea621f526286758fe5d6e339f3ac59efa6fcff5c4c"
+      "sha256": "a05994c8955000fcfb9b10216eb0f9acfa12fc7269204009111c2ce27b916f32",
+      "source_sha256": "ea7ffa1f8b9792af6e8de9129f034f5d462428d64121fbf9247fa1297671cee5"
     },
     "measurement-investigation.json": {
       "sha256": "1ab2c8fa44ee7d0b6c38ab87f6d8346bc60b2c73b67dbe917b87c0ccd974cb18",
       "source_sha256": "1ab2c8fa44ee7d0b6c38ab87f6d8346bc60b2c73b67dbe917b87c0ccd974cb18"
     },
     "measurements/index.html": {
-      "sha256": "514f0d2f1f63a5f88b8e5aa0e1824702f91e4d8319d5e9aa7922920d9e1ccdd9",
-      "source_sha256": "ca7a5a00a939e9d03dbf3dd7ac9edde8cd43845ac8edf15b8bda2e2bda46f4a0"
+      "sha256": "9b570642398db5d37aba6d946d537e68e8b3bd5ca031f1a969983566a09435fa",
+      "source_sha256": "0d5666b6e2044035b9988a2ea6c0434dbb4fa6120087d79e6836f4d10e4e12d1"
     },
     "measurements/atlas-experiments.json": {
-      "sha256": "a2c661a386a9e658194cd4868964089dde1f91ad9eed997a94a01a4d5f437867",
-      "source_sha256": "a2c661a386a9e658194cd4868964089dde1f91ad9eed997a94a01a4d5f437867"
+      "sha256": "7bf141e5fbd60585ad1612164a6ecbceac2691acc97ce37326b72edf6f4b3d1b",
+      "source_sha256": "7bf141e5fbd60585ad1612164a6ecbceac2691acc97ce37326b72edf6f4b3d1b"
     },
     "measurements/atlas.js": {
       "sha256": "43bc6481d6ed47ffea9dc54f73393079d601d87b39b00ae1299cf25f16bc0900",
       "source_sha256": "93162d8423dc4d89608c6d50ae70b2fc08af04db924862a7d86a8166160922f0"
     },
     "measurements/atlas-extension.js": {
-      "sha256": "02bbd82893d6cf15d12244ee736370cc8d48ffbbc170ac874a290a17468a74b8",
-      "source_sha256": "02bbd82893d6cf15d12244ee736370cc8d48ffbbc170ac874a290a17468a74b8"
+      "sha256": "8993a27fd017af6972ca9808bd137e839044bfca95bc56a8f3a8a3e7352b4a39",
+      "source_sha256": "8993a27fd017af6972ca9808bd137e839044bfca95bc56a8f3a8a3e7352b4a39"
     },
     "measurements/atlas-extension.css": {
       "sha256": "50e44baecd885f7ccec27315ca812360e470682a9dc37ca691affd35234fb2ff",

@@ -282,6 +282,12 @@ background:linear-gradient(145deg,#181805,#11151a 72%)}
   <select id="atlas-family"><option value="stripes">Stripe widths · all 15 color pairs</option></select>
   <p id="atlas-coverage" class="caption" aria-live="polite">Loading the additional experiments…</p>
 </div>
+<details class="technical-details" id="atlas-metric-key">
+  <summary>Reading the color coordinates and differences</summary>
+  <p><strong>XYZ</strong> describes measured or predicted color under the named light and observer conventions. <strong>Lab</strong> expresses color as lightness (L*), green–red (a*) and blue–yellow (b*) coordinates. <strong>D50</strong> names the standard daylight reference used for the i1Pro color calculations here; each experiment's measurement details state its convention.</p>
+  <p><strong>DeltaE00</strong> is an unsigned color distance. Check which two colors are compared: two measured patterns, forecast versus measurement, or requested versus measured color. <strong>RMS</strong> (root mean square) instead summarizes the magnitude of a wavelength-by-wavelength spectral difference, in the displayed units. Neither automatically defines visibility.</p>
+  <p>A <strong>signed difference</strong> keeps the direction in the order named beside it. For Lab, positive L* means lighter, positive a* redder and positive b* yellower. <strong>Repeated-reading movement</strong> describes how readings changed, not an uncertainty bound. i1Pro reflectance factor and CR-250 radiance remain separate quantities.</p>
+</details>
 <section id="atlas-additional" hidden aria-labelledby="atlas-experiment-title">
   <div class="atlas-controls">
     <label>Experiment<select id="atlas-experiment"></select></label>
@@ -300,7 +306,7 @@ background:linear-gradient(145deg,#181805,#11151a 72%)}
   <p class="caption">Select a reading to highlight its spectrum. Scroll the table sideways on a small screen.</p>
   <div class="atlas-table" tabindex="0" role="region" aria-label="Individual readings, scroll to see all columns"><table><thead><tr><th>Reading</th><th>Pattern</th><th>Measured XYZ</th><th>Measured Lab</th><th>Temperature</th></tr></thead><tbody id="atlas-readings"></tbody></table></div>
   <div id="atlas-evaluations" hidden><h3>Predictions and desired colors</h3><p id="atlas-evaluation-note" class="caption"></p><div class="atlas-table" tabindex="0" role="region" aria-label="Prediction results, scroll to see all columns"><table><thead><tr><th>Reading</th><th>Comparison</th><th>Predicted or desired XYZ</th><th>DeltaE00</th><th>Chosen limit</th><th>Signed XYZ difference</th><th>Result</th></tr></thead><tbody id="atlas-errors"></tbody></table></div></div>
-  <details><summary>Measurement details and source</summary><p id="atlas-convention"></p><p id="atlas-source"></p><p>Values are copied from the saved measurement analyses. A missing value is left blank rather than calculated by this page. Repeated-reading movement describes the observations; it is not an uncertainty estimate.</p></details>
+  <details><summary>Measurement details and source</summary><p id="atlas-convention"></p><p id="atlas-source"></p><p id="atlas-comparison-identity"></p><div class="atlas-table" tabindex="0" role="region" aria-label="Exact reading and pixel-pattern identifiers"><table><thead><tr><th>Reading</th><th>Saved reading identifier</th><th>Pixel-pattern identifier</th></tr></thead><tbody id="atlas-reading-identities"></tbody></table></div><p>Values are copied from the saved measurement analyses. A missing value is left blank rather than calculated by this page. Repeated-reading movement describes the observations; it is not an uncertainty estimate.</p></details>
 </section>
 <div id="legacy-atlas"><section class="map-explorer" id="all-pair-explorer" aria-labelledby="all-pair-title">
   <div class="map-heading"><div><h2 id="all-pair-title">Choose a comparison</h2><p class="caption">75 comparisons · 15 color pairs · 3 stripe widths</p></div></div>
