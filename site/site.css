@@ -1061,6 +1061,17 @@ pre code { background: none; padding: 0; }
 /* ---------- small screens ---------- */
 
 @media (max-width: 62rem) {
+  .topbar { position: static; }
+  .topbar-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.55rem 0.75rem;
+  }
+  .wordmark { grid-column: 1; grid-row: 1; }
+  .theme-toggle { grid-column: 2; grid-row: 1; margin-left: 0; }
+  .topnav { grid-column: 1 / -1; grid-row: 2; flex-wrap: wrap; gap: 0.35rem 1rem; }
+  .topnav a { white-space: nowrap; }
   /* Content first: a phone reader should meet the work, not 26 nav links.
      The track stays minmax(0, 1fr) -- that lower bound is what stops the
      column from sizing to its widest child and overflowing the viewport. */
@@ -1085,10 +1096,6 @@ pre code { background: none; padding: 0; }
 }
 
 @media (max-width: 42rem) {
-  /* The full name and three destinations wrap into a tall mobile header.
-     Keep the navigation, but let it leave with the opening instead of
-     occupying more than a tenth of every screen while the reader scrolls. */
-  .topbar { position: static; }
   .topbar-inner { padding-inline: 1rem; }
   .layout-plain, .layout-with-sidebar { padding-inline: 1rem; }
   .home-work-grid { grid-template-columns: 1fr; }

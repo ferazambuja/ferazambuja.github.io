@@ -1,5 +1,10 @@
 /* The case study keeps its measured-color graphics and dark reading surface.
    Only this route loads this shell; the surrounding portfolio is unchanged. */
+/* Use consistent solid reading surfaces. Pattern illustrations keep their
+   own gradients: these selectors cover decorative chapter backgrounds only. */
+body { background:var(--bg); }
+.display-primer, .summary-board, .hypothesis-card, .triad-update,
+.prediction-result { background:var(--panel); }
 .topbar { background:#11151a; border-bottom:1px solid #34414b; }
 .topbar .topbar-inner {
   max-width:1180px; margin:auto; padding:16px 22px;
