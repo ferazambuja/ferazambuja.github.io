@@ -111,14 +111,14 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn('src="/reflective-color-display/assets/cypresses-image.png"', self.article)
         self.assertIn('src="/reflective-color-display/assets/cypresses-control.png"', self.article)
 
-    def test_q3_comparison_and_image_enlargement_survive_delivery(self):
+    def test_q3_comparison_and_consolidated_image_example_survive_delivery(self):
         self.assertIn('id="fixed-adjustment-example"', self.article)
         for case in ("warm-light", "neutral128"):
             self.assertIn(f'data-correction-case="{case}"', self.article)
         self.assertIn('href="/reflective-color-display/measurements/?experiment=bcd&amp;comparison=bcd"', self.article)
-        self.assertIn('<dialog class="context-enlargement" id="context-enlargement"', self.article)
-        self.assertIn('href="#context-pixel-examples" data-context-enlarge', self.article)
-        self.assertIn('id="context-dialog-close"', self.article)
+        self.assertEqual(self.article.count('id="context-pixel-examples"'), 1)
+        for filename in ("cypresses-image.png", "cypresses-control.png"):
+            self.assertEqual(self.article.count(f'src="/reflective-color-display/assets/{filename}"'), 1)
         self.assertIn('href="/reflective-color-display/measurements/?experiment=center-context8&amp;comparison=CYPRESSES_IMAGE_MINUS_CONTROL"', self.article)
 
     def test_single_document_landmarks_and_current_navigation(self):
