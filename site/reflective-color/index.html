@@ -83,7 +83,11 @@ background:repeating-conic-gradient(#d4b322 0 25%,#315f9f 0 50%) 0/18px 18px}
 .pattern-hook h2{font-size:16px;margin:0 0 4px}.pattern-hook>p{color:var(--muted);font-size:13px;margin:0 0 12px}
 .pattern-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pattern-grid figure{margin:0}
 .hook-pixel-map{display:grid;grid-template-columns:repeat(18,1fr);aspect-ratio:16/7;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#0c1014}
-.hook-pixel-map span{min-width:0;min-height:0}
+.hook-pixel-map span{min-width:0;min-height:0;display:grid;place-items:center;font:700 14px/1 ui-monospace,monospace}
+#payload-definition{font-size:16px}#payload-map-key{margin-top:12px;font-size:14px}
+.payload-roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin:24px 0}
+.payload-roles>div{border-top:2px solid var(--accent);padding-top:12px}.payload-roles dt{font-size:18px;font-weight:750}.payload-roles dd{margin:8px 0 0;font-size:16px;color:var(--muted)}
+@media(max-width:640px){.payload-roles{grid-template-columns:1fr;gap:16px}}
 .pattern-grid figcaption{color:var(--muted);font-size:12px;margin-top:5px}
 .breadth-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 20px}
 .breadth-grid figure{margin:0}.breadth-grid figcaption{font-size:12px;color:var(--muted);margin-top:7px}.breadth-grid strong{color:var(--text)}
@@ -500,18 +504,20 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 <section class="pattern-hook" aria-labelledby="pattern-hook-title">
   <div class="discovery-bridge"><div class="eyebrow">The measurement that changed the question</div><h2 id="pattern-hook-title">Equal color counts produced different measured colors</h2>
   <p>While measuring patterns to understand the display's color response, I came across something I had not expected: two blue/green patterns with the same color counts gave different readings. One used horizontal rows; the other used vertical columns. I had started by trying to improve image color. Now I also needed to understand <strong>why the exact arrangement could matter</strong>.</p></div>
+  <p id="payload-definition">A <strong>pixel payload</strong> is the digital data that tells the display which native color state to use at each pixel position. It specifies the pixel arrangement, not the color of the reflected light. The driver packs those state choices into bytes for the display.</p>
   <p>A simple area-count description would treat these two patterns alike. These enlarged grids reproduce the repeating row and column rules used in the test.
-  In each full 800×480 source image, the exact payload contains 192,000 blue and
+  Each full 800×480 pixel map contains 192,000 blue and
   192,000 green pixels. Only their spatial organization differs. The measured spectrum
   and color coordinates below show the optical result.</p>
   <div class="pattern-grid">
     <figure><div class="hook-pixel-map" id="hook-pattern-h" role="img"
-      aria-label="Enlarged input pattern of blue and green pixels arranged as alternating horizontal one-pixel rows."></div>
+      aria-label="Enlarged pixel instructions: B for blue and G for green, arranged as alternating horizontal one-pixel rows."></div>
       <figcaption>Horizontal one-pixel rows · half blue, half green</figcaption></figure>
     <figure><div class="hook-pixel-map" id="hook-pattern-v" role="img"
-      aria-label="Enlarged input pattern of blue and green pixels arranged as alternating vertical one-pixel columns."></div>
+      aria-label="Enlarged pixel instructions: B for blue and G for green, arranged as alternating vertical one-pixel columns."></div>
       <figcaption>Vertical one-pixel columns · the same color counts</figcaption></figure>
   </div>
+  <p class="caption" id="payload-map-key"><strong>B = blue; G = green.</strong> The letters label native states; the actual payload is encoded as bytes. These grids illustrate the pixel instructions, not predicted appearance or photographs of the panel.</p>
   <div class="featured-comparison" id="featured-measurement" aria-labelledby="featured-measurement-title">
   <h3 id="featured-measurement-title">A larger difference: the black/yellow patterns</h3>
   <p>Blue/green prompted the investigation. Later, a one-pixel black/yellow comparison showed a much larger lightness difference. The two curves show how much light each horizontal and vertical pattern
@@ -875,6 +881,12 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 
 <h2 id="prediction-result-title">From pattern measurements to better images</h2>
 <p id="prediction-work-in-progress">The practical aim is a renderer that chooses useful native-pixel constructions because their measured color is predictable. Controlled patterns help identify dependencies; image regions test whether that knowledge transfers to ordinary content. <strong>Both remain open parts of the investigation.</strong> Moving into images does not mean the controlled-pattern problem is solved.</p>
+<dl class="payload-roles" id="payload-and-prediction" aria-label="Pixel instructions, predicted color and measured color">
+<div data-color-role="payload"><dt>Payload · what we send</dt><dd>The exact native-state pixel map, encoded for the display. A renderer or a test-pattern generator chooses these pixels.</dd></div>
+<div data-color-role="prediction"><dt>Prediction · what we expect</dt><dd>A model's estimate of the color those pixels will produce under stated conditions. The models below predict XYZ color coordinates.</dd></div>
+<div data-color-role="measurement"><dt>Measurement · what we observe</dt><dd>The light recorded by the meter: a spectrum, converted to color coordinates. This is what tests the prediction.</dd></div>
+</dl>
+<p id="same-payload-forecasts">Different models can predict different colors for the <strong>same unchanged payload</strong>. Making a forecast does not change the pixels. The requested image color is a separate goal: we check both how well we predicted the output and how closely that output matches the goal.</p>
 <ol class="prediction-questions" id="prediction-questions" aria-label="Three questions guiding color prediction and rendering">
 <li><a href="#prediction-return-status">Can we predict new absolute colors across useful conditions and repeated occurrences?</a><p>Forecast a construction's output, including when the same pixels return.</p></li>
 <li><a href="#image-context-result">Do those predictions transfer to regions inside previously unseen images?</a><p>Test the color of a region among the textures, edges and surroundings of a picture.</p></li>
@@ -889,7 +901,7 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 <div data-question-part="why"><dt>Why we tested it</dt><dd>A renderer needs to know the color its pixels will produce, not just whether two patterns will differ. Useful predictions must work on new inputs and remain useful when familiar patterns return.</dd></div>
 <div data-question-part="observed" id="prediction-progress-summary"><dt>What we saw</dt><dd>For <strong id="q1-inputs">14 new colors measured twice</strong>, a model based on proportional departures from a simple native-color mixture reduced average prediction error from <strong id="q1-direct-mean">6.73</strong> to <strong id="q1-ratio-mean">2.69 DeltaE00</strong> compared with directly averaging measured colors. Yet each method met the chosen limit on only <strong id="q1-passes">2 of 28 readings</strong>. Both forecasts concerned the same unchanged pixels.</dd></div>
 <div data-question-part="meaning"><dt>What it tells us</dt><dd>The ratio model improved average prediction in this test. Learning how measured mixtures depart from a simple native-color estimate is useful, but average improvement is not dependable accuracy.</dd></div>
-<div data-question-part="limit"><dt>What remains open</dt><dd><strong>Reliable new-color prediction is not established.</strong> Familiar payloads also did not return consistently across occurrences, so the intended conditions and display history must be considered when defining where a prediction applies.</dd></div>
+<div data-question-part="limit"><dt>What remains open</dt><dd><strong>Reliable new-color prediction is not established.</strong> The same pixel maps also did not return consistent colors across occurrences, so the intended conditions and display history must be considered when defining where a prediction applies.</dd></div>
 <div data-question-part="next"><dt>Next test</dt><dd>A future model should add a specific missing input or a new pixel construction. Its forecasts would then be tested on both new inputs and familiar returns under defined conditions. Repeating the same method alone would not answer what information is missing.</dd></div>
 </dl>
 <details class="technical-details" id="development-models"><summary>What would an absolute-color model need to know?</summary><div class="technical-body">
@@ -1490,7 +1502,11 @@ function mapRenderHookPatterns(){
     const target=document.getElementById("hook-pattern-"+orientation);clear(target);
     for(let y=0;y<8;y++)for(let x=0;x<18;x++){
       const cell=document.createElement("span"),index=orientation==="h"?y:x;
-      cell.style.background=index%2?"#4f9b69":"#3569b8";target.appendChild(cell);
+      cell.style.background=index%2?"#4f9b69":"#3569b8";
+      cell.dataset.nativeState=index%2?"GREEN":"BLUE";
+      cell.setAttribute("aria-hidden","true");
+      cell.textContent=index%2?"G":"B";cell.style.color=index%2?"#101820":"#fff";
+      target.appendChild(cell);
     }
   }
 }
