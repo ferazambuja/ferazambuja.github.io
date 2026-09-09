@@ -87,6 +87,11 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("comparison=return-stability39&amp;pattern=FIXED-RENDERER-NEXT-COVERAGE39-B-PALE-RED-LIGHT", self.article)
         for identifier in ("pair-comparison-table", "other-constructions"):
             self.assertIn(f'id="{identifier}"', self.article)
+        self.assertLess(self.article.index('id="prediction-domain-map"'), self.article.index('id="other-constructions"'))
+        self.assertLess(self.article.index('id="other-constructions"'), self.article.index('id="pair-susceptibility"'))
+        for scope in ('data-scope-unit="native-pairs" data-count="15"',
+                      'data-scope-unit="construction-questions" data-count="8"'):
+            self.assertIn(scope, self.article)
         # Final reader-selected labels must survive the delivery transform.
         for label in (
             '<h3 id="pair-susceptibility-title">Explore all 15 exact H/V comparisons</h3>',
