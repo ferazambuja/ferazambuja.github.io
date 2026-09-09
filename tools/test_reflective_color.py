@@ -53,6 +53,39 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("function forwardAtlasSelection()", self.article)
         self.assertIn('new URLSearchParams(location.search)', self.article)
 
+    def test_result_visuals_and_prediction_map_are_grounded(self):
+        self.assertIn('id="measured-prediction-example"', self.article)
+        self.assertIn(
+            'data-result-sha256="224085c999428cd9476bebee02e764881a40f323910ff2f168eefd2a3d59a748"',
+            self.article,
+        )
+        self.assertIn('data-source-id="RENDERER-BC-WARM-LIGHT-C"', self.article)
+        for xyz in (
+            "16.48454729033974,15.564632033519056,7.727523807314165",
+            "14.10692773053848,12.416873903444351,5.240211235593386",
+            "14.29114,12.57847,5.426062",
+        ):
+            self.assertIn(f'data-xyz-d50="{xyz}"', self.article)
+        self.assertEqual(self.article.count("data-fresh-reading="), 4)
+        for result in ("DeltaE00 0.41", "DeltaE00 5.96", "0.38–0.47", "5.81–5.96"):
+            self.assertIn(result, self.article)
+        for fabricated in ("--example-color", "#d5b849", "#647e79", "#687e77", "Conceptual illustration"):
+            self.assertNotIn(fabricated, self.article)
+
+        self.assertIn('id="prediction-domain-map"', self.article)
+        self.assertEqual(self.article.count("data-prediction-domain="), 4)
+        for domain in (
+            "two-color-layout",
+            "three-color-arrangement",
+            "image-region-context",
+            "return-condition",
+        ):
+            self.assertIn(f'data-prediction-domain="{domain}"', self.article)
+        self.assertIn("horizontal and vertical stripes, stripe width, phase, checkerboards and diagonal arrangements", self.article)
+        self.assertIn("same exact buffer did not always return to the same absolute measured color", self.article)
+        self.assertIn('src="/reflective-color-display/assets/cypresses-image.png"', self.article)
+        self.assertIn('src="/reflective-color-display/assets/cypresses-control.png"', self.article)
+
     def test_single_document_landmarks_and_current_navigation(self):
         for text in (self.article, self.atlas):
             self.assertEqual(len(re.findall(r"<main\b", text)), 1)
