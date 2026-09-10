@@ -16,6 +16,7 @@
 :root{color-scheme:dark;--bg:#0a0c0f;--panel:#11151a;--line:#27313a;--text:#f1f0e8;
 --muted:#a9b0b7;--accent:#d5c91b;--h:#cf7520;--v:#2f96c9;--diff:#948a10;--ref:#7c8790}
 *{box-sizing:border-box}
+:target{scroll-margin-top:22px}
 body{margin:0;background:radial-gradient(circle at 75% 0,#202511 0,transparent 34rem),var(--bg);
 color:var(--text);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 main{max-width:1180px;margin:auto;padding:30px 22px 54px}
@@ -423,6 +424,13 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 .result-status{display:block;width:fit-content;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:5px;padding:4px 7px;margin:0 0 9px;color:var(--text);font-size:12px;font-weight:700}
 .result-status[data-result-status="quiet"]{border-left-color:#8fa4ad}.result-status[data-result-status="mixed"]{border-left-color:#bfaf87}.result-status[data-result-status="unresolved"]{border-left-color:#92979c}
 .prediction-criterion{border-left:3px solid var(--accent);padding:12px 18px;color:var(--muted)}
+.measurement-process{margin:28px 0}.measurement-process figure{margin:0}.process-map{position:relative;margin:20px 0;padding:22px;display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:32px 26px;isolation:isolate}
+.process-map>svg{position:absolute;inset:0;width:100%;height:100%;z-index:-1;overflow:visible;pointer-events:none}.process-map path{fill:none;stroke:var(--muted);stroke-width:1.5;marker-end:url(#process-arrow)}
+.process-node{padding:13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:16px;line-height:1.5;min-width:0}.process-node strong{display:block;font-size:18px;color:var(--text);margin-bottom:4px}.process-node span{display:block;color:var(--muted)}
+.process-node[data-process-node="C"]{border-color:var(--accent)}.process-node[data-process-node="Q"],.process-node[data-process-node="R"]{border-top:3px solid var(--accent)}
+[data-process-node="A"]{grid-area:1/2}[data-process-node="B"]{grid-area:2/2}[data-process-node="C"]{grid-area:3/2}[data-process-node="D"]{grid-area:4/2}[data-process-node="E"]{grid-area:5/2}[data-process-node="F"]{grid-area:6/2}
+[data-process-node="H"]{grid-area:4/1}[data-process-node="G"]{grid-area:5/1}[data-process-node="P"]{grid-area:3/3}[data-process-node="V"]{grid-area:4/3}[data-process-node="W"]{grid-area:5/3}[data-process-node="Q"]{grid-area:6/3}[data-process-node="R"]{grid-area:6/1}
+@media(max-width:640px){.process-map{grid-template-columns:1fr 1fr;gap:30px 18px;padding:24px 16px}.process-node{padding:10px}.process-node strong{font-size:16px}[data-process-node="A"]{grid-area:1/1/2/3}[data-process-node="B"]{grid-area:2/1/3/3}[data-process-node="C"]{grid-area:3/1}[data-process-node="P"]{grid-area:3/2}[data-process-node="D"]{grid-area:4/1}[data-process-node="H"]{grid-area:4/2}[data-process-node="E"]{grid-area:5/1}[data-process-node="G"]{grid-area:5/2}[data-process-node="F"]{grid-area:6/1}[data-process-node="Q"]{grid-area:6/2}[data-process-node="V"]{grid-area:7/1}[data-process-node="W"]{grid-area:7/2}[data-process-node="R"]{grid-area:8/1/9/3}}
 @media(max-width:640px){.research-readout>div{grid-template-columns:1fr;gap:6px}.project-status{grid-template-columns:1fr}}
 </style>
 </head>
@@ -488,12 +496,12 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
       </div>
     </figure>
   </div>
-  <p class="primer-conclusion"><strong>Why prediction matters:</strong> if spatial
-  construction helps create the color, the renderer must either predict the output
-  of the construction it sends to the display or restrict itself to exact constructions
-  whose output has been measured and validated for that setup and chosen tolerance. A future ICC-style characterization
-  can describe only a fixed, tested rendering process.</p>
-  <p id="prediction-preview">Some exact constructions had accurate color forecasts. <a href="#prediction-return-status">Tests on new inputs</a> exposed remaining errors, while <a href="#measured-prediction-example">a forecast and requested-color comparison</a> showed that predicting an output accurately does not necessarily bring it closer to the desired color.</p>
+  <p class="primer-conclusion" id="rendering-options"><strong>Why arrangement matters:</strong>
+  spatial arrangement can change measured color, so useful forecasts may need more
+  than color proportions. We can also compare rendering methods directly on images
+  while prediction remains incomplete. An experimental ICC profile describes a
+  declared rendering/display condition; its usefulness and limits still need measurement.</p>
+  <p id="prediction-preview">Two questions guide the rendering work: <a href="#prediction-return-status">can we forecast the color a pattern will produce?</a> And <a href="#measured-prediction-example">can we choose pixels that bring it closer to the desired color?</a></p>
   <p class="technology-source">For the physical display technology, see
   <a href="https://www.eink.com/tech/detail/How_it_works">E Ink's explanation of how electronic ink works</a>,
   including the four-particle system used by Spectra 6. The pigment system inside
@@ -584,6 +592,44 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 </div>
 </section>
 
+<section class="measurement-process" id="measurement-process" aria-labelledby="measurement-process-title">
+<h2 id="measurement-process-title">Where could the measured difference come from?</h2>
+<p>The native colors and their proportions stayed the same; their positions changed. Some rearrangements gave different readings and others stayed close. Counting colors alone could not describe all the results. To understand why, I needed to separate the pixel instructions from what the display produced and what the meter collected.</p>
+<figure aria-labelledby="process-map-caption">
+<div class="process-map" id="process-map" aria-hidden="true">
+<svg aria-hidden="true"><defs><marker id="process-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" style="fill:var(--muted);stroke:none;marker-end:none"/></marker></defs></svg>
+<div class="process-node" id="process-source" data-process-node="A" data-process-next="B R"><strong>Source image and desired colors</strong><span>The picture we want to reproduce.</span></div>
+<div class="process-node" id="process-renderer" data-process-node="B" data-process-next="C"><strong>Color conversion and renderer</strong><span>Choose native states and their positions.</span></div>
+<div class="process-node" id="process-pixels" data-process-node="C" data-process-next="D P"><strong>Exact pixel map · payload</strong><span>Digital instructions. Controlled pattern tests begin here.</span></div>
+<div class="process-node" id="process-history" data-process-node="H" data-process-next="D"><strong>Update and history</strong><span>The preceding images, update sequence and operating conditions.</span></div>
+<div class="process-node" id="process-display" data-process-node="D" data-process-next="E V"><strong>Physical display</strong><span>The reflective state the panel actually reaches.</span></div>
+<div class="process-node" id="process-geometry" data-process-node="G" data-process-next="E"><strong>Measurement setup</strong><span>Light, meter position and how strongly different parts of the spot contribute.</span></div>
+<div class="process-node" id="process-light" data-process-node="E" data-process-next="F"><strong>Light collected by the meter</strong><span>A sample of the display's optical output.</span></div>
+<div class="process-node" id="process-measurement" data-process-node="F" data-process-next="Q R"><strong>Measured color</strong><span>Spectrum, then XYZ and Lab under the stated convention.</span></div>
+<div class="process-node" id="process-viewing" data-process-node="W" data-process-next="V"><strong>Viewing conditions</strong><span>Light, angle, distance and the surrounding image.</span></div>
+<div class="process-node" id="process-appearance" data-process-node="V"><strong>Appearance to a viewer</strong><span>A separate question, not established by these meter comparisons.</span></div>
+<div class="process-node" id="process-forecast" data-process-node="P" data-process-next="Q"><strong>Predicted color</strong><span>Pixel map + recorded history or measurement conditions, when modeled.</span></div>
+<div class="process-node" id="process-prediction-check" data-process-node="Q"><strong>Did the forecast match?</strong><span>Predicted color versus measured color.</span></div>
+<div class="process-node" id="process-target-check" data-process-node="R"><strong>Did we reproduce the goal?</strong><span>Desired color versus measured color.</span></div>
+</div>
+<div class="sr-only" id="process-map-text">
+<h3>Process relationships</h3>
+<ol>
+<li>The source image and desired colors enter color conversion and the spatial renderer, which produces the exact native-state pixel map and payload.</li>
+<li>The payload, together with the update sequence, display history, and operating conditions, leads to the physical displayed state.</li>
+<li>The display output, together with illumination, meter position, and spatial weighting, determines the light collected by the instrument and the resulting spectrum, XYZ, and Lab measurements.</li>
+<li>The display output and viewing conditions also contribute to appearance for a viewer, which these meter comparisons did not establish.</li>
+<li>A candidate model predicts measured color from the pixel map and its declared inputs. Comparing that prediction with the measurement tests forecast accuracy.</li>
+<li>Comparing the desired color with the measured color asks a different question: whether the rendering process reproduced the goal.</li>
+</ol>
+</div>
+<figcaption id="process-map-caption">Conceptual dependency map, not a diagnosis of the cause. Arrows connect stages and comparisons; they do not show which physical mechanism produced the differences.</figcaption>
+</figure>
+<p><strong>An exact pixel map is an instruction to a physical display, not a measurement of the color it will produce.</strong> The panel must form the image, and the meter samples the light it returns. A prediction is a forecast of that measured result, not another set of pixel instructions. These distinctions led to spatially informed prediction tests and comparisons of rendering methods.</p>
+<p>Grouping pixels reduced some stripe differences, but it did not consistently make arrangements measure alike: a separate four-color comparison gave a larger difference with larger blocks. <a href="#grouping-counterexample">See that comparison.</a></p>
+<nav class="hero-actions" aria-label="Checks prompted by the unexpected readings"><a href="#renderer-check">Check the sent pixels</a><a href="#instrument-check">Compare measuring instruments</a><a href="#hypothesis-tests">Repeat and reverse the reading order</a></nav>
+</section>
+
 <details class="technical-details metric-perspective" id="metric-perspective"><summary>How to read the spectra, color distances, and repeated readings</summary><div class="technical-body">
   <h3 id="metric-perspective-title">Different measurements answer different questions</h3>
   <p>The black/yellow example combines two questions: how did the reflected spectrum change, and how did the resulting color change? The blue/green and red/green examples below show why their answers need not track one another. Spectral RMS is useful because it
@@ -639,12 +685,6 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
   <p><a href="#other-constructions">See the tested pixel arrangements below.</a></p>
   <details class="technical-details" id="native-path-detail"><summary>How the exact patterns reached the display</summary><div class="technical-body">
   <p>The Pimoroni software and hardware still packed, sent, and refreshed those exact patterns on the display. This check isolated the image-conversion choice, not every part of the system. The source used exact entries from the driver's palette; its <code>set_image</code> conversion still ran, but its output was checked to leave the intended native-state map unchanged. Native-state packing, the low-level driver, the refresh sequence and the panel itself were still involved. Verifying the sent pixels does not establish that every physical pixel reached its intended optical state.</p>
-  <ol class="layer-flow" aria-label="Image and native-pattern paths to a measurement">
-    <li><strong>Image color</strong><span>An RGB image, optionally transformed through the experimental ICC profile.</span></li>
-    <li><strong>Pixel selection</strong><span>The image renderer chooses six-state pixels. The investigation instead supplies exact native-state maps here.</span></li>
-    <li><strong>Display output</strong><span>State packing, the low-level driver, the update sequence, and the reflective panel.</span></li>
-    <li><strong>Optical reading</strong><span>Illumination, viewing or contact geometry, and the instrument's spectral measurement.</span></li>
-  </ol>
   </div></details>
 </div>
 </section>
@@ -713,6 +753,7 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
   <h3 id="pair-susceptibility-title">All 15 pairs within the H/V family</h3>
   <p>This complete orientation screen covers every pair of the display's six native colors. Each row compares one-pixel horizontal and vertical stripes with equal color counts. H and V each summarize two i1Pro readings in the stated order. Select a pair to open its four spectra and exact measurement records.</p>
   <p id="orientation-screen-context"><strong>The pair changed the size of the H/V difference.</strong> Black/yellow and red/green had much larger color separations than white/yellow and white/blue. Yellow-containing pairs were prominent, but the partner controlled the result, and horizontal was not always lighter. Pairs that stayed small under this test are not universally unaffected: a different construction or measurement condition is a separate question.</p>
+  <p id="yellow-spectral-ranking">Yellow paired with black, blue, red or green gave the four largest spectral RMS differences in this one-pixel set. Color-distance rankings were different: red/green was second by DeltaE00 but sixth by RMS. These describe the commanded color combinations, not a finding that yellow pigment caused the differences. The table shows both rankings, with 1 meaning the largest value in that column.</p>
   <p class="table-scroll-hint">Swipe or scroll to see all columns →</p>
   <div class="pair-table-wrap" role="region" tabindex="0" aria-label="All 15 color pairs, scroll to view all columns">
     <table class="pair-comparison-table" id="pair-comparison-table" data-source-sha256="1ab2c8fa44ee7d0b6c38ab87f6d8346bc60b2c73b67dbe917b87c0ccd974cb18">
@@ -858,7 +899,7 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 </div>
 <p class="caption">The labels summarize these measurements; they do not say whether a difference would be visible to a viewer. A small difference in one test is not a promise that the patterns will always match.</p>
 </section>
-<div id="pattern-category-takeaway"><p id="patterns-to-prediction"><strong>A recurring difference is not the same as a stable absolute color.</strong> Some differences repeated, while other readings changed with time or surroundings. These findings motivate testing whether spatial arrangement, surrounding pixels and display history improve forecasts. A future renderer would use that knowledge to reproduce requested colors better. <a href="#prediction-result">Three open questions guide that next direction.</a></p></div>
+<div id="pattern-category-takeaway"><p id="patterns-to-prediction"><strong>A recurring difference does not mean that either pattern returns to the same measured color.</strong> Some differences repeated, while other readings changed with time or surroundings. These findings motivate testing whether spatial arrangement, surrounding pixels and display history improve forecasts. A future renderer would use that knowledge to reproduce requested colors better. <a href="#prediction-result">Three open questions guide that next direction.</a></p></div>
 <details class="technical-details" id="width-comparison-details"><summary>How spectral contrast varied with stripe width</summary><div class="technical-body">
   <p><strong>Wider stripes usually reduced the spectral contrast in this set.</strong> For 14 of 15 pairs, the arithmetic mean of the two two-pixel H/V comparisons was below the one-pixel RMS; the two three-pixel comparisons gave the same count. Phase, frame boundaries, and the pattern inside the meter's spot also changed, so width alone is not a general fix.</p>
   <p>The color table above compares one-pixel patterns. This plot compares the size of the spectral H/V difference across all three stripe widths and both reading orders. It shows where contrasts became smaller or differed between orders; it does not measure perceptual color distance or prediction accuracy. Equal spacing on the logarithmic axis represents equal ratios, keeping small and large contrasts readable together.</p>
@@ -870,7 +911,6 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
     Each dot summarizes one four-reading horizontal/vertical comparison. Joined dots show the two reading orders, not a range of uncertainty. Select a point to inspect its comparison.</figcaption>
   </figure>
 </div></details>
-<p>Some differences pointed in nearly the same spectral direction when measured again, while their size or both absolute colors moved. A repeatable gap is not yet a predictable output.</p>
   <details class="technical-details" data-history-section="EXACT-PAYLOAD-ACROSS-OCCURRENCES">
     <summary>Why a repeated difference is not yet a predictable color</summary>
     <div class="technical-body finding-grid">
@@ -953,6 +993,8 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
     <p>Six four-reading comparisons separate three questions about organization.
     Every
     pattern kept the same black/yellow/blue counts and the same horizontal axis.
+    A <strong>run</strong> is a band of consecutive rows with the same color.
+    <strong>Boundary density</strong> describes how often neighboring rows change color.
     Each row remains its own descriptive result because it represents a different
     exact comparison; they are not averaged into one rule.</p>
     <p class="table-scroll-hint">Swipe or scroll to see all columns →</p><div class="triad-table-wrap" role="region" tabindex="0" aria-label="Comparison table, scroll to view all columns">
@@ -977,13 +1019,12 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
     <div class="triad-conclusion"><strong>Combined finding:</strong>
     horizontal versus vertical was the opening clue, not the whole phenomenon.
     Exact fixed-axis arrangements can also measure differently. The experiment
-    narrows the next questions, but it does not identify a physical mechanism,
-    isolate the display from the meter, define a renderer or ICC correction, set a
-    threshold, or establish a universal pattern law.</div>
+    shows that keeping the horizontal direction fixed does not keep the measured
+    color fixed. It does not yet tell us why, or how to predict another arrangement.</div>
   </div>
   <div class="triad-expansion r4-update">
     <h3>Longer row groups did not produce a proportional response</h3>
-    <p>The comparison set includes the large cyclic-to-two-row bridge, then compares
+    <p>The comparison set repeats the cyclic-versus-two-row comparison, then compares
     two-row and four-row runs in both presentation orders. The exact black/yellow/blue
     counts and horizontal axis stayed fixed, while run length and boundary density
     still changed together.</p>
@@ -1001,13 +1042,22 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
     <div class="triad-readout">
       <article data-recurrence-id="R4-A0-R2-BRIDGE"><h4>The large contrast recurred</h4><p>The 12.1619 pp cyclic-versus-two-row comparison pointed in almost the same signed spectral direction as the corresponding ABBA and BAAB rows (cosines 0.999992 and 0.999997).</p></article>
       <article data-recurrence-id="R4-R2-R4-COMPLEMENT"><h4>The two-row-to-four-row contrast repeated</h4><p>The two-row-to-four-row comparisons were 0.8491 and 0.8591 pp with cosine 0.99982394, magnitude ratio 1.01183170, and signed-vector discrepancy 0.01891485 pp RMS.</p></article>
-      <article data-recurrence-id="R4-RESPONSE-SHAPE"><h4>The change was not proportional</h4><p>The two-row-to-four-row difference was about 7% of the cyclic-to-two-row difference's RMS and its spectral shape differed (cosine about 0.44). The two-row-to-four-row change was much smaller and differently shaped than the cyclic-to-two-row change. Run length and boundary density changed together; these observations do not define a proportional scaling law.</p></article>
+      <article data-recurrence-id="R4-RESPONSE-SHAPE"><h4>The change was not proportional</h4><p>The two-row-to-four-row difference was about 7% of the cyclic-to-two-row difference's RMS and its spectral shape differed (cosine about 0.44). Run length and boundary density changed together; these observations do not define a proportional scaling law.</p></article>
     </div>
     <div class="triad-conclusion"><strong>How this informed prediction:</strong>
     these comparisons motivated testing whether models could predict absolute color on new arrangements. The
     discovery rows still cannot establish a renderer rule or ICC correction by
     themselves.</div>
   </div>
+  <section id="grouping-counterexample" data-source-sha256="e02c873b9f8b0ad33724e3250531f940bcb3af6fbeb570047be6949452386825" data-source-path="RUN/2026-09-06T005016Z-i1pro-next64/descriptive-analysis.json">
+  <h3>Larger blocks did not always bring arrangements closer</h3>
+  <p>A separate comparison used equal amounts of white, black, green and blue. It compared a regularly repeating arrangement with an irregular, computer-generated arrangement at two block sizes. With 2 × 2 same-color blocks, their measured colors were close; with 4 × 4 blocks, the difference was larger in both reading orders.</p>
+  <table><caption>Color distance between the regular and irregular arrangements, DeltaE00</caption><thead><tr><th scope="col">Same-color block</th><th scope="col">ABBA</th><th scope="col">BAAB</th></tr></thead><tbody>
+  <tr><th scope="row">2 × 2 pixels</th><td data-retained-comparison="WBGB-P4-ORDERED-MINUS-APERIODIC-ABBA">0.226</td><td data-retained-comparison="WBGB-P4-ORDERED-MINUS-APERIODIC-BAAB">0.123</td></tr>
+  <tr><th scope="row">4 × 4 pixels</th><td data-retained-comparison="WBGB-P8-ORDERED-MINUS-APERIODIC-ABBA">2.241</td><td data-retained-comparison="WBGB-P8-ORDERED-MINUS-APERIODIC-BAAB">2.172</td></tr>
+  </tbody></table>
+  <p>Enlarging the blocks also changed local color proportions and edge positions within the nominal measurement area; the meter’s exact spatial weighting was not established. This result argues against assuming that larger blocks always reduce arrangement-dependent differences, but it does not isolate block size as the cause.</p>
+  </section>
 </div></section>
 </div></details></section>
 
@@ -1055,8 +1105,8 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 <h3 id="image-context-title">2 · Does the prediction transfer into an image?</h3>
 <dl class="research-readout">
 <div data-question-part="why"><dt>Why we tested it</dt><dd>Full-screen patterns help investigate particular dependencies, but ordinary images contain many constructions next to one another. A forecast that works on an isolated pattern may miss a region inside a picture.</dd></div>
-<div data-question-part="observed" id="image-prediction-answer"><dt>What we saw</dt><dd>In a prospective pilot, <strong id="q2-scope">six selected regions from three previously unused images</strong> were each measured twice. The learned local model was closer than the additive baseline on <strong id="q2-closer">all 12 readings</strong>, but <strong id="q2-passes">neither method met the chosen limit on any reading</strong>.</dd></div>
 <div data-question-part="meaning" id="image-model-key"><dt>What the methods use</dt><dd>Both methods use the proportions of native states in the same selected 64×64 digital region. The <strong>additive baseline</strong> weights measured native-state XYZ values by those proportions. The <strong>learned local model</strong> adjusts that estimate using how previously measured mixtures departed from their additive estimates. This tests prediction inside an image, rather than another uniform patch.</dd></div>
+<div data-question-part="observed" id="image-prediction-answer"><dt>What we saw</dt><dd>In a test with forecasts saved before measurement, <strong id="q2-scope">six selected regions from three previously unused images</strong> were each measured twice. The learned local model was closer than the additive baseline on <strong id="q2-closer">all 12 readings</strong>, but <strong id="q2-passes">neither method met the chosen limit on any reading</strong>.</dd></div>
 <div data-question-part="limit"><dt>What remains open</dt><dd><strong>Dependable image-region prediction is not established.</strong> The images were unchanged: this did not test improved rendering or whole-image quality, and it did not identify a physical cause.</dd></div>
 <div data-question-part="next" id="new-image-question"><dt>Next test</dt><dd>When a new candidate has a clear reason to improve, save its forecasts before measuring held-out regions and their returns. Use varied tones, textures and surroundings to test the specific information the new method adds, with a fixed renderer and a finite evaluation set.</dd></div>
 </dl>
@@ -1115,7 +1165,7 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
   </div></section>
 </figure>
 
-<p id="renderer-current-answer">A useful renderer needs both checks: <strong>forecast versus measured output</strong>, and <strong>measured output versus requested color</strong>. Dependable prediction-guided reproduction across new images has not yet been demonstrated.</p>
+<p id="renderer-current-answer">For prediction-guided rendering, <strong>forecast accuracy</strong> and <strong>requested-color accuracy</strong> answer different questions. Dependable prediction-guided reproduction across new images has not yet been demonstrated.</p>
 <p id="renderer-next-question"><strong>What comes next?</strong> Test whether a selected correction helps on fresh colors and images, with its forecasts fixed in advance. Evaluate requested-color error alongside tone, detail, texture and edges.</p>
 </section>
 </div></details>
@@ -1124,32 +1174,32 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 <section class="story-chapter" id="next-step" aria-labelledby="next-step-title">
 <span id="project-picture-title" aria-hidden="true"></span>
 <h2 id="next-step-title">A path toward predictable image color</h2>
-<p>What began as an experimental profile evaluation became a test of how exact pixels produce color. Repeated controlled comparisons reproduced differences, and fixed-axis three-color patterns showed that orientation was only one part of the problem. <strong>The current aim is to predict that output well enough for a renderer to choose constructions that reduce color error.</strong> That still requires three connected tests: predict a construction, check it inside an image, and measure whether the resulting picture is closer to the requested colors.</p>
-<ol class="layer-flow" id="prediction-to-profile-path" aria-label="Research path from controlled patterns to a characterized renderer">
+<p>What began as an experimental profile evaluation became a test of how exact pixels produce color. Repeated controlled comparisons reproduced differences, and fixed-axis three-color patterns showed that orientation was only one part of the problem. <strong>The current aim is better color reproduction, through parallel work on prediction and direct image comparisons.</strong> We can test which constructions are predictable, whether forecasts transfer into images, and which rendering methods produce more useful pictures. Image comparisons do not have to wait for prediction to succeed.</p>
+<ul class="layer-flow" id="prediction-to-profile-path" aria-label="Parallel work on patterns, prediction, rendering and experimental characterization">
 <li data-roadmap="construction"><strong>Controlled constructions</strong><span>Design comparisons that isolate particular dependencies in pixels, timing or conditions.</span></li>
 <li data-roadmap="transfer"><strong>Held-out image regions</strong><span>Test forecasts on content and returns not used to choose the method.</span></li>
 <li data-roadmap="reproduction"><strong>A fixed renderer comparison</strong><span>Measure whether a baseline and candidate differ in requested-color error and preservation of image structure.</span></li>
-<li data-roadmap="characterization"><strong>Characterize a supported process</strong><span>Only after its intended use is supported, freeze one renderer/display condition for a measured ICC profile.</span></li>
-</ol>
-<p id="future-icc-boundary">The first experimental ICC profile characterized an earlier rendering-and-display setup. A later measured profile would describe the color response of the newly supported, frozen process. It would not execute the renderer or supply missing spatial or display-history inputs. The <a href="https://www.color.org/icc_specs2/" data-reference="icc-specification">ICC profile specifications</a> define that interchange format.</p>
+<li data-roadmap="characterization"><strong>Experimental characterization</strong><span>Freeze a candidate renderer/display condition for experimental characterization, then test the profile on fresh images.</span></li>
+</ul>
+<p id="future-icc-boundary">The first experimental ICC profile characterized an earlier rendering-and-display setup. A later experimental profile would describe the color response of a declared candidate process being evaluated. It would not execute the renderer or automatically receive missing spatial, context or display-history inputs. The <a href="https://www.color.org/icc_specs2/" data-reference="icc-specification">ICC profile specifications</a> define that interchange format.</p>
 <dl class="project-status" id="project-status" aria-label="Project status">
 <div data-status="established"><dt>Established</dt><dd>Some exact pixel constructions measured differently. The initial profile improved its tested color grid.</dd></div>
-<div data-status="in-progress"><dt>In progress</dt><dd>Finding the patterns and conditions where predictions work, then testing whether they help choose pixels that reproduce the requested color.</dd></div>
+<div data-status="in-progress"><dt>In progress</dt><dd>Improving color forecasts alongside direct tests of which rendering methods better reproduce the requested colors and image structure.</dd></div>
 <div data-status="unknown"><dt>Still unknown</dt><dd>Dependable transfer across new content and returns, broadly improved image reproduction, and the physical cause of the observed dependencies.</dd></div>
-<div data-status="checkpoint"><dt>Next checkpoint</dt><dd>Test whether a new model input or pixel construction improves predictions on fresh patterns and image regions.</dd></div>
+<div data-status="checkpoint"><dt>Next checkpoint</dt><dd>Test forecasts that include image surroundings, and separately compare fixed rendering methods on images.</dd></div>
 </dl>
-<section id="next-measurements" aria-labelledby="next-measurements-title" data-plan-status="PLANNING_NOT_ACQUISITION_READY">
+<section id="next-measurements" aria-labelledby="next-measurements-title" data-plan-status="PLANNED_AWAITING_DEVICE_ACCESS">
 <h3 id="next-measurements-title">What I want to test next</h3>
-<p>The investigation is still in progress. All 15 native-color pairs were measured in the stripe-width study, but other layouts were tested with selected mixtures. The next measurements would make those comparisons more complete and help identify which patterns a color model needs to distinguish. Prediction tests would continue alongside them, using fresh patterns and image regions.</p>
-<h4>Do all color pairs respond the same way to a change of layout?</h4>
-<p>Compare all 15 pairs as checkerboards, horizontal stripes and vertical stripes under shared measurement conditions. The starting point would use equal amounts of the two colors and one-pixel cells or stripes. Measuring the stripes again alongside the checkerboards would make this a direct comparison, rather than borrowing results from earlier setups.</p>
-<h4>What changes with size, alignment and color proportions?</h4>
-<p>Extend the comparisons to the layouts already explored: larger or shifted checkers, rectangular and diagonal arrangements, patterns that combine row and column changes, unequal color mixtures, regular versus error-diffused patterns, and smaller patterned areas within a background. A result at one size or proportion may not describe the others.</p>
-<h4>What changes when three or four colors share a pattern?</h4>
-<p>Test multicolor layouts separately, including which color occupies each part of an uneven pattern. Putting a color in a narrow band is not the same construction as putting it in a wider band. Testing every two-color pair cannot answer how those multicolor assignments behave.</p>
-<details class="technical-details" id="coverage-plan-details"><summary>Scope of the proposed comparisons</summary><div class="technical-body">
-<p id="coverage-planning-estimate" data-native-pairs="15" data-layouts="3" data-observations-per-cell="2" data-source-cells="45" data-pattern-readings="90">The first checker/stripe comparison is a <strong>planning estimate, not a ready-to-run measurement sequence</strong>: 15 pairs × 3 layouts gives 45 proposed test cases, or 90 pattern readings at two observations per case, before reference readings or extra order and alignment variants. The proposed starting condition is a full-screen, 50/50 mixture at one-pixel scale with a specified starting position. Exact source patterns, reading order, setup and time budget still need to be prepared.</p>
-<p id="coverage-template-list">Broader coverage would include the previously investigated checker scales and starting positions (phase), rectangular and diagonal layouts, XOR/run-profile patterns, unequal-proportion quarter tiles versus diffusion, color-fraction sweeps and patterned extents. Three- and four-color coverage would also vary assignments to unequal spatial roles in cyclic, grouped, ordered, diffused and hashed layouts. This is a bounded set of questions, not a commitment to test every possible image or pixel arrangement.</p>
+<p>The investigation is still in progress. These next tests are planned and depend on access to the display and instruments. They ask three different questions:</p>
+<div data-next-question="checker-coverage"><h4>Which color pairs change when stripes become checkerboards?</h4>
+<p>Stripes have been measured for all 15 pairs, but checkerboards only for selected pairs. Use those results to identify the missing comparisons, then measure fresh stripe controls alongside the new checker readings so the layouts can be compared under the same conditions.</p></div>
+<div data-next-question="context-forecast"><h4>Does including the surrounding image improve a color forecast?</h4>
+<p>Test a model that adds information about surrounding pixels to its estimate of the measured region. Its method and forecasts are fixed before the new readings, so the test can show whether that extra information helps on fresh image outputs.</p></div>
+<div data-next-question="image-utility"><h4>Which rendering route makes a more useful picture?</h4>
+<p>Compare fixed rendering methods on known images. Measure local color error and examine tone, detail, texture and edges. This is a separate test from forecast accuracy: a predictable output can still be the wrong color, and a lower color error can still come with lost detail.</p></div>
+<details class="technical-details" id="coverage-plan-details"><summary>Other pattern questions to explore later</summary><div class="technical-body">
+<p id="coverage-template-list">Later comparisons could vary checker size and starting position (phase), rectangular and diagonal layouts, arrangements that change both row and column sequences, color proportions, regular patterns versus error diffusion, and the size of a patterned region within its background.</p>
+<p>Three- and four-color tests would also change which color occupies each part of an uneven pattern: a narrow band and a wider band give a color different neighbors. The yellow/blue/yellow/black one-pixel pattern was already measured as both rows and columns. The longer two-row and four-row groups shown here were horizontal; testing their matched column versions remains a more specific question.</p>
 </div></details>
 </section>
 <details class="technical-details"><summary>How the experimental renderer differs from the Pimoroni baseline</summary><div class="technical-body">
@@ -1170,6 +1220,35 @@ main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-s
 <div id="tooltip"></div>
 <script>
 "use strict";
+function drawProcessMap(){
+  const map=document.getElementById("process-map"),svg=map.querySelector("svg"),bounds=map.getBoundingClientRect(),mobile=window.matchMedia("(max-width:640px)").matches;
+  svg.querySelectorAll("path[data-process-edge]").forEach(path=>path.remove());
+  svg.setAttribute("viewBox",`0 0 ${bounds.width} ${bounds.height}`);
+  const nodes=new Map([...map.querySelectorAll("[data-process-node]")].map(node=>{
+    const r=node.getBoundingClientRect();return [node.dataset.processNode,{node,left:r.left-bounds.left,right:r.right-bounds.left,top:r.top-bounds.top,bottom:r.bottom-bounds.top,x:r.left-bounds.left+r.width/2,y:r.top-bounds.top+r.height/2}];
+  }));
+  for(const [from,a] of nodes)for(const to of (a.node.dataset.processNext||"").split(" ").filter(Boolean)){
+    const b=nodes.get(to);let d;
+    if(from==="P"&&to==="Q"){
+      const outer=bounds.width-4;d=`M${a.right},${a.y} H${outer} V${b.y} H${b.right}`;
+    }else if(from==="A"&&to==="R"){
+      d=`M${a.left},${a.y} H4 V${b.y} H${b.left}`;
+    }else if(mobile&&from==="D"&&to==="V"){
+      d=`M${a.left},${a.y} H10 V${b.y} H${b.left}`;
+    }else if(mobile&&from==="F"&&to==="R"){
+      d=`M${a.x},${a.bottom} V${a.bottom+15} H${b.x} V${b.top}`;
+    }else if(Math.abs(a.y-b.y)<2){
+      d=a.x<b.x?`M${a.right},${a.y} H${b.left}`:`M${a.left},${a.y} H${b.right}`;
+    }else{
+      const down=b.y>a.y,start=down?a.bottom:a.top,end=down?b.top:b.bottom,mid=(start+end)/2;
+      d=`M${a.x},${start} V${mid} H${b.x} V${end}`;
+    }
+    const path=document.createElementNS("http://www.w3.org/2000/svg","path");path.dataset.processEdge=from+"-"+to;path.setAttribute("d",d);svg.appendChild(path);
+  }
+}
+drawProcessMap();
+if(typeof ResizeObserver!=="undefined")new ResizeObserver(drawProcessMap).observe(document.getElementById("process-map"));
+else window.addEventListener("resize",drawProcessMap);
 function setupDetailLinks(){
   function reveal(hash){
     let id;try{id=decodeURIComponent(hash.slice(1))}catch{return null}
@@ -1658,6 +1737,7 @@ function renderMeasuredComparisonPreviews(){
 function mapRenderPairOverview(){
   const body=document.getElementById("pair-comparison-body");clear(body);
   const rows=MAP_DATA.rows.filter(row=>row.cell_size_pixels===1).sort((a,b)=>b.difference.delta_e_2000-a.difference.delta_e_2000);
+  const rmsRank=new Map([...rows].sort((a,b)=>b.difference.rms_pp-a.difference.rms_pp).map((row,index)=>[row.row_id,index+1]));
   for(const row of rows){
     const tr=document.createElement("tr");tr.dataset.pairId=row.pair_id;tr.dataset.rowId=row.row_id;tr.dataset.deltaE=String(row.difference.delta_e_2000);tr.dataset.deltaL=String(row.difference.lab_d50[0]);tr.dataset.rmsPp=String(row.difference.rms_pp);
     const pair=document.createElement("th");pair.setAttribute("scope","row");
@@ -1675,6 +1755,7 @@ function mapRenderPairOverview(){
     previews.appendChild(previewBox);
     const metric=(name,value)=>{const td=document.createElement("td");td.dataset.metric=name;td.className="metric-value";td.textContent=value;return td;};
     const distance=metric("delta-e",fmt(row.difference.delta_e_2000,2)),rms=metric("rms-pp",fmt(row.difference.rms_pp,3));
+    for(const [cell,rank] of [[distance,rows.indexOf(row)+1],[rms,rmsRank.get(row.row_id)]]){const label=document.createElement("small");label.dataset.rank=String(rank);label.textContent="Rank "+rank+" of "+rows.length;cell.appendChild(label);}
     const deltaL=row.difference.lab_d50[0],direction=metric("delta-l",fmtSigned(deltaL,2)),meaning=document.createElement("small");meaning.textContent=deltaL>0?"H lighter":deltaL<0?"V lighter":"Equal mean lightness";direction.appendChild(meaning);
     const movement=document.createElement("td");movement.dataset.metric="movement";
     for(const orientation of ["H","V"]){const value=document.createElement("div");value.dataset.orientation=orientation;value.textContent=orientation+" "+fmt(row[orientation].movement_rms_pp,3);movement.appendChild(value)}
@@ -1907,13 +1988,13 @@ function renderExactPayloadHistory(){
   const by=history.black_yellow_full_screen_h_v,operands=by.operands,cosines=by.signed_shape_relations.map(item=>item.signed_h_minus_v_spectrum_cosine);
   document.getElementById("history-black-yellow").textContent=
     "The same exact full-screen H and V pixel patterns, byte for byte, appear in five comparisons. H-minus-V spectral RMS was "+
-    operands.map(item=>fmt(item.h_minus_v_spectral_rms_pp,3)+" pp").join(", ")+" in chronological order. All ten pairwise signed-spectrum cosines were "+
-    fmt(Math.min(...cosines),4)+" or higher. The direction repeated closely, but its size did not stay fixed; this does not make either absolute H or V color predictable.";
+    operands.map(item=>fmt(item.h_minus_v_spectral_rms_pp,3)+" pp").join(", ")+" in chronological order. Comparing the direction of the wavelength-by-wavelength changes gives ten cosine values, all "+
+    fmt(Math.min(...cosines),4)+" or higher; 1 means the changes point in the same direction. The direction repeated closely, but the size of the difference did not stay fixed. This does not show that either pattern will return to the same measured color.";
   const checker=history.red_blue_checker_repeat_movement,old=checker.legacy_adjacent_repeat,newRows=checker.topology_quartet_operands;
   document.getElementById("history-red-blue-checker").textContent=
-    "The byte-identical red/blue checker had "+fmt(old.same_payload_movement_rms_pp,3)+" pp of movement as an adjacent repeat, then "+
-    fmt(newRows[0].same_payload_movement_rms_pp,3)+" pp as ABBA endpoints and "+fmt(newRows[1].same_payload_movement_rms_pp,3)+
-    " pp as the BAAB middle pair in later comparison quartets. Across these occurrences and repeat placements, the same checker did not have one repeat-movement value. The records do not separate session state from timing or sequence position, and the values are context rather than a noise or uncertainty limit.";
+    "The identical red/blue checker changed by "+fmt(old.same_payload_movement_rms_pp,3)+" pp RMS between consecutive readings, then by "+
+    fmt(newRows[0].same_payload_movement_rms_pp,3)+" pp between the first and last readings in ABBA order and "+fmt(newRows[1].same_payload_movement_rms_pp,3)+
+    " pp between the middle two readings in BAAB order. The amount of change varied across these sessions and sequence positions. The readings alone cannot separate those influences; their movement is context, not a noise or uncertainty limit.";
 }
 
 function forwardAtlasSelection(){
