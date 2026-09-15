@@ -492,18 +492,20 @@ def main() -> int:
         failures.append("imaging landing does not link the standalone comparator")
     if '/imaging/studies/color-model-equation-audit/' not in landing:
         failures.append("comparator feature does not link the equation study")
-    if "tradeoff rather than a universal win" not in landing:
+    if "The paper reports a closer match" not in landing:
         failures.append("comparator feature does not explain the paper's mixed result")
-    if "These are model calculations, not measurements or observer validation" not in landing:
+    if "appearance-model calculations, not measurements" not in landing:
         failures.append("comparator example is missing its interpretation limit")
-    if "Windows, macOS, and Linux" not in landing:
-        failures.append("comparator feature omits the platforms with successful public runs")
-    repository_cta = (
-        f'<a href="{COMPARATOR_URL}">Source code and tests are available on GitHub.</a>'
-    )
-    if repository_cta not in landing:
+    if f'<a href="{COMPARATOR_URL}">' not in landing:
         failures.append("comparator feature does not give readers a clear repository link")
-    if any(term in landing for term in ("Every push", "declared condition", "1,512")):
+    process_copy = (
+        "Every push",
+        "declared condition",
+        "1,512",
+        "1,728",
+        "The calculator is tested on",
+    )
+    if any(term in landing for term in process_copy):
         failures.append("comparator feature exposes stale or process-focused test wording")
     if f"{COMPARATOR_URL}/actions/" in landing:
         failures.append("comparator feature sends readers to workflow history")
@@ -543,21 +545,18 @@ def main() -> int:
             "What the models report",
             "Why viewing conditions matter",
             "Why compare the formulations",
-            "JavaScript is off",
-            "not display RGB",
-            "not a universal replacement",
+            "recalculation requires JavaScript",
+            "rather than display RGB",
+            "The paper reports a closer match",
         )
         for required_text in required_calculator_text:
             if required_text not in calculator_text:
                 failures.append(
                     f"browser calculator is missing reader guidance: {required_text!r}"
                 )
-        if repository_cta not in calculator_text:
+        if f'<a href="{COMPARATOR_URL}">' not in calculator_text:
             failures.append("browser calculator does not give readers a clear repository link")
-        if any(
-            term in calculator_text
-            for term in ("Every push", "declared condition", "1,512")
-        ):
+        if any(term in calculator_text for term in process_copy):
             failures.append("browser calculator exposes stale or process-focused test wording")
         if f"{COMPARATOR_URL}/actions/" in calculator_text:
             failures.append("browser calculator sends readers to workflow history")
