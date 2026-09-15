@@ -492,7 +492,7 @@ def main() -> int:
         failures.append("imaging landing does not link the standalone comparator")
     if '/imaging/studies/color-model-equation-audit/' not in landing:
         failures.append("comparator feature does not link the equation study")
-    if "The paper reports a closer match" not in landing:
+    if "Across the observer datasets reported in the paper" not in landing:
         failures.append("comparator feature does not explain the paper's mixed result")
     if "appearance-model calculations, not measurements" not in landing:
         failures.append("comparator example is missing its interpretation limit")
@@ -547,7 +547,7 @@ def main() -> int:
             "Why compare the formulations",
             "recalculation requires JavaScript",
             "rather than display RGB",
-            "The paper reports a closer match",
+            "Across the observer datasets reported in the paper",
         )
         for required_text in required_calculator_text:
             if required_text not in calculator_text:

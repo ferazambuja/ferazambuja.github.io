@@ -616,7 +616,7 @@ CALCULATOR_POINTERS = {
         "Try the complete forward models.",
     ),
     ("reports", "cam16-equation-audit"): (
-        "scope-and-related-implementation",
+        "scope-of-the-result",
         "Try the complete forward models.",
     ),
     ("methods", "cam16-equation-audit"): (
@@ -1558,8 +1558,9 @@ def comparator_feature(comparator_root: Path) -> str:
         'with the Hellwig–Fairchild 2022 proposal. Both report <code>J Q C M s h</code>; '
         'the proposal keeps <code>J</code> and <code>h</code> and redefines the other '
         'four correlates.</p>'
-        '<p>The paper reports a closer match for brightness and chroma but a '
-        'poorer match for colorfulness.</p>'
+        '<p>Across the observer datasets reported in the paper, the proposal '
+        'has higher correlations for brightness and chroma and a lower one '
+        'for colorfulness.</p>'
         '<p class="tool-actions">'
         f'<a class="tool-button" href="{COMPARATOR_ROUTE}">Open the calculator</a>'
         '<a href="/imaging/studies/color-model-equation-audit/">Equation study</a>'
@@ -1684,8 +1685,9 @@ def comparator_page(comparator_root: Path, docs: dict) -> str:
         '</section>'
         '<section><h2>Why compare the formulations</h2>'
         '<p>The 2022 proposal revisits linked brightness, chroma, colorfulness, '
-        'and saturation relations in CAM16. The paper reports a closer match '
-        'for brightness and chroma but a poorer match for colorfulness. '
+        'and saturation relations in CAM16. Across the observer datasets reported '
+        'in the paper, the proposal has higher correlations for brightness and '
+        'chroma and a lower one for colorfulness. '
         '<a href="/imaging/studies/color-model-equation-audit/">See the equation '
         'study</a> for the equations and fit results.</p>'
         f'<p><a href="{COMPARATOR_URL}">View the implementation and numerical '
