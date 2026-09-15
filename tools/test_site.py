@@ -503,7 +503,7 @@ def main() -> int:
     )
     if repository_cta not in landing:
         failures.append("comparator feature does not give readers a clear repository link")
-    if any(term in landing for term in ("Every push", "declared conditions", "1,512")):
+    if any(term in landing for term in ("Every push", "declared condition", "1,512")):
         failures.append("comparator feature exposes stale or process-focused test wording")
     if f"{COMPARATOR_URL}/actions/" in landing:
         failures.append("comparator feature sends readers to workflow history")
@@ -556,7 +556,7 @@ def main() -> int:
             failures.append("browser calculator does not give readers a clear repository link")
         if any(
             term in calculator_text
-            for term in ("Every push", "declared conditions", "1,512")
+            for term in ("Every push", "declared condition", "1,512")
         ):
             failures.append("browser calculator exposes stale or process-focused test wording")
         if f"{COMPARATOR_URL}/actions/" in calculator_text:

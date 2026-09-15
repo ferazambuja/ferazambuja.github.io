@@ -1578,7 +1578,7 @@ def comparator_feature(comparator_root: Path) -> str:
         'implementations across a broad range of stimuli and viewing conditions.</p>'
         '</div>'
         '<div class="model-example">'
-        '<p class="example-kicker">One declared condition</p>'
+        '<p class="example-kicker">Worked example</p>'
         '<h3>Same XYZ and viewing conditions, two formulations</h3>'
         '<p class="example-input"><code>XYZ = 45, 36, 12</code><br>'
         '<code>white = 95.05, 100, 108.88</code> (D65)<br>'
