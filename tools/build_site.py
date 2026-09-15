@@ -33,11 +33,6 @@ SITE_URL = "https://ferazambuja.github.io"
 AUTHOR = "Fernando Voltolini de Azambuja"
 COMPARATOR_REPO = "ferazambuja/cam16-hellwig-comparator"
 COMPARATOR_URL = f"https://github.com/{COMPARATOR_REPO}"
-# The run history rather than one pinned run id: a frozen link keeps claiming
-# a pass for a tree that moved on, and this page is rebuilt from that tree.
-COMPARATOR_CI_URL = (
-    f"{COMPARATOR_URL}/actions/workflows/test.yml?query=branch%3Amain"
-)
 HDR_ROUTE = "/hdr-platform/"
 REFLECTIVE_ROUTE = "/reflective-color-display/"
 COMPARATOR_ROUTE = "/imaging/cam16-hellwig-comparator/"
@@ -1575,12 +1570,12 @@ def comparator_feature(comparator_root: Path) -> str:
         'for colorfulness, so the change is a tradeoff rather than a universal win.</p>'
         '<p class="tool-actions">'
         f'<a class="tool-button" href="{COMPARATOR_ROUTE}">Open the calculator</a>'
-        f'<a href="{COMPARATOR_URL}">Python and JavaScript source</a>'
         '<a href="/imaging/studies/color-model-equation-audit/">Equation study</a>'
         '</p>'
-        f'<p class="tool-platform">Every push <a href="{COMPARATOR_CI_URL}">runs '
-        'the suite on Windows, macOS, and Linux</a> and checks both forward '
-        'models against an independent implementation.</p>'
+        f'<p class="tool-platform"><a href="{COMPARATOR_URL}">Source code and '
+        'tests are available on GitHub.</a> The calculator is tested on Windows, '
+        'macOS, and Linux and cross-checked against Colour’s independent '
+        'implementations across a broad range of stimuli and viewing conditions.</p>'
         '</div>'
         '<div class="model-example">'
         '<p class="example-kicker">One declared condition</p>'
@@ -1702,11 +1697,11 @@ def comparator_page(comparator_root: Path, docs: dict) -> str:
         'and saturation relations in CAM16. Its published fits improve for '
         'brightness and chroma but decline for colorfulness—a mixed result, not '
         'a universal replacement. <a href="/imaging/studies/color-model-equation-audit/">'
-        'See the equation study</a> or '
-        f'<a href="{COMPARATOR_URL}">use the Python and JavaScript source</a>.</p>'
-        f'<p>The public suite <a href="{COMPARATOR_CI_URL}">runs on Windows, '
-        'macOS, and Linux</a> and compares both models against an independent '
-        'implementation over 1,512 declared conditions.</p>'
+        'See the equation study</a> for the formulation choices.</p>'
+        f'<p><a href="{COMPARATOR_URL}">Source code and tests are available on '
+        'GitHub.</a> The calculator is tested on Windows, macOS, and Linux and '
+        'cross-checked against Colour’s independent implementations across a broad '
+        'range of stimuli and viewing conditions.</p>'
         '</section></div>'
         '<script type="module" src="/assets/cam16-calculator.mjs"></script>'
     )

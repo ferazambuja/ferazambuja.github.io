@@ -17,7 +17,6 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from build_site import (
-    COMPARATOR_CI_URL,
     THEME_BOOTSTRAP,
     COMPARATOR_LEGACY_ROUTE,
     COMPARATOR_ROUTE,
@@ -499,10 +498,15 @@ def main() -> int:
         failures.append("comparator example is missing its interpretation limit")
     if "Windows, macOS, and Linux" not in landing:
         failures.append("comparator feature omits the platforms with successful public runs")
-    if f'href="{COMPARATOR_CI_URL}"' not in landing:
-        failures.append("comparator feature does not link current main-branch CI")
-    if f"{COMPARATOR_URL}/actions/runs/" in landing:
-        failures.append("comparator feature links one frozen CI run")
+    repository_cta = (
+        f'<a href="{COMPARATOR_URL}">Source code and tests are available on GitHub.</a>'
+    )
+    if repository_cta not in landing:
+        failures.append("comparator feature does not give readers a clear repository link")
+    if any(term in landing for term in ("Every push", "declared conditions", "1,512")):
+        failures.append("comparator feature exposes stale or process-focused test wording")
+    if f"{COMPARATOR_URL}/actions/" in landing:
+        failures.append("comparator feature sends readers to workflow history")
     if not (comparator / "cam16_compare.py").is_file():
         failures.append("standalone comparator checkout is missing its implementation")
     browser_module = comparator / "cam16_compare.mjs"
@@ -548,6 +552,15 @@ def main() -> int:
                 failures.append(
                     f"browser calculator is missing reader guidance: {required_text!r}"
                 )
+        if repository_cta not in calculator_text:
+            failures.append("browser calculator does not give readers a clear repository link")
+        if any(
+            term in calculator_text
+            for term in ("Every push", "declared conditions", "1,512")
+        ):
+            failures.append("browser calculator exposes stale or process-focused test wording")
+        if f"{COMPARATOR_URL}/actions/" in calculator_text:
+            failures.append("browser calculator sends readers to workflow history")
         if calculator_text.count('data-model="') != 12:
             failures.append("browser calculator does not provide all 12 result targets")
         if '<script type="module" src="/assets/cam16-calculator.mjs"></script>' not in calculator_text:
