@@ -350,15 +350,15 @@ IMAGING = Project(
         "cam16": Excerpt(
             source="code/src/cam16_equation_audit.cpp",
             study="color-model-equation-audit",
-            after_heading="What the audit found",
+            after_heading="Results",
             start_contains="double cam16_relative_chroma_fixed_adapted_response(",
             end_contains="}",
             balance_braces=True,
             caption=(
-                "The coupled CAM16 response used in the audit. Keeping the "
-                "background, chroma, and lightness terms together is what "
-                "shows why the isolated 2.595× term is neither a bound nor "
-                "the complete model response."
+                "The coupled CAM16 response combines the background, chroma, "
+                "and lightness terms. Its range crosses the isolated 2.595× "
+                "factor, so that factor is neither a bound nor the complete "
+                "model response."
             ),
         ),
         "flat": Excerpt(
@@ -421,7 +421,7 @@ IMAGING = Project(
     # here falls back to the document's own H1, never to a prettified slug.
     nav_titles={
         "studies/cfa-flat-field-response": "CFA flat-field response",
-        "studies/color-model-equation-audit": "Color-model equation audit",
+        "studies/color-model-equation-audit": "CAM16 background coupling",
         "studies/colorchecker-ccm": "ColorChecker CCM validation",
         "studies/gamut-mapping": "Display-P3 to sRGB mapping",
         "studies/sfr-aperture-and-field": "SFR across aperture and field",
@@ -430,7 +430,7 @@ IMAGING = Project(
             "Spectral sensitivity and fidelity"
         ),
         "studies/spectroradiometer-recovery": "Spectroradiometer recovery",
-        "reports/cam16-equation-audit": "CAM16 equation audit",
+        "reports/cam16-equation-audit": "CAM16 equation results",
         "reports/ccm-fit": "CCM fit and evaluation",
         "reports/flat-field-response": "CFA flat-field response",
         "reports/gamut-mapping": "Gamut-mapping comparison",
@@ -440,7 +440,7 @@ IMAGING = Project(
         "reports/spectral-measurement-crosscheck": "Spectral cross-check",
         "reports/spectral-sensitivity": "Spectral sensitivity",
         "reports/spectroradiometer-recovery": "Spectroradiometer recovery",
-        "methods/cam16-equation-audit": "CAM16 equation audit",
+        "methods/cam16-equation-audit": "CAM16 equation calculation",
         "methods/color-correction-matrix": "Color-correction matrix",
         "methods/flat-field-response": "Flat-field response",
         "methods/gamut-mapping": "Gamut mapping",
@@ -608,24 +608,20 @@ def rewrite_target(raw: str, *, doc_dir: PurePosixPath, project: Project) -> str
 _WHOLE_PARAGRAPH_EM = re.compile(r"<p><em>(.*?)</em></p>", re.S)
 
 
-# Where the pointer belongs on each page, and why the calculator extends that
-# page. It sits immediately before the section that states the limits. By then
-# the reader has the equations and numbers and is at the moment of wanting
-# their own values -- not at the end of the document, where this used to sit.
+# Place the calculator after the result and method details, where a reader can
+# move from the fixed equation sweep to their own XYZ values.
 CALCULATOR_POINTERS = {
     ("studies", "color-model-equation-audit"): (
-        "what-this-establishesand-what-it-does-not",
-        "This study works from declared <code>J</code> and background values, "
-        "not XYZ.",
+        "scope-of-the-result",
+        "Try the complete forward models.",
     ),
     ("reports", "cam16-equation-audit"): (
-        "what-this-calculation-cannot-answer",
-        "The sweeps above use declared values rather than XYZ inputs.",
+        "scope-and-related-implementation",
+        "Try the complete forward models.",
     ),
     ("methods", "cam16-equation-audit"): (
-        "what-the-tests-establish",
-        "This C++ module does not accept XYZ or return a complete appearance "
-        "specification.",
+        "numerical-checks",
+        "Move from equation terms to a full XYZ calculation.",
     ),
 }
 
@@ -634,9 +630,7 @@ def calculator_pointer(lead: str) -> str:
     return (
         f'<aside class="related-tool"><strong>{lead}</strong> '
         f'<a href="{COMPARATOR_ROUTE}">Compare CAM16 and Hellwig\u2013Fairchild '
-        "with your own XYZ values and viewing conditions</a>. Its results are "
-        "model calculations, not measurements; a difference between the "
-        "models is not a color error or perceptual distance.</aside>"
+        "with your own XYZ values and viewing conditions</a>.</aside>"
     )
 
 
@@ -1203,9 +1197,9 @@ def build(
                         f'{study_resource_bar(entry["raw_md"], project)}'
                         f'<div class="prose">{before_code}</div>'
                         '<section class="study-implementation" id="implementation">'
-                        "<h2>Implementation used in this study</h2>"
-                        '<p class="study-code-intro">A tested source excerpt, '
-                        "shown where its result is discussed.</p>"
+                        "<h2>Reference implementation</h2>"
+                        '<p class="study-code-intro">The relevant calculation '
+                        "from the public C++ implementation.</p>"
                         f"{excerpt_block(data, show_destination=False)}</section>"
                         f'<div class="prose">{after_code}</div>'
                     )
@@ -1402,8 +1396,7 @@ def excerpt_block(data: dict, *, show_destination: bool = True) -> str:
         f"{destination}"
         f'<pre class="code highlight"><code>{code}</code></pre>'
         f'<p class="excerpt-src"><a href="{data["url"]}">{html.escape(data["source"])}</a>'
-        f' · lines {data["first"]}–{data["last"]} · extracted from the tested source '
-        "at build time</p>"
+        f' · lines {data["first"]}–{data["last"]}</p>'
         "</figure>"
     )
 
@@ -1412,9 +1405,9 @@ def method_excerpt_pointer(data: dict) -> str:
     used_in = data["used_in"]
     return (
         '<aside class="method-code-pointer">'
-        "<strong>See the implementation in context.</strong> "
+        "<strong>Reference implementation.</strong> "
         f'<a href="{used_in["route"]}#implementation">'
-        f'{html.escape(used_in["label"])}</a> shows the tested excerpt beside '
+        f'{html.escape(used_in["label"])}</a> shows the source excerpt beside '
         f'its result. <a href="{data["url"]}">Open source lines '
         f'{data["first"]}–{data["last"]}</a>.</aside>'
     )
@@ -1556,7 +1549,6 @@ def comparator_feature(comparator_root: Path) -> str:
     """Build a compact overview that leads to the interactive calculator."""
 
     payload = comparator_payload(comparator_root)
-    version = html.escape(str(payload["implementation_version"]))
     return (
         '<section class="tool-feature" id="cam16-hellwig-comparator">'
         '<div class="tool-copy">'
@@ -1566,16 +1558,14 @@ def comparator_feature(comparator_root: Path) -> str:
         'with the Hellwig–Fairchild 2022 proposal. Both report <code>J Q C M s h</code>; '
         'the proposal keeps <code>J</code> and <code>h</code> and redefines the other '
         'four correlates.</p>'
-        '<p>The published fits improve for brightness and chroma but become worse '
-        'for colorfulness, so the change is a tradeoff rather than a universal win.</p>'
+        '<p>The paper reports a closer match for brightness and chroma but a '
+        'poorer match for colorfulness.</p>'
         '<p class="tool-actions">'
         f'<a class="tool-button" href="{COMPARATOR_ROUTE}">Open the calculator</a>'
         '<a href="/imaging/studies/color-model-equation-audit/">Equation study</a>'
         '</p>'
-        f'<p class="tool-platform"><a href="{COMPARATOR_URL}">Source code and '
-        'tests are available on GitHub.</a> The calculator is tested on Windows, '
-        'macOS, and Linux and cross-checked against Colour’s independent '
-        'implementations across a broad range of stimuli and viewing conditions.</p>'
+        f'<p class="tool-platform"><a href="{COMPARATOR_URL}">View the Python '
+        'and JavaScript implementation on GitHub.</a></p>'
         '</div>'
         '<div class="model-example">'
         '<p class="example-kicker">Worked example</p>'
@@ -1587,9 +1577,9 @@ def comparator_feature(comparator_root: Path) -> str:
         '<p class="model-key">Shaded rows are the four correlates the proposal '
         'redefines. The columns use different scales; a smaller number is not '
         'automatically a dimmer or duller prediction.</p>'
-        '<p class="model-limit">These are model calculations, not measurements '
-        'or observer validation. Neither model outputs display RGB.</p>'
-        f'<p class="model-version">Generated with public tool version {version}</p>'
+        '<p class="model-limit">These are appearance-model calculations, not '
+        'measurements or display RGB values. Comparing them does not determine '
+        'which formulation better predicts observers.</p>'
         '</div>'
         '</section>'
     )
@@ -1636,8 +1626,8 @@ def comparator_page(comparator_root: Path, docs: dict) -> str:
         '<div class="calculator-grid">'
         '<form id="cam16-calculator" class="calculator-form">'
         '<h2>Inputs</h2>'
-        '<p>Values are never guessed. Use one scale for the stimulus, adopted '
-        'white, and background; adapting luminance remains absolute.</p>'
+        '<p>Enter the stimulus, adopted white, and background on the same scale; '
+        'adapting luminance remains absolute.</p>'
         '<fieldset><legend>Stimulus XYZ</legend>'
         f'<div class="calculator-triple">{stimulus_fields}</div></fieldset>'
         '<fieldset><legend>Adopted white XYZ</legend>'
@@ -1654,8 +1644,8 @@ def comparator_page(comparator_root: Path, docs: dict) -> str:
         '<input id="calculator-normalize" name="normalize" type="checkbox">'
         '<span>Scale XYZ, white, and background together so white Y = 100</span>'
         '</label>'
-        '<p class="calculator-note">Normalization never changes '
-        '<code>L_A</code>; it is an absolute luminance in cd/m².</p>'
+        '<p class="calculator-note"><code>L_A</code> remains an absolute '
+        'luminance in cd/m² and is not changed by this scaling.</p>'
         '<div class="calculator-actions"><button type="submit">Calculate</button>'
         '<button type="reset" class="secondary">Reset example</button></div>'
         '</form>'
@@ -1664,8 +1654,8 @@ def comparator_page(comparator_root: Path, docs: dict) -> str:
         '<h2 id="calculator-results-title">Appearance correlates</h2>'
         '<p id="calculator-status" class="calculator-status" aria-live="polite">'
         'Reference result for the example inputs.</p>'
-        '<noscript><p class="calculator-noscript">JavaScript is off, so the form '
-        'cannot recalculate. The table still shows the build-verified example.</p></noscript>'
+        '<noscript><p class="calculator-noscript">The example remains visible, '
+        'but recalculation requires JavaScript.</p></noscript>'
         f'{comparator_table(payload, interactive=True)}'
         '<p class="model-key">Shaded rows are redefined by the proposal. The '
         'columns use different scales, so their raw magnitudes are not a color '
@@ -1683,25 +1673,23 @@ def comparator_page(comparator_root: Path, docs: dict) -> str:
         '<code>M</code>, saturation <code>s</code>, and hue angle <code>h</code>. '
         'The proposal preserves <code>J</code> and <code>h</code> while changing '
         'the definitions and scales of the other four correlates.</p>'
-        '<p>These outputs are not display RGB, a color-difference score, a '
-        'measurement, or a verdict about which model predicts observers better.</p>'
+        '<p>The table reports appearance correlates rather than display RGB or a '
+        'color-difference score. Comparing the columns shows how the formulations '
+        'differ; it does not determine which one better predicts observers.</p>'
         '</section>'
         '<section><h2>Why viewing conditions matter</h2>'
         '<p>The same XYZ can appear different as the adopted white, background, '
-        'surround, or adapting luminance changes. A plausible-looking result '
-        'under the wrong condition is still the wrong calculation, so every '
-        'condition stays visible and editable.</p>'
+        'surround, or adapting luminance changes. Enter the conditions for the '
+        'intended observation; they remain visible and editable beside the result.</p>'
         '</section>'
         '<section><h2>Why compare the formulations</h2>'
         '<p>The 2022 proposal revisits linked brightness, chroma, colorfulness, '
-        'and saturation relations in CAM16. Its published fits improve for '
-        'brightness and chroma but decline for colorfulness—a mixed result, not '
-        'a universal replacement. <a href="/imaging/studies/color-model-equation-audit/">'
-        'See the equation study</a> for the formulation choices.</p>'
-        f'<p><a href="{COMPARATOR_URL}">Source code and tests are available on '
-        'GitHub.</a> The calculator is tested on Windows, macOS, and Linux and '
-        'cross-checked against Colour’s independent implementations across a broad '
-        'range of stimuli and viewing conditions.</p>'
+        'and saturation relations in CAM16. The paper reports a closer match '
+        'for brightness and chroma but a poorer match for colorfulness. '
+        '<a href="/imaging/studies/color-model-equation-audit/">See the equation '
+        'study</a> for the equations and fit results.</p>'
+        f'<p><a href="{COMPARATOR_URL}">View the implementation and numerical '
+        'checks on GitHub.</a></p>'
         '</section></div>'
         '<script type="module" src="/assets/cam16-calculator.mjs"></script>'
     )
@@ -1709,7 +1697,7 @@ def comparator_page(comparator_root: Path, docs: dict) -> str:
         title=f"CAM16 and Hellwig–Fairchild calculator · {AUTHOR}",
         description=(
             "Calculate and compare CAM16 and Hellwig–Fairchild 2022 appearance "
-            "correlates for declared XYZ values and viewing conditions."
+            "correlates for entered XYZ values and viewing conditions."
         ),
         body=body,
         canonical=COMPARATOR_ROUTE,
@@ -1795,14 +1783,14 @@ def project_landing(
         f'<h1>{html.escape(project.title)}</h1>'
         f'<p class="lede">{html.escape(project.tagline)}</p>'
         '<p class="jumpline"><a href="#how-it-is-computed">'
-        "Skip to the implementation</a></p>"
+        "Skip to reference implementations</a></p>"
         f'<div class="prose">{intro}</div>'
         f"{''.join(sections_html)}"
         f"{comparator_feature(comparator_root)}"
         '<section class="codeblock" id="how-it-is-computed">'
-        "<h2>How it is computed</h2>"
-        '<p class="lede">Excerpts are lifted from the tested source at build '
-        "time and linked to their exact line range. None of it is retyped.</p>"
+        "<h2>Reference implementations</h2>"
+        '<p class="lede">Selected C++ calculations, with links to the complete '
+        "source.</p>"
         f"{excerpt_html}"
         f"{implementation_index(implementations)}</section>"
         f"{figures_section}"
@@ -1890,9 +1878,9 @@ def selected_work(cards: list[Card]) -> str:
         'width="1200" height="630"></a>'
         f'<div><h3><a href="{COMPARATOR_ROUTE}">CAM16 and Hellwig\u2013Fairchild '
         "calculator</a></h3>"
-        "<p>Enter an XYZ value and viewing conditions, then compare what CAM16 "
-        "and the 2022 proposal predict. The model runs in the browser, from "
-        "the same tested source as the standalone tool.</p></div>"
+        "<p>Enter an XYZ value and viewing conditions to compare how CAM16 and "
+        "the 2022 proposal describe appearance. The calculation runs in the "
+        "browser without installation.</p></div>"
         "</article>"
     )
     return (

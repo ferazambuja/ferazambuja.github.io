@@ -81,7 +81,7 @@
 
 /* The topbar is sticky and currently 51px tall. Without this reserve, an anchored
    target lands at viewport top and sits underneath it, so a reader following
-   "See the implementation in context" arrives at a heading they cannot see.
+   an implementation link arrives at a heading they cannot see.
    The same clearance positions the desktop sidebar, keeping both sticky
    surfaces tied to one layout value. Applies to hash navigation and to
    scrollIntoView alike. */
