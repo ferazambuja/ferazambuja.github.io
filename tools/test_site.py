@@ -21,6 +21,9 @@ from build_site import (
     COMPARATOR_LEGACY_ROUTE,
     COMPARATOR_ROUTE,
     COMPARATOR_URL,
+    ATLAS_ROUTE,
+    ATLAS_URL,
+    ATLAS_TITLE,
     IMAGING,
     PROFILE_ASSETS,
     SITE_URL,
@@ -466,7 +469,7 @@ def main() -> int:
                 sidebar,
                 flags=re.S,
             )
-            expected_visible = len(study_pages) + 4
+            expected_visible = len(study_pages) + 5
             if visible.count("<a ") != expected_visible:
                 failures.append(
                     f"{study_page.relative_to(root)}: expected {expected_visible} "
@@ -484,8 +487,8 @@ def main() -> int:
         IMAGING.landing_figures
     ):
         failures.append("imaging landing figure count does not match its selection")
-    if landing.count('<section class="tool-feature"') != 1:
-        failures.append("imaging landing must contain one standalone-tool feature")
+    if landing.count('<section class="tool-feature"') != 2:
+        failures.append("imaging landing must contain the calculator and Color Atlas features")
     if f'href="{COMPARATOR_ROUTE}"' not in landing:
         failures.append("imaging landing does not link the browser calculator")
     if "https://github.com/ferazambuja/cam16-hellwig-comparator" not in landing:
@@ -579,6 +582,54 @@ def main() -> int:
             encoding="utf-8"
         ):
             failures.append(f"{related_route}: does not link the calculator")
+
+    atlas = route_to_file(root, ATLAS_ROUTE)
+    if not atlas.is_file():
+        failures.append("Color Atlas page is missing")
+    else:
+        atlas_text = atlas.read_text(encoding="utf-8")
+        if f"<h1>{ATLAS_TITLE}</h1>" not in atlas_text:
+            failures.append("Color Atlas title differs from its navigation title")
+        if f'href="{ATLAS_URL}"' not in atlas_text:
+            failures.append("Color Atlas does not link its source repository")
+        if f'href="{COMPARATOR_ROUTE}"' not in atlas_text:
+            failures.append("Color Atlas does not link the complementary calculator")
+        if atlas_text.count('<figure class="atlas-shot">') != 2:
+            failures.append("Color Atlas must show both explained screenshots")
+        for private_text in ("PRIVATE_DRAFT", "OWNER_ACCEPTANCE", "Publishing notes"):
+            if private_text in atlas_text:
+                failures.append(f"Color Atlas exposes private draft text: {private_text}")
+        if re.search(r"/(?:Users|home)/", atlas_text):
+            failures.append("Color Atlas exposes a local home-directory path")
+        if '<meta name="robots" content="noindex' in atlas_text:
+            failures.append("Color Atlas publication source still carries draft indexing controls")
+        if f"{SITE_URL}{ATLAS_ROUTE}" not in (root / "sitemap.xml").read_text():
+            failures.append("Color Atlas is missing from the sitemap")
+    for related_route in (
+        "/", "/imaging/", COMPARATOR_ROUTE,
+        "/imaging/studies/color-model-equation-audit/",
+        "/imaging/reports/cam16-equation-audit/",
+        "/imaging/methods/cam16-equation-audit/",
+    ):
+        related_text = route_to_file(root, related_route).read_text(encoding="utf-8")
+        related_main = related_text.split('<main id="main">', 1)[1].split("</main>", 1)[0]
+        if f'href="{ATLAS_ROUTE}"' not in related_main:
+            failures.append(f"{related_route}: does not link Color Atlas")
+        if related_route == "/" and not (
+            related_text.index('href="/hdr-platform/"', related_text.index('home-work-grid'))
+            < related_text.index('href="/reflective-color-display/"', related_text.index('home-work-grid'))
+            < related_text.index(f'href="{ATLAS_ROUTE}"', related_text.index('home-work-grid'))
+        ):
+            failures.append("Color Atlas displaced the two flagship projects")
+    atlas_asset_names = {"02-cam16.png", "04-prophoto-preview.png"}
+    atlas_output = root / "assets" / "color-atlas"
+    if {p.name for p in atlas_output.glob("*")} != atlas_asset_names:
+        failures.append("Color Atlas assets differ from the two selected screenshots")
+    for name in atlas_asset_names:
+        source = Path.cwd() / "site" / "color-atlas" / name
+        rendered = atlas_output / name
+        if not source.is_file() or not rendered.is_file() or source.read_bytes() != rendered.read_bytes():
+            failures.append(f"Color Atlas screenshot differs from source: {name}")
 
     retired_comparator = route_to_file(root, COMPARATOR_LEGACY_ROUTE)
     if not retired_comparator.is_file():

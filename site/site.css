@@ -1105,9 +1105,9 @@ pre code { background: none; padding: 0; }
 
 /* ---------- HDR platform ---------- */
 
-.hdr-shot, .hdr-diagram { margin: 2rem 0 2.8rem; max-width: 50rem; }
-.hdr-shot a, .hdr-diagram a { display: block; }
-.hdr-shot img {
+.hdr-shot, .hdr-diagram, .atlas-shot { margin: 2rem 0 2.8rem; max-width: 50rem; }
+.hdr-shot a, .hdr-diagram a, .atlas-shot a { display: block; }
+.hdr-shot img, .atlas-shot img {
   width: 100%;
   margin: 0;
   border: 1px solid var(--rule);
@@ -1126,7 +1126,7 @@ pre code { background: none; padding: 0; }
   border-radius: 10px;
 }
 
-.hdr-shot figcaption, .hdr-diagram figcaption {
+.hdr-shot figcaption, .hdr-diagram figcaption, .atlas-shot figcaption {
   margin-top: 0.75rem;
   max-width: 44rem;
   color: var(--ink-faint);
@@ -1195,3 +1195,7 @@ pre code { background: none; padding: 0; }
 }
 .side-tool a:hover { border-color: var(--accent); }
 .side-tool a.active { background: var(--accent-soft); border-left-width: 4px; }
+
+/* Keep every Color Atlas control visible in the selected-work thumbnail. */
+.color-atlas-card .home-work-figure img { object-fit: contain; }
+.atlas-shot figcaption a { display: inline; }

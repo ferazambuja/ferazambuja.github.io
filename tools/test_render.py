@@ -404,7 +404,10 @@ def main() -> int:
 
     # Anchor navigation is how a reader reaches an implementation excerpt from
     # a method page, and how the landing page skips to its code.
-    anchored = [("/imaging/", "how-it-is-computed")]
+    anchored = [
+        ("/imaging/", "how-it-is-computed"),
+        ("/imaging/color-atlas/", "reading-a-slice-of-color"),
+    ]
     anchored.extend(
         (
             f"/imaging/studies/{page.parent.name}/",
