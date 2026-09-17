@@ -19,6 +19,7 @@ import html
 import json
 import re
 import shutil
+import struct
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -36,6 +37,14 @@ COMPARATOR_URL = f"https://github.com/{COMPARATOR_REPO}"
 HDR_ROUTE = "/hdr-platform/"
 REFLECTIVE_ROUTE = "/reflective-color-display/"
 COMPARATOR_ROUTE = "/imaging/cam16-hellwig-comparator/"
+ATLAS_ROUTE = "/imaging/color-atlas/"
+ATLAS_URL = "https://github.com/ferazambuja/color-atlas"
+ATLAS_TITLE = "Color Atlas: Exploring Color Appearance"
+ATLAS_PREVIEW = "/assets/color-atlas/02-cam16.png"
+ATLAS_PREVIEW_ALT = (
+    "Color Atlas showing a CAM16 constant-hue plane, with chroma increasing "
+    "rightward and lightness increasing upward beside the viewing controls."
+)
 CALCULATOR_PREVIEW = "/assets/social/cam16-calculator.jpg"
 CALCULATOR_PREVIEW_ALT = (
     "The calculator with stimulus and adopted-white inputs beside a results "
@@ -630,7 +639,9 @@ def calculator_pointer(lead: str) -> str:
     return (
         f'<aside class="related-tool"><strong>{lead}</strong> '
         f'<a href="{COMPARATOR_ROUTE}">Compare CAM16 and Hellwig\u2013Fairchild '
-        "with your own XYZ values and viewing conditions</a>.</aside>"
+        "with your own XYZ values and viewing conditions</a>. "
+        f'<a href="{ATLAS_ROUTE}">Explore the inverse calculation across a color '
+        "plane in Color Atlas</a>.</aside>"
     )
 
 
@@ -1033,12 +1044,18 @@ def sidebar_html(project: Project, docs: dict, active: str) -> str:
     # a repository link -- a list of documents with a tool filed among them.
     # It gets its own affordance and leaves the secondary list to references.
     on_calculator = active == COMPARATOR_ROUTE
+    on_atlas = active == ATLAS_ROUTE
     blocks.append(
         '<p class="side-tool">'
         f'<a href="{COMPARATOR_ROUTE}"'
         f'{" class=\"active\"" if on_calculator else ""}'
         f'{" aria-current=\"page\"" if on_calculator else ""}>'
         "Open the CAM16 calculator</a></p>"
+        '<p class="side-tool">'
+        f'<a href="{ATLAS_ROUTE}"'
+        f'{" class=\"active\"" if on_atlas else ""}'
+        f'{" aria-current=\"page\"" if on_atlas else ""}>'
+        "Explore Color Atlas</a></p>"
         '<div class="side-secondary">'
         f'<a href="{project.repo_url}">Technical repository</a>'
         "</div>"
@@ -1318,6 +1335,11 @@ def build(
                 comparator_page(comparator_root, docs),
             )
             pages_written += 1
+            write(
+                output / ATLAS_ROUTE.strip("/") / "index.html",
+                atlas_page(site_dir, docs),
+            )
+            pages_written += 1
 
         # Figures.
         figures_src = root / "figures"
@@ -1325,6 +1347,10 @@ def build(
             shutil.copytree(figures_src, output / "assets" / "figures")
 
     # Site-owned pages and profile assets.
+    atlas_output = output / "assets" / "color-atlas"
+    atlas_output.mkdir(parents=True, exist_ok=True)
+    for name in ("02-cam16.png", "04-prophoto-preview.png"):
+        shutil.copy2(site_dir / "color-atlas" / name, atlas_output / name)
     profile_output = output / "assets" / "profile"
     profile_output.mkdir(parents=True, exist_ok=True)
     for asset in PROFILE_ASSETS.values():
@@ -1693,6 +1719,11 @@ def comparator_page(comparator_root: Path, docs: dict) -> str:
         f'<p><a href="{COMPARATOR_URL}">View the implementation and numerical '
         'checks on GitHub.</a></p>'
         '</section></div>'
+        '<aside class="related-tool"><strong>Explore a whole plane of color.</strong> '
+        f'<a href="{ATLAS_ROUTE}">Color Atlas</a> starts with appearance '
+        'coordinates and calculates the XYZ values needed to produce them. '
+        'Its MATLAB interface reveals how viewing conditions and RGB gamut '
+        'shape a color plane.</aside>'
         '<script type="module" src="/assets/cam16-calculator.mjs"></script>'
     )
     return page(
@@ -1789,6 +1820,7 @@ def project_landing(
         f'<div class="prose">{intro}</div>'
         f"{''.join(sections_html)}"
         f"{comparator_feature(comparator_root)}"
+        f"{atlas_feature()}"
         '<section class="codeblock" id="how-it-is-computed">'
         "<h2>Reference implementations</h2>"
         '<p class="lede">Selected C++ calculations, with links to the complete '
@@ -1890,8 +1922,87 @@ def selected_work(cards: list[Card]) -> str:
         + feature
         + reflective_feature()
         + calculator
+        + atlas_card()
         + "".join(items)
         + "</div>"
+    )
+
+
+def atlas_card() -> str:
+    return (
+        '<article class="home-work-card home-work-feature color-atlas-card">'
+        f'<a class="home-work-figure" href="{ATLAS_ROUTE}">'
+        f'<img src="{ATLAS_PREVIEW}" '
+        f'alt="{html.escape(ATLAS_PREVIEW_ALT, quote=True)}" '
+        'width="2160" height="1500" loading="lazy"></a>'
+        f'<div><h3><a href="{ATLAS_ROUTE}">{ATLAS_TITLE}</a></h3>'
+        '<p>An interactive MATLAB app for exploring hue, lightness and chroma. '
+        'Move through color planes, adjust viewing conditions, and distinguish '
+        'the selected RGB gamut from the limits of an sRGB preview.</p>'
+        '</div></article>'
+    )
+
+
+def atlas_feature() -> str:
+    return (
+        '<section class="tool-feature" id="color-atlas">'
+        '<div class="tool-copy"><p class="eyebrow">MATLAB app and source code</p>'
+        f'<h2>{ATLAS_TITLE}</h2>'
+        '<p>Hold one color attribute fixed and explore the other two. '
+        'Color Atlas calculates entire color planes from CIELAB and '
+        'color-appearance models, with editable viewing conditions '
+        'and a color-by-color view of gamut and preview limits.</p>'
+        '<p class="tool-actions">'
+        f'<a class="tool-button" href="{ATLAS_ROUTE}">Explore the app</a>'
+        f'<a href="{ATLAS_URL}">MATLAB source code</a></p></div>'
+        f'<a href="{ATLAS_ROUTE}"><img src="{ATLAS_PREVIEW}" '
+        f'alt="{html.escape(ATLAS_PREVIEW_ALT, quote=True)}" '
+        'width="2160" height="1500" loading="lazy"></a></section>'
+    )
+
+
+def atlas_page(site_dir: Path, docs: dict) -> str:
+    title, body_md = strip_front_links(
+        (site_dir / "color-atlas.md").read_text(encoding="utf-8")
+    )
+    if title != ATLAS_TITLE:
+        raise SystemExit("Color Atlas page title differs from its navigation title")
+    rendered = render_markdown(
+        body_md, doc_dir=PurePosixPath("."), project=IMAGING
+    )
+
+    def figure(match: re.Match[str]) -> str:
+        image_path = match.group("path")
+        source = site_dir / "color-atlas" / Path(image_path).name
+        width, height = struct.unpack(">II", source.read_bytes()[16:24])
+        return (
+            '<figure class="atlas-shot">'
+            f'<a href="{image_path}"><img src="{image_path}" '
+            f'alt="{match.group("alt")}" width="{width}" height="{height}" '
+            'loading="lazy"></a>'
+            f'<figcaption>{match.group("caption")} '
+            f'<a href="{image_path}">Open full-size image</a>.</figcaption></figure>'
+        )
+
+    rendered, count = re.subn(
+        r'<p><img alt="(?P<alt>[^"]*)" src="(?P<path>/assets/color-atlas/[^"]+)" ?/?></p>\s*'
+        r'<p class="caption"><em>(?P<caption>.*?)</em></p>',
+        figure, rendered, flags=re.S,
+    )
+    if count != 2:
+        raise SystemExit("Color Atlas requires two screenshot-and-caption pairs")
+    return page(
+        title=f"{ATLAS_TITLE} · {AUTHOR}",
+        description=("An interactive MATLAB color atlas for exploring appearance "
+                     "models, viewing conditions, RGB gamut and screen previews."),
+        body=(f'<p class="crumb"><a href="/imaging/">Imaging</a></p>'
+              f'<h1>{ATLAS_TITLE}</h1><div class="prose">{rendered}</div>'),
+        canonical=ATLAS_ROUTE,
+        nav_active="imaging",
+        sidebar=sidebar_html(IMAGING, docs, ATLAS_ROUTE),
+        depth_class="doc atlas-page",
+        social_image=ATLAS_PREVIEW,
+        social_image_alt=ATLAS_PREVIEW_ALT,
     )
 
 

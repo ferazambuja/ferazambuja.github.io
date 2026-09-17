@@ -6,6 +6,7 @@ of imaging engineering, color science, photography, and research-tool work.
 The site presents technical studies from
 [imaging-color-measurement](https://github.com/ferazambuja/imaging-color-measurement),
 the interactive [CAM16 and Hellwig–Fairchild comparator](https://github.com/ferazambuja/cam16-hellwig-comparator),
+the MATLAB [Color Atlas](https://github.com/ferazambuja/color-atlas),
 and selected owner-authored photography from the public profile repository.
 
 ## Build locally

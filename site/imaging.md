@@ -11,3 +11,8 @@ For display measurement and rendering, the separate
 [Reflective Color Display Engineering case study](/reflective-color-display/)
 follows the path from an experimental color profile to pixel-pattern tests
 and the open problem of predicting colors inside images.
+
+For hands-on exploration, [Color Atlas](/imaging/color-atlas/) turns appearance
+coordinates into color planes in MATLAB. The
+[CAM16 and Hellwig–Fairchild calculator](/imaging/cam16-hellwig-comparator/)
+compares the forward calculation for one XYZ stimulus in the browser.
