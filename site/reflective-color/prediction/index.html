@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prediction experiments and limits</title><meta name="description" content="Forecasts that succeeded in bounded cases, and tests of whether those successes carried to other patterns, returns and image regions.">
+<meta property="og:type" content="article"><meta property="og:title" content="Prediction experiments and limits"><meta property="og:description" content="Forecasts that succeeded in bounded cases, and tests of whether those successes carried to other patterns, returns and image regions.">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="Prediction experiments and limits"><meta name="twitter:description" content="Forecasts that succeeded in bounded cases, and tests of whether those successes carried to other patterns, returns and image regions.">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"><link rel="stylesheet" href="/reflective-color-display/story.css">
+</head><body class="case-detail"><div class="case-navigation"><nav class="case-nav" aria-label="Reflective display case study"><a href="/reflective-color-display/">Overview</a><a href="/reflective-color-display/pattern-behavior/">Pattern behavior</a><a href="/reflective-color-display/prediction/" aria-current="page">Prediction</a><a href="/reflective-color-display/renderer/">Renderer</a><a href="/reflective-color-display/icc/">Experimental ICC</a><a href="/reflective-color-display/measurements/">Measurement atlas</a></nav></div><main id="main-content" tabindex="-1">
+<header id="project"><p class="eyebrow">Reflective display · color science · software</p><h1>Prediction experiments and limits</h1><p class="lede">Forecasts that succeeded in bounded cases, and tests of whether those successes carried to other patterns, returns and image regions.</p></header>
+<noscript><p class="note">The explanations, photographs and saved results remain available. Interactive spectra and the full color-pair table require JavaScript.</p></noscript>
+<section class="story-chapter" id="bounded-prediction-success"><h2>Successful forecasts in defined tests</h2>
+<p>Predictions were saved before the new measurements. These are separate tests, not a pooled score or a learning curve. Each used a chosen ΔE00 limit of 1; that was an engineering criterion, not a universal visibility threshold.</p>
+<table><caption>Prospective prediction results</caption><thead><tr><th>Test</th><th>What succeeded</th><th>Scope</th></tr></thead><tbody>
+<tr data-result="p2"><th>Two full-screen patterns</th><td>8 of 8 readings within the chosen limit</td><td>Two exact entries at the tested starting position.</td></tr>
+<tr data-result="wbgb"><th>One new four-color raster</th><td>Two empirical forecasts each passed 4 of 4 readings; the area-only baseline passed 0 of 4.</td><td>Four observations of one new pattern, not four patterns.</td></tr>
+<tr data-result="c-output"><th>Alternative renderings of two target colors</th><td>The saved output forecasts passed 8 of 8 readings.</td><td>Forecast accuracy did not mean the output matched the desired color.</td></tr>
+</tbody></table><p>The detailed comparisons below distinguish new inputs, returns to familiar pixels, and regions inside images.</p></section><section class="technical-details" id="prediction-trials"><h2>Testing forecasts on new measurements</h2><div class="technical-body">
+<dl class="payload-roles" id="payload-and-prediction" aria-label="Pixel instructions, predicted color and measured color">
+<div data-color-role="payload"><dt>Payload · what we send</dt><dd>The exact native-state pixel map, encoded for the display. A renderer or a test-pattern generator chooses these pixels.</dd></div>
+<div data-color-role="prediction"><dt>Prediction · what we expect</dt><dd>A model's estimate of the color those pixels will produce under stated conditions. The models below predict XYZ color coordinates.</dd></div>
+<div data-color-role="measurement"><dt>Measurement · what we observe</dt><dd>The light recorded by the meter: a spectrum, converted to color coordinates. This is what tests the prediction.</dd></div>
+</dl>
+<p id="same-payload-forecasts">Different models can predict different colors for the <strong>same unchanged payload</strong>. Making a forecast does not change the pixels. The requested image color is a separate goal: we check both how well we predicted the output and how closely that output matches the goal.</p>
+<p class="prediction-criterion" id="prediction-criterion" data-applies-to="prediction-return-status image-context-result">In questions 1 and 2, prediction error means the ΔE00 distance between a saved forecast and a fresh measured color. Those two tests chose a limit of 1 before measurement, using nominal-D50 Lab. That is an engineering criterion for those tests, not a universal visibility threshold. Question 3 also checks distance from the requested color, labeled separately.</p>
+
+<section class="research-question" id="prediction-return-status" aria-labelledby="prediction-return-title" data-source-sha256="d0d0b80c980242c9a2a0fab6ee57b2b64617a2ebc60a6144bb5574884470f8c1">
+<span id="current-prediction-status" aria-hidden="true"></span>
+<h3 id="prediction-return-title">1 · Can we predict a construction's absolute color?</h3>
+<dl class="research-readout">
+<div data-question-part="why"><dt>Why we tested it</dt><dd>Prediction-guided rendering needs an estimate of the absolute color its pixels will produce, not just whether two patterns will differ. Useful predictions must work on new inputs and remain useful when familiar patterns return.</dd></div>
+<div data-question-part="observed" id="prediction-progress-summary"><dt>What we saw</dt><dd>For <strong id="q1-inputs">14 new colors measured twice</strong>, a model based on proportional departures from a simple native-color mixture reduced average prediction error from <strong id="q1-direct-mean">6.73</strong> to <strong id="q1-ratio-mean">2.69 ΔE00</strong> compared with directly averaging measured colors. Yet each method met the chosen limit on only <strong id="q1-passes">2 of 28 readings</strong>. Both forecasts concerned the same unchanged pixels.</dd></div>
+<div data-question-part="meaning"><dt>What it tells us</dt><dd>Modeling departures from a simple native-color mixture helped on average, but that average gain did not translate into reliable predictions for individual readings.</dd></div>
+<div data-question-part="limit"><dt>What the test did not establish</dt><dd><strong>Reliable new-color prediction is not established.</strong> In a separate return test, two unchanged cyan-leaning pixel maps were 1.39–1.63 ΔE00 from their earlier occurrence means, larger than their 0.19–0.26 ΔE00 maximum movement within the later occurrence. The sessions differed in chronology and setup, so this shows occurrence sensitivity without identifying its cause.</dd></div>
+
+</dl>
+<section class="technical-note" id="development-models"><h4>Inputs considered by the color models</h4><div class="technical-body">
+<div class="model-anatomy" role="group" aria-label="Proposed color-model inputs and predicted outputs">
+<div><svg class="model-icon" viewBox="0 0 64 52" aria-hidden="true" focusable="false"><rect x="2" y="4" width="17" height="17" rx="3" fill="#141414" stroke="#9099a0"/><rect x="23" y="4" width="17" height="17" rx="3" fill="#eee"/><rect x="44" y="4" width="17" height="17" rx="3" fill="#cc4545"/><rect x="2" y="27" width="17" height="17" rx="3" fill="#e6c645"/><rect x="23" y="27" width="17" height="17" rx="3" fill="#29ad55"/><rect x="44" y="27" width="17" height="17" rx="3" fill="#346ace"/></svg><strong>Native-state contributions</strong><span>Which colors, in what proportions?</span></div><b aria-hidden="true">+</b>
+<div><svg class="model-icon" viewBox="0 0 64 52" aria-hidden="true" focusable="false"><path d="M3 5h25v8H3zm0 16h25v8H3zm0 16h25v8H3zM37 5h8v40h-8zm16 0h8v40h-8z" fill="currentColor"/></svg><strong>Spatial construction</strong><span>Arrangement, grouping, phase, and local context.</span></div><b aria-hidden="true">+</b>
+<div><svg class="model-icon" viewBox="0 0 64 52" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="4" width="42" height="28" rx="3"/><path d="M15 40h15m-8-8v8"/><circle cx="48" cy="35" r="13"/><path d="M48 26v10l7 4"/></g></svg><strong>Display and measurement conditions</strong><span>Previous updates, timing, setup, and any environmental terms supported by tests.</span></div>
+<div class="model-output"><svg class="model-icon" viewBox="0 0 64 52" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v36h45M12 40L3 49"/><circle cx="40" cy="17" r="7"/><path d="M40 24v16M33 17H12" stroke-dasharray="3 4"/></g></svg><strong>Predicted absolute color: XYZ → Lab</strong><span>Compare each fresh reading with its prediction. A spectral model can also predict the wavelength-by-wavelength response.</span></div>
+</div>
+<p class="caption">A working hypothesis about possible model inputs, not a validated recipe. Which arrangement and condition terms matter remains open. The empirical forecasts discussed here predict XYZ directly.</p>
+
+<p>The direct model averages measured XYZ from nearby inputs. The ratio model averages how those measurements differ proportionally from a native-color estimate, then applies that ratio to the new input's estimate. The two approaches were compared with forecasts saved before the new readings. Neither changes the displayed pixels by itself.</p>
+</div></section>
+</section>
+
+<section class="research-question" id="image-context-result" aria-labelledby="image-context-title" data-source-sha256="3841b2b149b73cad3862a19e3b5a63da5dc73b638cd4e1332b02ba1b27cb36c2">
+<h3 id="image-context-title">2 · Does the prediction transfer into an image?</h3>
+<dl class="research-readout">
+<div data-question-part="why"><dt>Why we tested it</dt><dd>Full-screen patterns help investigate particular dependencies, but ordinary images contain many constructions next to one another. A forecast that works on an isolated pattern may miss a region inside a picture.</dd></div>
+<div data-question-part="meaning" id="image-model-key"><dt>What the methods use</dt><dd>Both methods use the proportions of native states in the same selected 64×64 digital region. The <strong>additive baseline</strong> weights measured native-state XYZ values by those proportions. The <strong>learned local model</strong> adjusts that estimate using how previously measured mixtures departed from their additive estimates. This tests prediction inside an image, rather than another uniform patch.</dd></div>
+<div data-question-part="observed" id="image-prediction-answer"><dt>What we saw</dt><dd>In a test with forecasts saved before measurement, <strong id="q2-scope">six selected regions from three previously unused images</strong> were each measured twice. The learned local model was closer than the additive baseline on <strong id="q2-closer">all 12 readings</strong>, but <strong id="q2-passes">neither method met the chosen limit on any reading</strong>.</dd></div>
+<div data-question-part="limit"><dt>What the test did not establish</dt><dd><strong>Dependable image-region prediction is not established.</strong> The images were unchanged: this did not test improved rendering or whole-image quality, and it did not identify a physical cause.</dd></div>
+
+</dl>
+</section>
+
+<section class="research-question" id="prediction-transfer" aria-labelledby="transfer-title">
+<h3 id="transfer-title">3 · Can predictions help reproduce the requested image?</h3>
+<p>The practical goal is to use what we learn about the display to choose native pixels that bring measured colors closer to the image's requested colors, while preserving tone, detail, texture and edges.</p>
+<section class="correction-comparison" id="fixed-adjustment-example" aria-labelledby="fixed-adjustment-title" data-result-sha256="224085c999428cd9476bebee02e764881a40f323910ff2f168eefd2a3d59a748">
+<h4 id="fixed-adjustment-title">A later fixed adjustment helped the warm color but worsened the neutral</h4>
+<p>In a rendering test of two target colors, a warm tone and a neutral gray, I used previous measurements to adjust the renderer's input. This was a fixed, case-specific adjusted rendering, not a general predictor choosing pixels.</p>
+<table>
+<caption>Distance from the original desired color, in ΔE00. Each range covers four fresh readings; lower is closer.</caption>
+<thead><tr><th scope="col">Test color</th><th scope="col">Baseline rendering</th><th scope="col">Adjusted rendering</th></tr></thead>
+<tbody>
+<tr data-correction-case="warm-light"><th scope="row">Warm tone</th><td id="warm-baseline-range" data-arm="B">6.24–6.65</td><td id="warm-adjustment-range" data-arm="D"><strong>2.86–2.98</strong><span>Closer on every reading</span></td></tr>
+<tr data-correction-case="neutral128"><th scope="row">Neutral gray</th><td id="neutral-baseline-range" data-arm="B">5.51–5.87</td><td id="neutral-adjustment-range" data-arm="D"><strong>6.17–6.51</strong><span>Farther on every reading</span></td></tr>
+</tbody></table>
+<p><strong>The adjusted rendering did not improve both colors.</strong> Its saved output forecasts also missed the chosen limit on all eight readings. Every adjusted result remained above the test's original-color error limit of 1. The warm improvement was useful, but it did not establish a dependable correction for other colors. This is a different arm from the alternative renderings in the summary above.</p>
+<p class="caption">Both versions were compared with the same original desired color for each case. These patterned test patches did not test whole-image quality or establish the closest colors the display could reproduce. <a href="/reflective-color-display/measurements/?experiment=bcd&amp;comparison=bcd">Inspect the readings and forecasts.</a></p>
+</section>
+<figure class="measured-comparison" id="measured-prediction-example"
+  aria-labelledby="measured-prediction-title" aria-describedby="measured-prediction-caption"
+  data-result-sha256="224085c999428cd9476bebee02e764881a40f323910ff2f168eefd2a3d59a748"
+  data-source-id="RENDERER-BC-WARM-LIGHT-C">
+  <h4 id="measured-prediction-title">Predicting a color is not the same as reproducing it</h4>
+  <p>A separate construction in that experiment had an accurate output forecast but still missed the desired color. Its forecast was saved before four fresh measurements; the first reading is shown here.</p>
+  <div class="measured-color-grid">
+    <div class="measured-color-card" data-color-role="requested" data-xyz-d50="16.48454729033974,15.564632033519056,7.727523807314165">
+      <strong>Original desired color</strong><i style="--measured-preview:#836852" aria-hidden="true"></i><span>D50 XYZ: 16.485 · 15.565 · 7.728</span>
+    </div>
+    <div class="measured-color-card" data-color-role="forecast" data-xyz-d50="14.10692773053848,12.416873903444351,5.240211235593386">
+      <strong>Saved output forecast</strong><i style="--measured-preview:#805a43" aria-hidden="true"></i><span>D50 XYZ: 14.107 · 12.417 · 5.240</span>
+    </div>
+    <div class="measured-color-card" data-color-role="measured" data-xyz-d50="14.29114,12.57847,5.426062">
+      <strong>First fresh measurement</strong><i style="--measured-preview:#815a44" aria-hidden="true"></i><span>D50 XYZ: 14.291 · 12.578 · 5.426</span>
+    </div>
+  </div>
+  <div class="comparison-results">
+    <div class="comparison-result" data-comparison="prediction">
+      <strong>Forecast ↔ measured output</strong><b>ΔE00 0.41</b><span>Within the preset engineering limit of 1.</span>
+    </div>
+    <div class="comparison-result" data-comparison="reproduction">
+      <strong>Requested ↔ measured output</strong><b>ΔE00 5.96</b><span>Outside the same limit.</span>
+    </div>
+  </div>
+  <p><strong>All four fresh readings told the same bounded story:</strong> forecast error was 0.38–0.47 ΔE00, while requested-color error was 5.81–5.96.</p>
+  <figcaption id="measured-prediction-caption">Four-reading warm-color test. Desired colors are image colors scaled to the panel's measured white: sRGB is converted to D50 XYZ, then scaled component by component so sRGB white maps to the measured native white. The requested color and saved forecast were fixed before the fresh measurements. Swatches are approximate sRGB previews computed from the printed D50 XYZ values; the numerical comparisons carry the result. This one construction explains the distinction between prediction and reproduction. Broadly improved reproduction remains open.</figcaption>
+  <section class="technical-note"><h4>All four fresh readings</h4><div class="technical-body topic-table" role="region" tabindex="0" aria-label="All four fresh readings for the warm-color C construction">
+    <table><caption>Fresh measurements in acquisition order</caption><thead><tr><th scope="col">Reading</th><th scope="col">Measured D50 XYZ</th><th scope="col">Forecast error</th><th scope="col">Requested-color error</th></tr></thead><tbody>
+      <tr data-fresh-reading="1"><th scope="row">1</th><td>14.29114 · 12.57847 · 5.426062</td><td>0.4089</td><td>5.9641</td></tr>
+      <tr data-fresh-reading="2"><th scope="row">2</th><td>14.24502 · 12.54802 · 5.422607</td><td>0.3914</td><td>5.9523</td></tr>
+      <tr data-fresh-reading="3"><th scope="row">3</th><td>14.39455 · 12.68825 · 5.477240</td><td>0.4711</td><td>5.8099</td></tr>
+      <tr data-fresh-reading="4"><th scope="row">4</th><td>14.28953 · 12.60059 · 5.436232</td><td>0.3792</td><td>5.8571</td></tr>
+    </tbody></table>
+  </div></section>
+</figure>
+
+<p id="renderer-current-answer">For prediction-guided rendering, <strong>forecast accuracy</strong> and <strong>requested-color accuracy</strong> answer different questions. Dependable prediction-guided reproduction across new images has not yet been demonstrated.</p>
+
+</section>
+</div></section><section class="story-chapter" id="prediction-limits"><h2>Prediction errors were not only a repeatability problem</h2>
+<p>In a separate image-history comparison, the readings agreed closely within each tested condition and across the selected preceding images, yet the learned model met its limit on only 2 of 18 readings and the additive baseline on none. A model can miss even when the measurements are relatively consistent.</p>
+<p>The successful forecasts and relative improvements therefore do not establish reliable absolute-color prediction across the tested patterns, occurrences and image regions. The records leave several possible contributions unresolved; they do not show that every e-paper display is impossible to characterize.</p></section><p class="detail-link"><a data-atlas-link href="/reflective-color-display/measurements/">Inspect forecasts alongside the measured colors →</a></p>
+<footer class="case-footer"><a href="/reflective-color-display/">Case-study overview</a><a href="/reflective-color-display/measurements/">Interactive measurement atlas</a><a href="/">Portfolio home</a></footer>
+</main><div id="tooltip"></div><script src="/reflective-color-display/story.js" defer></script></body></html>

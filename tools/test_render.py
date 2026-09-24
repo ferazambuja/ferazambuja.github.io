@@ -17,16 +17,16 @@ from __future__ import annotations
 
 import argparse
 import atexit
-import http.server
 import re
 import shutil
-import socketserver
 import subprocess
 import sys
 import tempfile
 import threading
 from contextlib import contextmanager
 from pathlib import Path
+
+from serve_site import create_preview_server
 
 CHROME_CANDIDATES = (
     "google-chrome",
@@ -310,12 +310,7 @@ def find_chrome() -> str | None:
 def serving(root: Path):
     """Serve the generated pages from a local origin."""
 
-    class Quiet(http.server.SimpleHTTPRequestHandler):
-        def log_message(self, format, *args):  # request noise, not results
-            pass
-
-    handler = lambda *a, **kw: Quiet(*a, directory=str(root), **kw)
-    with socketserver.TCPServer(("127.0.0.1", 0), handler) as httpd:
+    with create_preview_server(root, port=0, quiet=True) as httpd:
         thread = threading.Thread(target=httpd.serve_forever, daemon=True)
         thread.start()
         try:

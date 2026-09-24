@@ -30,5 +30,5 @@ git clone https://github.com/ferazambuja/cam16-hellwig-comparator ../cam16-hellw
   --comparator ../cam16-hellwig-comparator
 ```
 
-Serve the result with `python3 -m http.server -d _site 8000` and open
+Serve the result with `./.venv/bin/python tools/serve_site.py --site _site --port 8000` and open
 <http://localhost:8000>.

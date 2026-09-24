@@ -16,7 +16,19 @@ body { background:var(--bg); }
 .topbar .topnav { display:flex; flex-wrap:wrap; gap:10px 20px; }
 .topbar .active { color:#e0d52b; text-decoration:underline; text-underline-offset:5px; }
 .topbar a:hover { text-decoration:underline; }
+.skip-link {
+  position:absolute; top:8px; left:16px; z-index:20; padding:10px 16px;
+  color:var(--text, var(--ink)); background:var(--panel); transform:translateY(-180%);
+}
+.skip-link:focus { transform:none; }
+.case-navigation {
+  max-width:1180px; margin:auto; padding:30px 22px 0; display:flow-root;
+}
+.case-navigation + main { padding-top:0; }
+.measurements .case-navigation { max-width:1280px; padding:2.6rem 1.3rem 0; }
 @media(max-width:640px) {
+  .case-navigation { padding:16px 16px 0; }
   .topbar .topbar-inner { padding:14px 18px; gap:12px; }
   .topbar a { font-size:14px; }
+  .measurements .case-navigation { padding:1rem 1rem 0; }
 }

@@ -1,11 +1,8 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" href="data:,"><meta name="robots" content="noindex,nofollow"><title>Measurements | Reflective Color Display Engineering</title>
-<meta name="description" content="Measured pixel-pattern behavior, bounded color predictions, and development of a reproducible reflective-display rendering process.">
-<style>
+
 :root{color-scheme:dark;--bg:#0a0c0f;--panel:#11151a;--line:#27313a;--text:#f1f0e8;
 --muted:#a9b0b7;--accent:#d5c91b;--h:#cf7520;--v:#2f96c9;--diff:#948a10;--ref:#7c8790}
 *{box-sizing:border-box}
+:target{scroll-margin-top:22px}
 body{margin:0;background:radial-gradient(circle at 75% 0,#202511 0,transparent 34rem),var(--bg);
 color:var(--text);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 main{max-width:1180px;margin:auto;padding:30px 22px 54px}
@@ -73,7 +70,11 @@ background:repeating-conic-gradient(#d4b322 0 25%,#315f9f 0 50%) 0/18px 18px}
 .pattern-hook h2{font-size:16px;margin:0 0 4px}.pattern-hook>p{color:var(--muted);font-size:13px;margin:0 0 12px}
 .pattern-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pattern-grid figure{margin:0}
 .hook-pixel-map{display:grid;grid-template-columns:repeat(18,1fr);aspect-ratio:16/7;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#0c1014}
-.hook-pixel-map span{min-width:0;min-height:0}
+.hook-pixel-map span{min-width:0;min-height:0;display:grid;place-items:center;font:700 14px/1 ui-monospace,monospace}
+#payload-definition{font-size:16px}#payload-map-key{margin-top:12px;font-size:14px}
+.payload-roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin:24px 0}
+.payload-roles>div{border-top:2px solid var(--accent);padding-top:12px}.payload-roles dt{font-size:18px;font-weight:750}.payload-roles dd{margin:8px 0 0;font-size:16px;color:var(--muted)}
+@media(max-width:640px){.payload-roles{grid-template-columns:1fr;gap:16px}}
 .pattern-grid figcaption{color:var(--muted);font-size:12px;margin-top:5px}
 .breadth-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 20px}
 .breadth-grid figure{margin:0}.breadth-grid figcaption{font-size:12px;color:var(--muted);margin-top:7px}.breadth-grid strong{color:var(--text)}
@@ -85,13 +86,30 @@ background:repeating-conic-gradient(#d4b322 0 25%,#315f9f 0 50%) 0/18px 18px}
 .order-samples{grid-template-columns:1fr 1fr}.order-samples div{display:grid;grid-template-rows:repeat(4,1fr);border:1px solid #48535c;border-radius:6px;overflow:hidden}
 .local-samples{grid-template-columns:1fr 1fr}.local-samples .full{background:repeating-linear-gradient(to bottom,#3569b8 0 5px,#4f9b69 5px 10px)}
 .local-samples .inlay{background:#f4f1df;position:relative}.local-samples .inlay:after{content:"";position:absolute;inset:29%;background:repeating-linear-gradient(to bottom,#3569b8 0 4px,#4f9b69 4px 8px);border:1px solid #65717b}
+.prediction-domain-map{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0}
+.prediction-domain-map article{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.prediction-domain-map .domain-text-only{grid-template-columns:1fr}
+.prediction-domain-map h3{font-size:18px;margin:0 0 8px}.prediction-domain-map p{font-size:14px;margin:7px 0}.prediction-domain-map strong{color:var(--text)}
+.prediction-domain-map .pattern-links{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px}.prediction-domain-map article:last-child{grid-column:1/-1}
+.suspect-matrix{width:100%;table-layout:fixed;border-collapse:collapse;margin:24px 0}.suspect-matrix th,.suspect-matrix td{padding:16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:15px;line-height:1.6}.suspect-matrix th:first-child{width:22%}.suspect-matrix th{color:var(--text)}.suspect-matrix p{font-size:15px;margin:0 0 10px}.suspect-matrix p:last-child{margin-bottom:0}
+@media(max-width:640px){.suspect-matrix,.suspect-matrix tbody,.suspect-matrix tr,.suspect-matrix th,.suspect-matrix td{display:block;width:auto!important}.suspect-matrix thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.suspect-matrix tr{margin-bottom:22px;border:1px solid var(--line);border-radius:12px;overflow:hidden}.suspect-matrix th,.suspect-matrix td{padding:14px}.suspect-matrix td:before{content:attr(data-label);display:block;font-weight:700;color:var(--text);margin-bottom:8px}.suspect-matrix td:last-child{border-bottom:0}}
+.domain-visual{height:120px;display:grid;gap:7px;padding:9px;border:1px solid #48535c;border-radius:9px;background:#0c1014;overflow:hidden}
+.domain-two-layouts{grid-template-columns:repeat(3,1fr)}#equal-count-stripes .domain-two-layouts{grid-template-columns:1fr 1fr}.domain-two-layouts span,.domain-returns span,.domain-context span{border:1px solid #48535c;border-radius:5px}
+.domain-two-layouts .horizontal{background:repeating-linear-gradient(to bottom,#3569b8 0 5px,#4f9b69 5px 10px)}
+.domain-two-layouts .vertical{background:repeating-linear-gradient(to right,#3569b8 0 5px,#4f9b69 5px 10px)}
+.domain-two-layouts .checker{background:conic-gradient(#3569b8 25%,#4f9b69 0 50%,#3569b8 0 75%,#4f9b69 0) 0 0/12px 12px}
+.domain-context{grid-template-columns:1fr 1fr;align-items:center}.domain-context span{display:grid;place-items:center;overflow:hidden;background:#050608}.domain-context img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.domain-returns{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:stretch;gap:3px;padding:7px}.domain-returns b{align-self:center;color:var(--muted)}.domain-returns span{display:grid;min-width:0;place-items:center;text-align:center;padding:4px 2px;color:var(--muted);background:#11151a}.domain-returns strong,.domain-returns small{font-size:12px}
+.prediction-domain-map .order-samples,.prediction-domain-map .local-samples{height:120px}
+@media(max-width:820px){.prediction-domain-map{grid-template-columns:1fr}}
+@media(max-width:460px){.prediction-domain-map article{grid-template-columns:1fr}.domain-visual,.prediction-domain-map .order-samples,.prediction-domain-map .local-samples{height:105px}}
 .featured-comparison{margin:25px 0 0}.featured-comparison>h2,.featured-comparison>h3{font-size:21px;margin:0 0 6px}
 .featured-comparison>p{color:var(--muted);max-width:900px;margin:0 0 14px}
 .featured-native{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,.72fr);border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#11151a}
-.featured-native-plot{min-width:0;border-right:1px solid var(--line)}.featured-native-scroll{overflow-x:auto;padding:10px 12px 6px}.featured-native-scroll svg{display:block;width:100%;height:auto;min-width:620px}
+.featured-native-plot{min-width:0;border-right:1px solid var(--line)}.featured-native-scroll{padding:10px 12px 6px}.featured-native-scroll svg{display:block;width:100%;height:auto}
 .featured-native-metrics{padding:17px}.featured-native-metrics h3{font-size:17px;margin:0 0 13px}.featured-native-metrics dl{display:grid;gap:0;margin:0}.featured-native-metrics dl>div{border-top:1px solid var(--line);padding:10px 0}.featured-native-metrics dl>div:first-child{border-top:0;padding-top:0}
 .featured-native-metrics dt{color:var(--muted);font-size:10px}.featured-native-metrics dd{margin:3px 0 0;font-size:15px;font-weight:750}.featured-native-metrics small{display:block;color:#8f969d;font-size:10px;margin-top:2px}
-.featured-color-pair{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}.featured-color-pair span{display:grid;gap:5px;color:var(--muted);font-size:10px}.featured-color-pair i{display:block;height:48px;border:1px solid #71808c;border-radius:8px;background:#33414c}
+.featured-color-pair{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:18px 0 24px}.featured-color-pair span{display:grid;gap:10px;color:var(--muted);font-size:13px}.featured-color-pair span+span{text-align:right}.featured-color-pair i{display:block;height:80px;border:0;border-radius:0;background:#33414c}
 .featured-native-caption{color:var(--muted);font-size:11px;margin:9px 2px 0}
 .prediction-workflow{border-top:1px solid #4a3f1c;margin-top:16px;padding-top:15px}.prediction-workflow>h3,.explorer-intro h2,.next-step h3{font-size:20px;margin:0 0 6px}
 .prediction-workflow>p,.explorer-intro>p,.next-step>p{color:var(--muted);max-width:900px;margin:0 0 14px}
@@ -145,7 +163,7 @@ background:linear-gradient(135deg,#181805,#11151a 62%);border-radius:16px;paddin
 .metric-comparison-native{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
 .metric-comparison-native article{border:1px solid var(--line);border-radius:13px;background:#0c1014;overflow:hidden}
 .metric-comparison-native header{padding:10px 12px 0}.metric-comparison-native h3{font-size:14px;margin:0}.metric-comparison-native header p{font-size:11px;color:var(--muted);margin:3px 0 0}
-.metric-comparison-native svg{min-width:540px}.metric-comparison-native .plot-scroll{overflow-x:auto;padding:4px 8px 0}
+.metric-comparison-native svg{min-width:0;width:100%}.metric-comparison-native .plot-scroll{overflow-x:auto;padding:4px 8px 0}
 .metric-comparison-native dl{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);margin:0}
 .metric-comparison-native dl div{background:#11151a;padding:8px 10px}.metric-comparison-native dt{font-size:10px;color:var(--muted)}.metric-comparison-native dd{font-size:16px;font-weight:800;margin:2px 0 0}
 .metric-comparison-native dl .movement{grid-column:1/-1}.metric-comparison-native dl .movement dd{font-size:12px;font-weight:650}.metric-comparison-native dl .movement small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
@@ -276,82 +294,136 @@ background:linear-gradient(145deg,#181805,#11151a 72%)}
   .card-body svg{min-width:720px}
   .native-figure{overflow-x:auto}.native-figure #native-width-overview{min-width:850px}
 }
-</style><link rel="stylesheet" href="/reflective-color-display/measurements/atlas-extension.css"><link rel="stylesheet" href="/reflective-color-display/atlas-site.css"><meta property="og:title" content="Measurements | Reflective Color Display Engineering"><meta property="og:description" content="Individual measured spectra, colors and predictions across the reflective-display investigation."><style>.case-nav{display:flex;flex-wrap:wrap;gap:10px 18px;padding:14px 0 24px;margin-bottom:24px;border-bottom:1px solid var(--line)}.case-nav a{color:var(--muted);font-size:14px;text-decoration:none}.case-nav a[aria-current]{color:var(--accent);font-weight:750;text-decoration:underline;text-underline-offset:6px}</style></head><body class="measurements">
-<div class="case-navigation"><nav class="case-nav" aria-label="Reflective display case study"><a href="/reflective-color-display/">Overview</a><a href="/reflective-color-display/pattern-behavior/">Pattern behavior</a><a href="/reflective-color-display/prediction/">Prediction</a><a href="/reflective-color-display/renderer/">Renderer</a><a href="/reflective-color-display/icc/">Experimental ICC</a><a href="/reflective-color-display/measurements/" aria-current="page">Measurement atlas</a></nav></div><main id="main-content" tabindex="-1"><header class="opening"><h1>Explore the measurements</h1><p class="lead">Choose a question, inspect the measured spectra, and compare the colors or forecasts. <a href="/reflective-color-display/">Read the investigation</a>.</p></header><div class="atlas-picker">
-  <label for="atlas-family">Investigation topic</label>
-  <select id="atlas-family"><option value="stripes">Stripe widths · all 15 color pairs</option></select>
-  <p id="atlas-coverage" class="caption" aria-live="polite">Loading the additional experiments…</p>
-</div>
-<details class="technical-details" id="atlas-metric-key">
-  <summary>Reading the color coordinates and differences</summary>
-  <p><strong>XYZ</strong> describes measured or predicted color under the named light and observer conventions. <strong>Lab</strong> expresses color as lightness (L*), green–red (a*) and blue–yellow (b*) coordinates. <strong>D50</strong> names the standard daylight reference used for the i1Pro color calculations here; each experiment's measurement details state its convention.</p>
-  <p><strong>DeltaE00</strong> is an unsigned color distance. Check which two colors are compared: two measured patterns, forecast versus measurement, or requested versus measured color. <strong>RMS</strong> (root mean square) instead summarizes the magnitude of a wavelength-by-wavelength spectral difference, in the displayed units. Neither automatically defines visibility.</p>
-  <p>A <strong>signed difference</strong> keeps the direction in the order named beside it. For Lab, positive L* means lighter, positive a* redder and positive b* yellower. <strong>Repeated-reading movement</strong> describes how readings changed, not an uncertainty bound. i1Pro reflectance factor and CR-250 radiance remain separate quantities.</p>
-</details>
-<section id="atlas-additional" hidden aria-labelledby="atlas-experiment-title">
-  <div class="atlas-controls">
-    <label>Experiment<select id="atlas-experiment"></select></label>
-    <label>Pattern or comparison<select id="atlas-pattern"></select></label>
-    <label>Show readings<select id="atlas-reading-pattern"></select></label>
-  </div>
-  <h2 id="atlas-experiment-title"></h2>
-  <p id="atlas-experiment-note"></p>
-  <p id="atlas-condition" class="caption"></p>
-  <div id="atlas-summary" class="atlas-metrics"></div>
-  <div id="atlas-means" hidden><h3>Measured group means</h3><div class="atlas-table" tabindex="0" role="region" aria-label="Measured mean colors"><table><thead><tr><th>Pattern</th><th>XYZ</th><th>Lab</th></tr></thead><tbody id="atlas-mean-rows"></tbody></table></div></div>
-  <figure class="atlas-spectrum"><h3 id="atlas-spectrum-title">Measured spectra</h3><svg id="atlas-spectrum" role="img"></svg><figcaption id="atlas-spectrum-caption"></figcaption></figure>
-  <div id="atlas-series-key" class="atlas-series-key"></div>
-  <figure id="atlas-difference-figure" class="atlas-spectrum" hidden><h3 id="atlas-difference-title"></h3><svg id="atlas-difference" role="img"></svg><figcaption id="atlas-signed-color"></figcaption></figure>
-  <h3>Individual readings</h3>
-  <p class="caption">Select a reading to highlight its spectrum. Scroll the table sideways on a small screen.</p>
-  <div class="atlas-table" tabindex="0" role="region" aria-label="Individual readings, scroll to see all columns"><table><thead><tr><th>Reading</th><th>Pattern</th><th>Measured XYZ</th><th>Measured Lab</th><th>Temperature</th></tr></thead><tbody id="atlas-readings"></tbody></table></div>
-  <div id="atlas-evaluations" hidden><h3>Predictions and desired colors</h3><p id="atlas-evaluation-note" class="caption"></p><div class="atlas-table" tabindex="0" role="region" aria-label="Prediction results, scroll to see all columns"><table><thead><tr><th>Reading</th><th>Comparison</th><th>Predicted or desired XYZ</th><th>DeltaE00</th><th>Chosen limit</th><th>Signed XYZ difference</th><th>Result</th></tr></thead><tbody id="atlas-errors"></tbody></table></div></div>
-  <details><summary>Measurement details and source</summary><p id="atlas-convention"></p><p id="atlas-source"></p><p id="atlas-comparison-identity"></p><div class="atlas-table" tabindex="0" role="region" aria-label="Exact reading and pixel-pattern identifiers"><table><thead><tr><th>Reading</th><th>Saved reading identifier</th><th>Pixel-pattern identifier</th></tr></thead><tbody id="atlas-reading-identities"></tbody></table></div><p>Values are copied from the saved measurement analyses. A missing value is left blank rather than calculated by this page. Repeated-reading movement describes the observations; it is not an uncertainty estimate.</p></details>
-</section>
-<div id="legacy-atlas"><section class="map-explorer" id="all-pair-explorer" aria-labelledby="all-pair-title">
-  <div class="map-heading"><div><h2 id="all-pair-title">Choose a comparison</h2><p class="caption">75 comparisons · 15 color pairs · 3 stripe widths</p></div></div>
-  <div class="map-controls">
-    <label><span>Color pair</span><select id="map-pair-select" aria-label="Color pair"></select></label>
-    <fieldset><legend>Stripe width</legend><div class="map-buttons" id="map-width-controls"></div></fieldset>
-    <fieldset><legend>Four-reading sequence</legend><div class="map-buttons" id="map-order-controls"></div></fieldset>
-    <p class="map-order-note"><strong>Why use ABBA and BAAB?</strong> In this atlas,
-    A is the horizontal pattern and B is the vertical pattern. ABBA is
-    H–V–V–H; BAAB reverses the order to V–H–H–V. Each exact pattern is measured
-    twice. Reversing which pattern comes first and last shows whether the measured
-    H-minus-V direction persists when the reading order changes, while the duplicate
-    readings show how much each unchanged pattern moved within the sequence. This
-    does not remove display history or identify a cause.</p>
-  </div>
-  <p class="sr-only" id="map-selection-status" role="status" aria-live="polite"></p>
-  <div class="map-selected">
-    <article class="map-pattern-card">
-      <div class="map-card-head"><h3 id="map-selection-title">Loading row…</h3><p id="map-selection-context"></p></div>
-      <div class="map-patterns">
-        <figure><div class="map-pixels" id="map-pattern-h"></div><figcaption>H · horizontal bands</figcaption></figure>
-        <figure><div class="map-pixels" id="map-pattern-v"></div><figcaption>V · vertical bands</figcaption></figure>
-      </div>
-    </article>
-    <article class="map-metrics">
-      <div class="map-card-head"><h3>Absolute color and H minus V</h3><p>Nominal-D50 XYZ/Lab for this exact comparison</p></div>
-      <div class="map-metric-grid">
-        <div><span>Horizontal mean color (Lab)</span><strong id="map-h-lab">—</strong><small id="map-h-xyz">—</small></div>
-        <div><span>Vertical mean color (Lab)</span><strong id="map-v-lab">—</strong><small id="map-v-xyz">—</small></div>
-        <div><span>Spectrum difference</span><strong id="map-rms">—</strong><small>percentage points RMS</small></div>
-        <div><span>Color distance</span><strong id="map-de">—</strong><small>DeltaE00; unsigned</small></div>
-        <div><span>Color-coordinate change (Lab)</span><strong id="map-dlab">—</strong><small>horizontal minus vertical</small></div>
-        <div><span>Tristimulus change (XYZ)</span><strong id="map-dxyz">—</strong><small>horizontal minus vertical</small></div>
-      </div>
-    </article>
-  </div>
-  <div class="map-charts">
-    <div class="card"><div class="card-head"><h2>All four spectra and their means</h2><p>Solid lines are horizontal; dashed lines are vertical. Thin lines are the individual readings; thick lines are the H and V means. The approximate screen colors come from the measured nominal-D50 XYZ values and may look subdued for darker panel colors.</p></div><div class="map-spectra-key" aria-label="Persistent orientation and measured-color key"><span><i class="trace"></i><i class="preview" id="map-preview-h"></i>Horizontal, solid</span><span><i class="trace dashed"></i><i class="preview" id="map-preview-v"></i>Vertical, dashed</span></div><div class="card-body"><svg id="map-svg-absolute" viewBox="0 0 980 330" role="img" aria-label="Individual and mean H and V reflectance spectra colored with approximate measured-color previews"></svg></div></div>
-    <div class="card"><div class="card-head"><h2>Signed H minus V spectrum</h2><p>This keeps the wavelength-by-wavelength direction that RMS and DeltaE00 remove.</p></div><div class="card-body"><svg id="map-svg-difference" viewBox="0 0 980 330" role="img" aria-label="Signed H minus V reflectance spectrum"></svg></div></div>
-  </div>
-  <div class="map-context">
-    <article class="map-context-card"><h3>How much did the repeated readings move?</h3><p id="map-movement"></p><p>Horizontal and vertical each appeared twice in this four-reading sequence. This describes the duplicate readings; it is not an uncertainty estimate.</p></article>
-    <article class="map-context-card"><h3>What happened when the reading order changed?</h3><div id="map-recurrence"></div></article>
-    <details class="map-context-card map-context-more"><summary>Compare this pattern with the non-contact CR-250 meter</summary><div id="map-cr-context"></div></details>
-  </div>
-</section>
-</div></main><footer>Fernando Voltolini de Azambuja · Reflective Color Display Engineering</footer>
-<div class="tooltip" id="tooltip"></div><script src="/reflective-color-display/measurements/atlas.js"></script><script src="/reflective-color-display/measurements/atlas-extension.js"></script></body></html>
+
+/* Single-page portfolio: shared theme, native figures, layered detail. */
+body{font-size:16px;line-height:1.65}h2{font-size:clamp(25px,3vw,35px);line-height:1.15;letter-spacing:-.025em}
+main>section,main>.triad-update{margin:44px 0}header{padding:30px 0}.lede{font-size:clamp(17px,2vw,20px);max-width:920px}
+.story-chapter>p{max-width:960px}.story-chapter .caption,figcaption{color:var(--muted);font-size:13px;line-height:1.5}
+.artwork-triptych{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}
+.artwork-triptych figure{margin:0;min-width:0}.artwork-window{position:relative;overflow:hidden}.artwork-window img{position:absolute;top:0;height:auto;max-width:none;border:0;border-radius:0}
+.artwork-triptych[data-artwork="cypresses"] .artwork-window{aspect-ratio:381/480}.artwork-triptych[data-artwork="cypresses"] img{width:209.97375328%;left:-54.85564304%}
+.artwork-triptych[data-artwork="bedroom"] .artwork-window{aspect-ratio:613/480}.artwork-triptych[data-artwork="bedroom"] img{width:130.50570963%;left:-15.17128874%}
+.artwork-triptych[data-artwork="great-wave"] .artwork-window{aspect-ratio:714/480}.artwork-triptych[data-artwork="great-wave"] img{width:112.04481793%;left:-6.02240896%}
+.artwork-triptych figcaption{padding:8px 0;font-weight:650}.icc-grid-result{border-left:3px solid var(--accent);padding:8px 20px;margin:25px 0}
+.layer-flow{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:0;gap:10px}
+.layer-flow li{padding:18px;border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:10px;background:var(--panel)}
+.layer-flow strong,.layer-flow span{display:block}.layer-flow span{font-size:14px;color:var(--muted);margin-top:9px}
+.prediction-story{grid-template-columns:repeat(3,minmax(0,1fr))}
+.instrument-photos{display:grid;grid-template-columns:1fr 1fr;gap:20px}.instrument-photos figure{margin:0}
+.instrument-photos img{width:100%;height:390px;object-fit:cover;border-radius:14px}.instrument-photos figcaption{margin:9px 0 18px}
+.topic-table{overflow-x:auto}.topic-table table{min-width:660px}.topic-table th,.topic-table td{text-align:left;vertical-align:top;padding:14px}
+.topic-table th{color:var(--text)}.topic-table caption,caption{text-align:left;color:var(--muted);padding:10px 0}
+.atlas-link{display:inline-block;border:1px solid var(--accent);border-radius:30px;padding:12px 20px;text-decoration:none}
+.model-anatomy{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:stretch;margin:24px 0}.model-anatomy>div{padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:12px}.model-anatomy strong,.model-anatomy span{display:block}.model-anatomy span{color:var(--muted);font-size:14px;margin-top:6px}.model-anatomy .model-output{grid-column:1/-1;border-color:var(--accent);text-align:center}.model-anatomy>b{color:var(--accent);align-self:center}
+@media(max-width:640px){.model-anatomy{grid-template-columns:1fr}.model-anatomy>b{text-align:center}.model-anatomy .model-output{grid-column:auto}}
+.technical-details{margin:18px 0}.technical-details>summary{font-size:16px}.technical-body p{font-size:15px}
+.prediction-questions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:0;list-style:none;margin:28px 0}.prediction-questions li{border-top:2px solid var(--accent);padding-top:14px}.prediction-questions a{font-size:19px;font-weight:700}.prediction-questions p{font-size:15px;color:var(--muted);margin-bottom:0}
+.context-examples{margin:28px 0}.context-example{margin:24px 0}.context-example h4{margin-bottom:12px}.context-pair{display:grid;grid-template-columns:1fr 1fr;gap:20px}.context-pair figure{margin:0;min-width:0}.context-pair figcaption{margin-top:8px}.context-pixels{position:relative;aspect-ratio:800/480;background:#000}.context-pixels img{display:block;width:100%;height:auto;border:0;border-radius:0;image-rendering:pixelated}.context-center{position:absolute;left:46%;top:32.9166666667%;width:8%;height:13.3333333333%;outline:2px solid #fff;box-shadow:0 0 0 4px #111;pointer-events:none}
+.question-step{margin:28px 0 14px;border-left:3px solid var(--accent);padding-left:18px}.question-step strong{color:var(--text)}
+@media(max-width:640px){.prediction-questions{grid-template-columns:1fr;gap:18px}.context-pair{grid-template-columns:1fr;gap:18px}}
+.metric-example{margin-top:28px}.metric-roles,.metric-comparison-native,.model-anatomy,.future-system-grid{margin-bottom:26px}.story-bridge{margin:28px 0 0;font-size:18px;color:var(--text);max-width:960px}.chapter-intro{max-width:960px;margin-bottom:24px}
+.project-aim{margin:26px 0;padding-left:20px;border-left:3px solid var(--accent)}.project-aim strong{color:var(--text)}
+.chronology-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));list-style:none;gap:10px;padding:0;margin:24px 0}.chronology-strip li{padding:15px 0;border-top:2px solid var(--accent);font-size:14px}.chronology-strip strong{display:block;color:var(--text);margin-bottom:6px}
+.reading-orders{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}.reading-orders ol{list-style:none;display:flex;gap:5px;padding:0}.reading-orders li{flex:1;text-align:center;padding:14px 0;border:1px solid var(--line);font-weight:700}.reading-orders li[data-pattern="H"]{background:#244856}.reading-orders li[data-pattern="V"]{background:#163540}.reading-orders figcaption{margin-bottom:10px}
+.measured-comparison{margin:30px 0;padding:22px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.measured-comparison h4{margin-top:0}.measured-color-grid,.comparison-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0}
+.measured-color-card,.comparison-result{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.measured-color-card strong,.measured-color-card span,.comparison-result strong,.comparison-result span{display:block}
+.measured-color-card i{display:block;height:70px;margin:14px 0;border:1px solid rgba(255,255,255,.22);border-radius:7px;background:var(--measured-preview)}
+.measured-color-card span,.comparison-result span{font-size:14px;color:var(--muted);margin-top:6px}
+.comparison-results{grid-template-columns:1fr 1fr}.comparison-result b{display:block;font-size:28px;margin:9px 0;color:var(--text)}
+.measured-comparison figcaption{margin-top:18px}.measured-comparison table{min-width:720px}
+.correction-comparison{margin:26px 0}.correction-comparison table{font-size:16px;table-layout:fixed}.correction-comparison th,.correction-comparison td{text-align:left;padding:12px 8px;vertical-align:top}.correction-comparison caption{text-align:left;color:var(--muted);margin-bottom:10px}.correction-comparison td strong,.correction-comparison td span{display:block}.correction-comparison td span{font-size:14px;color:var(--muted)}
+@media(max-width:640px){.chronology-strip,.reading-orders,.measured-color-grid,.comparison-results{grid-template-columns:1fr}.measured-color-card i{height:54px}.measured-comparison{padding:16px}}
+.triad-update{padding:20px;border:1px solid var(--line);border-radius:16px}.triad-metrics article p{font-size:14px}
+.held-meter-sequence{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;list-style:none;padding:0;margin:22px 0}.held-meter-sequence li{border-top:2px solid var(--accent);padding:12px 0}.held-meter-sequence strong,.held-meter-sequence span{display:block}.held-meter-sequence span{font-size:14px;color:var(--muted);margin-top:5px}
+.history-comparison{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}.history-comparison div{border-left:3px solid var(--accent);padding:8px 16px}.history-comparison strong,.history-comparison span{display:block}.history-comparison span{color:var(--muted);margin-top:6px}
+#prediction-reading-plot{margin:30px 0}#prediction-reading-plot .prediction-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}#prediction-reading-plot figure{margin:14px 0;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px}#prediction-reading-plot h3{font-size:20px;margin:0 0 12px}#prediction-reading-plot .legend{font-size:14px;gap:16px}#prediction-reading-plot .c{color:#65b7dc}#prediction-reading-plot .d{color:#e6c645}#prediction-reading-plot .caption{margin-top:16px;font-size:15px}
+.prediction-findings{padding-left:22px}.prediction-findings li{margin:14px 0}.prediction-methods{margin:22px 0;padding-left:18px;border-left:3px solid var(--accent)}
+.skip-link{position:absolute;top:8px;left:16px;z-index:20;padding:10px 16px;background:var(--panel);transform:translateY(-180%)}.skip-link:focus{transform:none}
+.table-scroll-hint{display:none;color:var(--muted);font-size:13px;margin:12px 0 6px}
+.concept-caption,.featured-native-caption,.featured-native-metrics dt,.featured-native-metrics small,
+.result-figure figcaption,.triad-payloads figcaption,.pair-comparison-table caption,
+.pair-comparison-table th,.pair-table-note,.preview-label,.triad-expansion table,
+.triad-expansion table small,.prediction-metrics span,.prediction-metrics small,
+.metric-comparison-native header p,.metric-comparison-native dt,.metric-comparison-native dl .movement small,
+.display-control-card figcaption span,.renderer-bridge .bridge-step span{font-size:13px}
+.native-figure .native-legend,.metric-roles p,.triad-readout p,.prediction-meaning p{font-size:14px}
+.native-palette span,.rgb-channel span{font-size:12px}
+.renderer-methods li{margin:12px 0}.renderer-methods strong{color:var(--text)}
+@media(max-width:640px){.table-scroll-hint{display:block}}
+@media(max-width:640px){.held-meter-sequence,.history-comparison,#prediction-reading-plot .prediction-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.artwork-triptych,.instrument-photos,.layer-flow{grid-template-columns:1fr}.artwork-triptych{gap:14px}.instrument-photos img{height:340px}.story-chapter{margin:30px 0}main{padding:16px}.icc-grid-result{padding:8px 12px}}
+
+
+/* Review composition: one narrative with optional technical depth. */
+.byline{color:var(--muted);margin:0 0 18px;font-size:14px}
+.early-findings{margin:24px 0}.early-findings h2{font-size:20px}
+.early-findings li{margin:10px 0}.metric-key{border-left:3px solid var(--accent);padding:1px 18px;margin:24px 0}
+.rgb-example-title{display:flex;gap:12px;align-items:center;justify-content:space-between}.rgb-result{display:inline-block;width:44px;height:44px;flex:0 0 44px;border-radius:6px;background:rgb(64,160,208)}
+.rgb-control{height:150px}.rgb-channel span{min-height:38px;font-variant-numeric:tabular-nums}
+.icc-route-flow{display:grid;gap:14px;margin:22px 0}.icc-route{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;background:var(--panel);border-left:3px solid var(--line)}
+.icc-route>strong{flex-basis:100%}.icc-route .icc-transform{color:var(--accent);font-weight:700}.story-bridge strong{color:var(--accent)}
+.discovery-bridge{margin:28px 0 20px;padding:12px 20px;border-left:4px solid var(--accent)}.discovery-bridge h2{margin:4px 0 10px;font-size:clamp(24px,3vw,32px)}.discovery-bridge p{max-width:920px}
+.model-icon{display:block;width:64px;height:52px;margin:0 0 12px;color:var(--accent)}.model-output .model-icon{margin:0 auto 12px}
+.technical-note{margin:24px 0}.technical-note>h4{font-size:17px;margin:0 0 12px}.technical-note>.technical-body{padding:0}
+#width-overview:focus-within #width-keyboard-help{position:static;width:auto;height:auto;padding:0;margin:12px 0;overflow:visible;clip:auto;white-space:normal}
+.prediction-stage{color:var(--accent);font-weight:700;margin:26px 0 10px}.personal-reflection{max-width:960px;margin:28px 0;font-size:18px}
+.closing-findings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:28px}
+.closing-findings h3{font-size:18px}.closing-findings p{color:var(--muted)}
+[data-chart-status]{color:var(--muted);font-size:14px}
+#native-width-overview circle:focus{outline:none;stroke:var(--text);stroke-width:3}
+@media(max-width:640px){.closing-findings{grid-template-columns:1fr;gap:8px}}
+.research-question{margin:42px 0;padding-top:12px;border-top:1px solid var(--line)}
+.research-readout{margin:20px 0}.research-readout>div{display:grid;grid-template-columns:155px minmax(0,1fr);gap:22px;padding:14px 0;border-bottom:1px solid var(--line)}
+.research-readout dt{font-weight:750;color:var(--text)}.research-readout dd{margin:0;color:var(--muted)}.research-readout strong{color:var(--text)}
+.project-status{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:28px 0}.project-status>div{border-top:3px solid var(--accent);padding:14px 0}.project-status dt{font-weight:750}.project-status dd{margin:8px 0 0;color:var(--muted)}
+.pair-comparison-table{min-width:1080px;font-size:15px;line-height:1.45}
+.pair-comparison-table th,.pair-comparison-table td{padding:12px 10px;vertical-align:middle}
+.pair-comparison-table tbody th{text-transform:none;letter-spacing:0;font-size:15px}
+.pair-comparison-table .pair-label{gap:4px}.pair-comparison-table .native-name{padding:3px 7px}
+.pair-reading-link{display:block;text-decoration:none}.pair-reading-link:hover .pair-label{text-decoration:underline}
+.pair-instructions{display:flex;gap:10px;align-items:center;margin-top:7px;font-size:12px;color:var(--muted)}
+.pair-instructions span{display:inline-flex;gap:4px;align-items:center}.pair-instructions i{display:inline-block;width:36px;height:24px;border:1px solid #7e8992}
+.pair-comparison-table .metric-value{font-size:18px;font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pair-comparison-table small{display:block;font-size:12px;color:var(--muted)}
+.pair-comparison-table .preview-chip{display:block;width:36px;height:28px;border:0;border-radius:0}.pair-comparison-table .preview-pair{gap:0}.pair-comparison-table .preview-label{display:block;text-align:center}
+.construction-results{margin:28px 0}.construction-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+.construction-results table{width:100%;min-width:920px;font-size:15px;line-height:1.5}.construction-results caption{text-align:left;padding:14px;color:var(--muted);font-size:14px}
+.construction-results th,.construction-results td{padding:14px 12px;text-align:left;vertical-align:top}.construction-results tbody th{width:20%}.construction-results td{color:var(--muted)}.construction-results strong{color:var(--text)}
+.construction-results tbody th small{display:block;margin-top:9px;font-size:13px;font-weight:400;color:var(--muted)}
+.behavior-jumps{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 26px}.behavior-jumps a{padding:6px 10px;border:1px solid var(--line);border-radius:7px;font-size:13px;text-decoration:none}
+#other-constructions-title{font-size:28px;line-height:1.3}
+.behavior-group{margin:30px 0}.behavior-group-title{font-size:22px;margin:0 0 18px;padding-bottom:10px;border-bottom:1px solid var(--line)}.behavior-family h5.family-title{font-size:22px;line-height:1.3;margin:0 0 18px}.behavior-group:last-child .behavior-family{grid-column:1/-1}.extent-closeup{max-width:240px;margin:14px auto 0}
+.count-only-baseline{padding:14px 18px;border-left:3px solid var(--accent);background:var(--panel)}
+.behavior-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.behavior-family{min-width:0;padding:22px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.behavior-family h4{font-size:22px;line-height:1.3;margin:0 0 18px}.behavior-family h5{font-size:14px;margin:0 0 10px}.behavior-family p{font-size:15px;line-height:1.6;margin:12px 0}.behavior-wide{grid-column:1/-1}
+.pattern-gallery,.orientation-examples{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pattern-gallery figure{margin:0;min-width:0}.tested-pattern a{display:block}.tested-pattern img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:fill;image-rendering:pixelated;border-radius:4px}.tested-pattern.full-frame img{aspect-ratio:5/3;image-rendering:auto}.pattern-gallery figcaption{font-size:12px;line-height:1.4;color:var(--muted);margin:7px 0 0}
+.width-patterns,.extent-patterns{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.width-patterns .pattern-gallery{gap:5px}.extent-patterns figure+figure{margin-top:12px}.four-patterns{gap:14px}.context-patterns img{display:block;width:100%;height:auto}
+.pattern-changes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}.pattern-changes dt{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}.pattern-changes dd{font-size:14px;line-height:1.5;margin:0}
+.behavior-outcome{border-top:1px solid var(--line);padding-top:14px}.behavior-outcome strong{font-size:1.15em;color:var(--text)}.behavior-repeat{color:var(--muted)}.behavior-family .pattern-links{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:13px;margin-bottom:0}.orientation-examples{gap:24px}.orientation-examples strong{font-size:24px}
+.return-timeline{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0;margin:18px 0}.return-timeline li{border-top:2px solid var(--accent);padding-top:8px;font-weight:650;font-size:14px}.return-timeline span{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.history-cases{gap:28px}.history-case{min-width:0}.history-case h6{font-size:20px;line-height:1.35;margin:0 0 16px}.history-case .pattern-gallery{grid-template-columns:1fr;max-width:280px}
+.family-pair-details{margin-top:20px}.family-pair-details .pair-table-wrap{max-width:100%}.pair-instructions img{width:56px;height:34px;image-rendering:pixelated;object-fit:fill;border-radius:3px}
+.reading-method .compact-orders{display:flex;flex-wrap:wrap;gap:18px;margin:14px 0;font-size:14px}.compact-orders span{display:block;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:8px}.compact-orders b{letter-spacing:.12em;margin-left:10px}
+@media(max-width:760px){.behavior-grid{grid-template-columns:1fr}.behavior-wide{grid-column:auto}.behavior-family{padding:18px}.orientation-examples{gap:14px}.behavior-jumps{gap:6px}.behavior-jumps a{font-size:12px}.pattern-gallery figcaption{font-size:11px}}
+@media(max-width:420px){.pattern-changes{grid-template-columns:1fr;gap:10px}.behavior-family h4{font-size:20px}.orientation-examples{grid-template-columns:1fr}.orientation-examples>div+div{margin-top:10px}.width-patterns,.extent-patterns{gap:6px}}
+.result-status{display:block;width:fit-content;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:5px;padding:4px 7px;margin:0 0 9px;color:var(--text);font-size:12px;font-weight:700}
+.result-status[data-result-status="quiet"]{border-left-color:#8fa4ad}.result-status[data-result-status="mixed"]{border-left-color:#bfaf87}.result-status[data-result-status="unresolved"]{border-left-color:#92979c}
+.prediction-criterion{border-left:3px solid var(--accent);padding:12px 18px;color:var(--muted)}
+.measurement-process{margin:28px 0}.measurement-process figure{margin:0}.process-map{position:relative;margin:20px 0;padding:22px;display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:32px 26px;isolation:isolate}
+.process-map>svg{position:absolute;inset:0;width:100%;height:100%;z-index:-1;overflow:visible;pointer-events:none}.process-map path{fill:none;stroke:var(--muted);stroke-width:1.5;marker-end:url(#process-arrow)}
+.process-node{padding:13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:16px;line-height:1.5;min-width:0}.process-node strong{display:block;font-size:18px;color:var(--text);margin-bottom:4px}.process-node span{display:block;color:var(--muted)}
+.process-node[data-process-node="C"]{border-color:var(--accent)}.process-node[data-process-node="Q"],.process-node[data-process-node="R"]{border-top:3px solid var(--accent)}
+[data-process-node="A"]{grid-area:1/2}[data-process-node="B"]{grid-area:2/2}[data-process-node="C"]{grid-area:3/2}[data-process-node="D"]{grid-area:4/2}[data-process-node="E"]{grid-area:5/2}[data-process-node="F"]{grid-area:6/2}
+[data-process-node="H"]{grid-area:4/1}[data-process-node="G"]{grid-area:5/1}[data-process-node="P"]{grid-area:3/3}[data-process-node="V"]{grid-area:4/3}[data-process-node="W"]{grid-area:5/3}[data-process-node="Q"]{grid-area:6/3}[data-process-node="R"]{grid-area:6/1}
+@media(max-width:640px){.process-map{grid-template-columns:1fr 1fr;gap:30px 18px;padding:24px 16px}.process-node{padding:10px}.process-node strong{font-size:16px}[data-process-node="A"]{grid-area:1/1/2/3}[data-process-node="B"]{grid-area:2/1/3/3}[data-process-node="C"]{grid-area:3/1}[data-process-node="P"]{grid-area:3/2}[data-process-node="D"]{grid-area:4/1}[data-process-node="H"]{grid-area:4/2}[data-process-node="E"]{grid-area:5/1}[data-process-node="G"]{grid-area:5/2}[data-process-node="F"]{grid-area:6/1}[data-process-node="Q"]{grid-area:6/2}[data-process-node="V"]{grid-area:7/1}[data-process-node="W"]{grid-area:7/2}[data-process-node="R"]{grid-area:8/1/9/3}}
+@media(max-width:640px){.research-readout>div{grid-template-columns:1fr;gap:6px}.project-status{grid-template-columns:1fr}}
+
+/* The case-study pages share the established palette and plot components. */
+.case-nav{display:flex;flex-wrap:wrap;gap:8px 18px;padding:14px 0 24px;border-bottom:1px solid var(--line);margin-bottom:30px}
+.case-nav a{color:var(--muted);font-size:14px;text-decoration:none}.case-nav a[aria-current]{color:var(--accent);font-weight:750;text-decoration:underline;text-underline-offset:6px}
+.case-footer{display:flex;flex-wrap:wrap;gap:24px;border-top:1px solid var(--line);padding-top:28px;margin-top:44px}.detail-link{margin:20px 0}.detail-link a{font-weight:700}
+.case-overview .story-chapter{margin:52px 0}.case-overview .story-chapter>h2{font-size:clamp(25px,3vw,34px);line-height:1.15}.case-overview p{max-width:1000px}.case-detail section.technical-details>h2{margin:0;padding:20px 24px;font-size:23px}.case-detail .metric-perspective>h2{padding:0}
+.renderer-pipeline{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;padding:0;margin:24px 0}.renderer-pipeline li{border-top:3px solid var(--accent);padding:16px 0}.renderer-pipeline strong,.renderer-pipeline span{display:block}.renderer-pipeline span{color:var(--muted);margin-top:10px}.overview-examples{display:grid;grid-template-columns:1fr 1fr;gap:30px}.overview-examples article{min-width:0}.case-overview .instrument-photos img{max-height:420px;object-fit:cover}.case-overview #later-return-case{border:0;padding:0}.case-overview .topic-table{overflow-x:auto}
+@media(max-width:700px){.renderer-pipeline,.overview-examples{grid-template-columns:1fr}.case-nav{gap:12px 18px}.case-overview .story-chapter{margin:34px 0}.case-detail section.technical-details>h2{padding:16px}}

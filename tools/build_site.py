@@ -1085,7 +1085,7 @@ def write(path: Path, text: str) -> None:
 
 
 def build_reflective_color(site_dir: Path, output: Path) -> int:
-    """Deliver the selected article and explorer without importing other projects."""
+    """Deliver only the reviewed case-study pages and assets in its snapshot."""
     source = site_dir / "reflective-color"
     files = json.loads((source / "snapshot.json").read_text())["files"]
     for name, record in files.items():
@@ -1094,12 +1094,17 @@ def build_reflective_color(site_dir: Path, output: Path) -> int:
             raise ValueError("snapshot path escapes the selected project")
         if hashlib.sha256(path.read_bytes()).hexdigest() != record["sha256"]:
             raise ValueError(f"selected project file changed: {name}")
+    pages_written = 0
     for name in files:
         target = output / REFLECTIVE_ROUTE.strip("/") / name
         target.parent.mkdir(parents=True, exist_ok=True)
         if name.endswith(".html"):
             text = (source / name).read_text()
-            route = REFLECTIVE_ROUTE + ("measurements/" if name.startswith("measurements/") else "")
+            route = REFLECTIVE_ROUTE + name.removesuffix("index.html")
+            # The delivery owns URL metadata. A selected source may have been
+            # previewed elsewhere; never carry its old canonical into this site.
+            text = re.sub(r'<link\b(?=[^>]*\brel=[\"\']canonical[\"\'])[^>]*>\s*', "", text, flags=re.I)
+            text = re.sub(r'<meta\b(?=[^>]*\bproperty=[\"\']og:url[\"\'])[^>]*>\s*', "", text, flags=re.I)
             metadata = (
                 f'<link rel="canonical" href="{SITE_URL}{route}">\n'
                 f'<meta property="og:url" content="{SITE_URL}{route}">\n'
@@ -1109,12 +1114,15 @@ def build_reflective_color(site_dir: Path, output: Path) -> int:
             if 'name="twitter:card"' not in text:
                 metadata += '<meta name="twitter:card" content="summary">'
             text = text.replace("</head>", metadata + "</head>", 1)
-            text = re.sub(r"(<body\b[^>]*>)", lambda m: m[0] + topbar(route, "reflective"), text, count=1)
+            skip_link = '<a class="skip-link" href="#main-content">Skip to content</a>'
+            text = re.sub(r"(<body\b[^>]*>)", lambda m: m[0] + skip_link + topbar(route, "reflective"), text, count=1)
             write(target, text)
+            pages_written += 1
         else:
             shutil.copyfile(source / name, target)
+    (output / "assets").mkdir(parents=True, exist_ok=True)
     shutil.copyfile(source / "shell.css", output / "assets/reflective-shell.css")
-    return 2
+    return pages_written
 
 
 def build(
@@ -2014,10 +2022,10 @@ def reflective_feature() -> str:
         'alt="A non-contact spectroradiometer aimed at a reflective display, with a reference disk nearby." loading="lazy"></a>'
         '<div><p class="project-kind">Display color · measurement · rendering</p>'
         f'<h3><a href="{REFLECTIVE_ROUTE}">Reflective Color Display Engineering</a></h3>'
-        '<p>An experimental ICC route lowered average color error on a 133-color test grid, '
-        'then exact native-pattern measurements showed that spatial arrangement could change color '
-        'even when pixel-state counts were unchanged. The ongoing work tests when those outputs can '
-        'be predicted reliably and used to improve rendering.</p>'
+        '<p>An experimental ICC route lowered average color error on a 133-color test grid. '
+        'Exact pattern measurements then showed how pixel arrangement, image surroundings and '
+        'display history could change measured color. I tested when those effects could be '
+        'predicted and built an offline renderer with explicit color and halftoning choices.</p>'
         f'<p class="project-action"><a href="{REFLECTIVE_ROUTE}">Read the visual case study →</a></p>'
         '</div></article>'
     )
