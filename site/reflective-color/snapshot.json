@@ -1,8 +1,8 @@
 {
   "files": {
     "index.html": {
-      "sha256": "49684f88a378717365b240f5ecc99674f419d7f049641b0262d5e50787a865cc",
-      "source_sha256": "49684f88a378717365b240f5ecc99674f419d7f049641b0262d5e50787a865cc"
+      "sha256": "28b4a3152e39bb4b1cbcaa9d5a22039ff2ac8bd7cc8a800bfa7cb9665db837c3",
+      "source_sha256": "28b4a3152e39bb4b1cbcaa9d5a22039ff2ac8bd7cc8a800bfa7cb9665db837c3"
     },
     "measurement-investigation.json": {
       "sha256": "1ab2c8fa44ee7d0b6c38ab87f6d8346bc60b2c73b67dbe917b87c0ccd974cb18",
@@ -605,12 +605,12 @@
       "source_sha256": "9e3ba0d799a44836ee5aa45cd770c09beee06367059fb2f64df716b6c17f16ac"
     },
     "pattern-behavior/index.html": {
-      "sha256": "e635445fc9538aeeeebe8af293212c20f2fc197e3e9b151b85076ff58b4e7286",
-      "source_sha256": "e635445fc9538aeeeebe8af293212c20f2fc197e3e9b151b85076ff58b4e7286"
+      "sha256": "2b44b4dd8c732de1860b2edee11ac4f42f2462bf9adb0347ad65c506bcc5f832",
+      "source_sha256": "2b44b4dd8c732de1860b2edee11ac4f42f2462bf9adb0347ad65c506bcc5f832"
     },
     "prediction/index.html": {
-      "sha256": "9669cdd499552c768cc2f5bc5dad84e1f2ea464b4ac1d96f355f744e084c0bda",
-      "source_sha256": "9669cdd499552c768cc2f5bc5dad84e1f2ea464b4ac1d96f355f744e084c0bda"
+      "sha256": "58840cb7ecbf63ea64e8580e1e2423c467faca894e4cd85e3c1dc65536ddf99c",
+      "source_sha256": "58840cb7ecbf63ea64e8580e1e2423c467faca894e4cd85e3c1dc65536ddf99c"
     },
     "renderer/index.html": {
       "sha256": "b6c06c425ed5591671ed87168786563ab957e9861a9efc90fa5bb40928b7f4b9",
