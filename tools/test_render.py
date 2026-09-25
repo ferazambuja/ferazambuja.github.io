@@ -91,19 +91,64 @@ DYNAMIC_ANCHOR_PROBE = """
         ? Math.round(target.getBoundingClientRect().top)
         : -9999);
   }
+  function reportAfterRealignment() {
+    if (document.readyState === "complete") { reportPosition(); }
+    else { addEventListener("load", reportPosition, {once: true}); }
+  }
   if (finishedRendering()) {
-    reportPosition();
+    reportAfterRealignment();
     return;
   }
   var observer = new MutationObserver(function () {
     if (!finishedRendering()) { return; }
     observer.disconnect();
-    reportPosition();
+    reportAfterRealignment();
   });
   document.querySelectorAll("[data-data-pending]").forEach(function (node) {
     observer.observe(node, {childList: true, characterData: true, subtree: true});
   });
 })();
+</script>
+"""
+
+
+# Simulate two forms of reader takeover immediately before the delayed-content
+# correction would run. Neither focus navigation nor a scroll position change
+# should be undone merely because the measurement payload finished rendering.
+FOCUS_TAKEOVER_PROBE = """
+<script>
+addEventListener("load", function () {
+  requestAnimationFrame(function () {
+    var focused = document.querySelector(
+      'a[href="/reflective-color-display/prediction/"]'
+    );
+    focused.focus();
+    focused.scrollIntoView({block: "center"});
+    var before = Math.round(scrollY);
+    realignHashAfterDynamicContent(captureReaderState());
+    var box = focused.getBoundingClientRect();
+    document.title =
+      "before=" + before +
+      "|after=" + Math.round(scrollY) +
+      "|focusTop=" + Math.round(box.top) +
+      "|focusBottom=" + Math.round(box.bottom) +
+      "|viewport=" + innerHeight;
+  });
+});
+</script>
+"""
+
+
+SCROLL_TAKEOVER_PROBE = """
+<script>
+addEventListener("load", function () {
+  requestAnimationFrame(function () {
+    scrollBy(0, -600);
+    var before = Math.round(scrollY);
+    realignHashAfterDynamicContent(captureReaderState());
+    document.title = "before=" + before + "|after=" + Math.round(scrollY);
+  });
+});
 </script>
 """
 
@@ -501,6 +546,47 @@ def main() -> int:
                         f"pattern-behavior #{anchor} at {width}px: target lands "
                         f"{top}px from the top after measurement details render"
                     )
+
+        focus_takeover = report(
+            chrome,
+            root,
+            port,
+            "/reflective-color-display/pattern-behavior/",
+            1200,
+            FOCUS_TAKEOVER_PROBE,
+            "#history-results",
+        )
+        checks += 1
+        if focus_takeover.get("before") != focus_takeover.get("after"):
+            failures.append(
+                "pattern-behavior focus takeover: delayed-content correction "
+                "pulled the page away from its focused link"
+            )
+        else:
+            focus_top = int(focus_takeover.get("focusTop", "-9999"))
+            focus_bottom = int(focus_takeover.get("focusBottom", "9999"))
+            viewport = int(focus_takeover.get("viewport", "0"))
+            if focus_top < 0 or focus_bottom > viewport:
+                failures.append(
+                    "pattern-behavior focus takeover: focused link is outside "
+                    "the viewport after delayed-content correction"
+                )
+
+        scroll_takeover = report(
+            chrome,
+            root,
+            port,
+            "/reflective-color-display/pattern-behavior/",
+            390,
+            SCROLL_TAKEOVER_PROBE,
+            "#history-results",
+        )
+        checks += 1
+        if scroll_takeover.get("before") != scroll_takeover.get("after"):
+            failures.append(
+                "pattern-behavior scroll takeover: delayed-content correction "
+                "overrode the reader's new scroll position"
+            )
 
         # A phone reader must never scroll sideways. Wide code and figures are
         # expected to scroll inside their own box, not to widen the document.

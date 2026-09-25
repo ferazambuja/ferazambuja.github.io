@@ -1,24 +1,25 @@
 "use strict";
-let dynamicHashRealignmentCancelled=false;
-const HASH_SCROLL_KEYS=new Set(["ArrowUp","ArrowDown","PageUp","PageDown","Home","End"," ","Spacebar"]);
-function cancelDynamicHashRealignment(){dynamicHashRealignmentCancelled=true;}
-addEventListener("wheel",cancelDynamicHashRealignment,{passive:true});
-addEventListener("touchmove",cancelDynamicHashRealignment,{passive:true});
-addEventListener("keydown",event=>{
-  if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey||!HASH_SCROLL_KEYS.has(event.key))return;
-  if(event.target instanceof Element&&event.target.closest("input,select,textarea,button,[contenteditable]"))return;
-  cancelDynamicHashRealignment();
-});
-function resetDynamicHashRealignment(){dynamicHashRealignmentCancelled=false;}
+let hashLanding=null;
+function clearHashLanding(){hashLanding=null;}
 function currentHashTarget(){
   let id;try{id=decodeURIComponent(location.hash.slice(1))}catch{return null}
   return id?document.getElementById(id):null;
 }
-function realignHashAfterDynamicContent(){
+function recordHashLanding(expectedHash=location.hash){
+  const target=currentHashTarget();
+  if(!target||location.hash!==expectedHash){clearHashLanding();return;}
+  hashLanding={hash:expectedHash,y:scrollY,focus:document.activeElement};
+}
+function scheduleHashLandingRecord(expectedHash=location.hash){
+  requestAnimationFrame(()=>recordHashLanding(expectedHash));
+}
+function captureReaderState(){return {y:scrollY,focus:document.activeElement};}
+function realignHashAfterDynamicContent(readerState){
   const align=()=>{
-    if(dynamicHashRealignmentCancelled)return;
     const hash=location.hash,target=currentHashTarget();if(!target)return;
-    if(location.hash!==hash||!target.isConnected)return;
+    const landing=hashLanding;
+    if(!landing||landing.hash!==hash||location.hash!==hash||!target.isConnected)return;
+    if(!readerState||Math.abs(readerState.y-landing.y)>2||readerState.focus!==landing.focus||document.activeElement!==readerState.focus)return;
     target.scrollIntoView({block:"start",inline:"nearest"});
   };
   if(document.readyState==="complete")align();
@@ -64,12 +65,20 @@ function setupDetailLinks(){
   }
   document.querySelectorAll('a[href^="#"]').forEach(link=>{
     link.addEventListener("click",event=>{
-      if(event.button===0&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey)resetDynamicHashRealignment();
-      reveal(link.getAttribute("href"));
+      const hash=link.getAttribute("href");
+      if(event.button===0&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey){
+        clearHashLanding();reveal(hash);scheduleHashLandingRecord(hash);return;
+      }
+      reveal(hash);
     });
   });
-  window.addEventListener("hashchange",()=>{resetDynamicHashRealignment();reveal(location.hash)});
+  window.addEventListener("hashchange",()=>{
+    clearHashLanding();const hash=location.hash;reveal(hash);scheduleHashLandingRecord(hash);
+  });
   reveal(location.hash);
+  const recordInitialLanding=()=>recordHashLanding(location.hash);
+  if(document.readyState==="complete")recordInitialLanding();
+  else addEventListener("load",recordInitialLanding,{once:true});
 }
 setupDetailLinks();
 
@@ -813,10 +822,10 @@ function forwardAtlasSelection(){
   link.href=target.href;
   }
 }
-function showDataFailure(){
+function showDataFailure(readerState){
   document.querySelectorAll("[data-data-pending]").forEach(node=>{node.textContent="These interactive details could not load. The written findings remain available; reload to try again.";});
   document.querySelectorAll("[data-chart-status]").forEach(node=>{node.hidden=false;node.textContent="This plot could not load. The written findings and saved example values remain available; reload to try again.";});
-  realignHashAfterDynamicContent();
+  realignHashAfterDynamicContent(readerState);
 }
 function redrawResponsivePlots(){
   if(!MAP_DATA)return;
@@ -825,18 +834,20 @@ function redrawResponsivePlots(){
   mapRenderMetricExample("RED_GREEN","native-metric-red-green","native-rg-rms","native-rg-de","native-rg-movement");
 }
 async function loadPageData(){
+  let readerState=null;
   try{
     const response=await fetch("/reflective-color-display/measurement-investigation.json");
     if(!response.ok)throw new Error("measurement data unavailable");
     const map=await response.json();
+    readerState=captureReaderState();
     if(!Array.isArray(map.rows)||!map.rows.length||!Array.isArray(map.wavelengths_nm))throw new Error("invalid measurement data");
     MAP_DATA=map;mapRenderPairOverview();mapRenderNativeFigures();renderExactPayloadHistory();
     document.querySelectorAll("[data-chart-status]").forEach(node=>node.hidden=true);
     if(typeof ResizeObserver!=="undefined"){const observer=new ResizeObserver(redrawResponsivePlots);
     ["featured-spectrum-native","native-metric-blue-green","native-metric-red-green"].forEach(id=>{const node=document.getElementById(id);if(node)observer.observe(node)});}
     document.getElementById("metric-perspective")?.addEventListener("toggle",redrawResponsivePlots);
-    realignHashAfterDynamicContent();
-  }catch(error){MAP_DATA=null;showDataFailure();}
+    realignHashAfterDynamicContent(readerState);
+  }catch(error){if(!readerState)readerState=captureReaderState();MAP_DATA=null;showDataFailure(readerState);}
 }
 forwardAtlasSelection();
 mapRenderHookPatterns();

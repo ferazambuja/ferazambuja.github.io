@@ -605,8 +605,8 @@
       "source_sha256": "9e3ba0d799a44836ee5aa45cd770c09beee06367059fb2f64df716b6c17f16ac"
     },
     "pattern-behavior/index.html": {
-      "sha256": "ba53dd9ef8327570abfb2eda7c2a840171dd1ba2da3d0eba9d2e66398eeade38",
-      "source_sha256": "ba53dd9ef8327570abfb2eda7c2a840171dd1ba2da3d0eba9d2e66398eeade38"
+      "sha256": "66b554b95150b719e99b6dc0b835a47f878fdaf7a1c3c09f54b462b0eb50d931",
+      "source_sha256": "66b554b95150b719e99b6dc0b835a47f878fdaf7a1c3c09f54b462b0eb50d931"
     },
     "prediction/index.html": {
       "sha256": "58840cb7ecbf63ea64e8580e1e2423c467faca894e4cd85e3c1dc65536ddf99c",
@@ -625,8 +625,8 @@
       "source_sha256": "06e259fe2fe03f6e0598870195d1d05de38c8530f2ae6993cde2ac0d543cc358"
     },
     "story.js": {
-      "sha256": "ef359849f4f8e750e345e1124fba024b82c8ea69a73bbfa354aed4b3a7b12077",
-      "source_sha256": "ef359849f4f8e750e345e1124fba024b82c8ea69a73bbfa354aed4b3a7b12077"
+      "sha256": "28ec31c2a9642f334812cedcc81376af3fa574cc00d0c01303b95c65299a3a28",
+      "source_sha256": "28ec31c2a9642f334812cedcc81376af3fa574cc00d0c01303b95c65299a3a28"
     },
     "fragment-routes.json": {
       "sha256": "43b3cb4f69dddfc2f6a2b85cc627ede2bdb722fa08c29303ed8a1d220fb2aa71",
