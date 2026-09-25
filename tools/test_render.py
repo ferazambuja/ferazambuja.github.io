@@ -64,6 +64,50 @@ addEventListener("load", function () {
 """
 
 
+# A native fragment jump can happen before story.js replaces its short data
+# placeholders. Measure the final position from an initial bookmarked URL,
+# after those asynchronous replacements have settled.
+DYNAMIC_ANCHOR_PROBE = """
+<script>
+(() => {
+  function finishedRendering() {
+    return !Array.prototype.some.call(
+      document.querySelectorAll("[data-data-pending]"),
+      function (node) {
+        return node.textContent.indexOf(
+          "Interactive history details require the measurement data."
+        ) >= 0;
+      }
+    );
+  }
+  function reportPosition() {
+    var id;
+    try { id = decodeURIComponent(location.hash.slice(1)); }
+    catch (error) { id = ""; }
+    var target = id ? document.getElementById(id) : null;
+    document.title =
+      "ready=" + (finishedRendering() ? "1" : "0") +
+      "|anchorTop=" + (target
+        ? Math.round(target.getBoundingClientRect().top)
+        : -9999);
+  }
+  if (finishedRendering()) {
+    reportPosition();
+    return;
+  }
+  var observer = new MutationObserver(function () {
+    if (!finishedRendering()) { return; }
+    observer.disconnect();
+    reportPosition();
+  });
+  document.querySelectorAll("[data-data-pending]").forEach(function (node) {
+    observer.observe(node, {childList: true, characterData: true, subtree: true});
+  });
+})();
+</script>
+"""
+
+
 # The theme has three states and only one of them can be forced from the
 # command line, so drive the root element directly and read the tokens back.
 # Clicking the real control rather than calling a helper keeps the handler,
@@ -320,7 +364,7 @@ def serving(root: Path):
 
 
 def report(chrome: str, root: Path, port: int, route: str, width: int,
-           probe: str) -> dict[str, str]:
+           probe: str, url_suffix: str = "") -> dict[str, str]:
     """Run one page with a probe injected and read its findings back."""
 
     page = root / route.strip("/") / "index.html" if route != "/" else root / "index.html"
@@ -331,7 +375,7 @@ def report(chrome: str, root: Path, port: int, route: str, width: int,
             [
                 chrome, "--headless=new", "--disable-gpu", "--no-sandbox",
                 f"--window-size={width},900", "--virtual-time-budget=6000",
-                "--dump-dom", f"http://127.0.0.1:{port}{route}",
+                "--dump-dom", f"http://127.0.0.1:{port}{route}{url_suffix}",
             ],
             capture_output=True, text=True, timeout=90,
         )
@@ -424,6 +468,39 @@ def main() -> int:
                     f"{route}: sticky sidebar at {m['sidebarTop']}px overlaps the "
                     f"{m['bar']}px header"
                 )
+
+        # These bookmarked sections sit below text that grows after the
+        # measurement payload arrives. The page must correct the browser's
+        # early native jump at both desktop and phone widths.
+        for anchor in (
+            "history-results",
+            "history-results-title",
+            "triad-detail",
+            "triad-update-title",
+        ):
+            for width in (1200, 390):
+                found = report(
+                    chrome,
+                    root,
+                    port,
+                    "/reflective-color-display/pattern-behavior/",
+                    width,
+                    DYNAMIC_ANCHOR_PROBE,
+                    f"#{anchor}",
+                )
+                checks += 1
+                if found.get("ready") != "1":
+                    failures.append(
+                        f"pattern-behavior #{anchor} at {width}px: "
+                        "measurement details did not finish rendering"
+                    )
+                    continue
+                top = int(found.get("anchorTop", "-9999"))
+                if not 0 <= top <= 40:
+                    failures.append(
+                        f"pattern-behavior #{anchor} at {width}px: target lands "
+                        f"{top}px from the top after measurement details render"
+                    )
 
         # A phone reader must never scroll sideways. Wide code and figures are
         # expected to scroll inside their own box, not to widen the document.

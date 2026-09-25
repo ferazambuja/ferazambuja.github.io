@@ -158,6 +158,10 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("function showDataFailure()", self.scripts)
         self.assertIn("function forwardAtlasSelection()", self.scripts)
         self.assertIn('new URLSearchParams(location.search)', self.scripts)
+        self.assertIn("function realignHashAfterDynamicContent()", self.scripts)
+        self.assertEqual(self.scripts.count("realignHashAfterDynamicContent();"), 2)
+        self.assertIn('addEventListener("wheel",cancelDynamicHashRealignment', self.scripts)
+        self.assertIn('addEventListener("touchmove",cancelDynamicHashRealignment', self.scripts)
 
     def test_result_visuals_and_prediction_map_are_grounded(self):
         self.assertIn('id="measured-prediction-example"', self.article)
@@ -353,7 +357,11 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("neither waiting nor redrawing acted as a universal reset", patterns)
         self.assertIn("Each hold waited for the recorded duration of the preceding display update", patterns)
         self.assertIn("a practical timing match, not an identical history", patterns)
-        self.assertIn("Twenty of 22 same-predecessor refresh/hold comparisons", patterns)
+        self.assertIn("In 20 of 22 refresh-versus-hold comparisons using the same preceding image", patterns)
+        self.assertIn("the two reading intervals differed by no more than 0.20 seconds", patterns)
+        self.assertIn("When the checker followed red/blue stripes, the intervals differed by about 1.71 seconds", patterns)
+        self.assertIn("when it followed white, by 1.80 seconds", patterns)
+        self.assertIn("following the alignment image, was closely time-matched", patterns)
         self.assertIn("Each episode was observed once", patterns)
         self.assertIn("does not identify a universal history rule or a physical cause", patterns)
         self.assertIn("1.44 and 1.56 ΔE00", prediction)
@@ -363,13 +371,18 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("the other four patterns were 0.32–0.99 ΔE00 away", prediction)
         self.assertIn("maximum pairwise separation among the cyan maps' six later-session readings", prediction)
         self.assertIn("occurrence sensitivity without identifying its cause", prediction)
-        self.assertIn("A separate cross-session comparison covered six familiar patterns", patterns)
+        self.assertIn("A separate comparison repeated six familiar patterns", patterns)
+        self.assertIn("1.44 and 1.56 ΔE00", patterns)
+        self.assertIn("the other four differed by 0.32–0.99 ΔE00", patterns)
         self.assertIn('href="/reflective-color-display/prediction/#prediction-return-status"', patterns)
 
         overview_start = self.article.index('<section class="story-chapter" id="other-constructions">')
         overview_end = self.article.index('<section class="story-chapter" id="renderer-result">')
         overview = self.article[overview_start:overview_end]
-        self.assertIn("Other identical pixel maps moved more after another update", overview)
+        self.assertIn("Other identical pixel maps did move", overview)
+        self.assertIn("blue/green stripes changed by 0.31–0.60 ΔE00 after redraw", overview)
+        self.assertIn("black/yellow stripes changed by 0.29–0.30 while held", overview)
+        self.assertIn("two near-neutral cyan maps differed from their earlier-session means by 1.44–1.56 ΔE00", overview)
         self.assertIn('href="/reflective-color-display/pattern-behavior/#unchanged-pattern-returns"', overview)
         for overclaim in (
             "presentation history changed readings",

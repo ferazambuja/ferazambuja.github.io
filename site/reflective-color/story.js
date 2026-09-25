@@ -1,4 +1,29 @@
 "use strict";
+let dynamicHashRealignmentCancelled=false;
+const HASH_SCROLL_KEYS=new Set(["ArrowUp","ArrowDown","PageUp","PageDown","Home","End"," ","Spacebar"]);
+function cancelDynamicHashRealignment(){dynamicHashRealignmentCancelled=true;}
+addEventListener("wheel",cancelDynamicHashRealignment,{passive:true});
+addEventListener("touchmove",cancelDynamicHashRealignment,{passive:true});
+addEventListener("keydown",event=>{
+  if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey||!HASH_SCROLL_KEYS.has(event.key))return;
+  if(event.target instanceof Element&&event.target.closest("input,select,textarea,button,[contenteditable]"))return;
+  cancelDynamicHashRealignment();
+});
+function resetDynamicHashRealignment(){dynamicHashRealignmentCancelled=false;}
+function currentHashTarget(){
+  let id;try{id=decodeURIComponent(location.hash.slice(1))}catch{return null}
+  return id?document.getElementById(id):null;
+}
+function realignHashAfterDynamicContent(){
+  const align=()=>{
+    if(dynamicHashRealignmentCancelled)return;
+    const hash=location.hash,target=currentHashTarget();if(!target)return;
+    if(location.hash!==hash||!target.isConnected)return;
+    target.scrollIntoView({block:"start",inline:"nearest"});
+  };
+  if(document.readyState==="complete")align();
+  else addEventListener("load",align,{once:true});
+}
 function drawProcessMap(){
   const map=document.getElementById("process-map");if(!map)return;const svg=map.querySelector("svg"),bounds=map.getBoundingClientRect(),mobile=window.matchMedia("(max-width:640px)").matches;
   svg.querySelectorAll("path[data-process-edge]").forEach(path=>path.remove());
@@ -38,9 +63,12 @@ function setupDetailLinks(){
     return target;
   }
   document.querySelectorAll('a[href^="#"]').forEach(link=>{
-    link.addEventListener("click",()=>reveal(link.getAttribute("href")));
+    link.addEventListener("click",event=>{
+      if(event.button===0&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey)resetDynamicHashRealignment();
+      reveal(link.getAttribute("href"));
+    });
   });
-  window.addEventListener("hashchange",()=>reveal(location.hash));
+  window.addEventListener("hashchange",()=>{resetDynamicHashRealignment();reveal(location.hash)});
   reveal(location.hash);
 }
 setupDetailLinks();
@@ -788,6 +816,7 @@ function forwardAtlasSelection(){
 function showDataFailure(){
   document.querySelectorAll("[data-data-pending]").forEach(node=>{node.textContent="These interactive details could not load. The written findings remain available; reload to try again.";});
   document.querySelectorAll("[data-chart-status]").forEach(node=>{node.hidden=false;node.textContent="This plot could not load. The written findings and saved example values remain available; reload to try again.";});
+  realignHashAfterDynamicContent();
 }
 function redrawResponsivePlots(){
   if(!MAP_DATA)return;
@@ -806,6 +835,7 @@ async function loadPageData(){
     if(typeof ResizeObserver!=="undefined"){const observer=new ResizeObserver(redrawResponsivePlots);
     ["featured-spectrum-native","native-metric-blue-green","native-metric-red-green"].forEach(id=>{const node=document.getElementById(id);if(node)observer.observe(node)});}
     document.getElementById("metric-perspective")?.addEventListener("toggle",redrawResponsivePlots);
+    realignHashAfterDynamicContent();
   }catch(error){MAP_DATA=null;showDataFailure();}
 }
 forwardAtlasSelection();
