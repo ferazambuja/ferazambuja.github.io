@@ -303,11 +303,10 @@ class ReflectiveDeliveryTests(unittest.TestCase):
                     self.assertEqual(hashlib.sha256((self.project / asset).read_bytes()).hexdigest(), sha)
                 self.assertIn('href="https://www.metmuseum.org/art/collection/search/45434"', page)
                 text = " ".join(re.sub(r"<[^>]+>", " ", page).split())
-                for boundary in ("not panel photographs", "measured native-state colors used for the ICC artwork previews",
-                                 "only for comparing pixel choices",
-                                 "not the renderer's endpoint-reference table",
-                                 "same interpreted, fitted source", "not Pimoroni's untouched image-intake workflow"):
+                for boundary in ("not panel photographs", "visualization palette",
+                                 "same interpreted, fitted source"):
                     self.assertIn(boundary, text)
+                self.assertRegex(text, r"(?:do not predict the colors reflected|rather than predicting reflected color)")
                 self.assertIn("Katsushika Hokusai", text)
         # Readers should encounter the working renderer before the detailed
         # prediction example, while the metric table stays on the deeper page.
@@ -322,7 +321,7 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         })
         self.assertIn("114 software conditions", renderer)
         self.assertIn("not measured screen errors", renderer)
-        self.assertIn("not an unseen validation set", renderer)
+        self.assertIn("does not establish performance on unseen images", renderer)
 
     def test_renderer_previews_share_one_measured_visualization_palette(self):
         from PIL import Image
@@ -374,7 +373,7 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("later-session means", prediction)
         self.assertIn("the other four patterns were 0.32–0.99 ΔE00 away", prediction)
         self.assertIn("maximum pairwise separation among the cyan maps' six later-session readings", prediction)
-        self.assertIn("occurrence sensitivity without identifying its cause", prediction)
+        self.assertIn("different timing and setup prevent attributing the change to one cause", prediction)
         self.assertIn("A separate comparison repeated six familiar patterns", patterns)
         self.assertIn("1.44 and 1.56 ΔE00", patterns)
         self.assertIn("the other four differed by 0.32–0.99 ΔE00", patterns)
@@ -399,19 +398,19 @@ class ReflectiveDeliveryTests(unittest.TestCase):
 
     def test_renderer_copy_separates_image_mean_from_individual_guards(self):
         renderer = self.pages["renderer/index.html"]
-        self.assertIn("worsened the equal-weighted mean across the eight development images", renderer)
-        self.assertIn("Across the broader 114-condition comparison", renderer)
-        self.assertIn("a flat dark-gray field rose from 8.11 to 14.73 ΔE00", renderer)
+        self.assertIn("Giving each image equal weight", renderer)
+        self.assertIn("95th-percentile tile error rose from 19.405", renderer)
+        self.assertIn("to 20.019", renderer)
+        self.assertIn("114 software conditions", renderer)
+        self.assertIn("flat dark-gray field's reference error rose from 8.11 to 14.73 ΔE00", renderer)
         self.assertIn("several tone and detail checks worsened", renderer)
+        self.assertIn("did not isolate which change caused the regressions", renderer)
 
     def test_renderer_preview_palette_and_icc_color_terms_are_explicit(self):
-        caption = (
-            "the measured native-state colors used for the ICC artwork previews, "
-            "scaled so the panel's white appears white"
-        )
-        self.assertIn(caption, self.article)
-        self.assertIn(caption, self.pages["renderer/index.html"])
-        self.assertIn("not the renderer's endpoint-reference table", self.article)
+        self.assertIn("measured native-state colors scaled to panel white", self.article)
+        renderer = self.pages["renderer/index.html"]
+        self.assertIn("measured colors scaled to the display's white", renderer)
+        self.assertIn("separate from the numerical reference table", renderer)
         self.assertIn("measured native-state colors", self.pages["icc/index.html"])
         self.assertNotIn("measured native-state chromaticities", self.pages["icc/index.html"])
 
@@ -432,10 +431,10 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("two target colors, a warm tone and a neutral gray", self.article)
 
         renderer = self.pages["renderer/index.html"]
-        self.assertIn("complete 16 × 16 source-image tiles", renderer)
-        self.assertIn("not comparable with the 11.20 measured on the ICC grid", renderer)
-        self.assertIn("packed file the display controller accepts", renderer)
-        self.assertIn("The implementation is currently in a private development repository", renderer)
+        self.assertIn("complete 16 × 16 pixel tiles", renderer)
+        self.assertIn("averaged each tile's source color in D50 XYZ", renderer)
+        self.assertIn("calculated reference errors, not measured screen errors", renderer)
+        self.assertIn("packed file used to send it to the display", renderer)
 
         prediction = self.pages["prediction/index.html"]
         self.assertIn("Alternative renderings of two target colors", prediction)

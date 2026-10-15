@@ -7,7 +7,7 @@
 </head><body class="case-detail"><div class="case-navigation"><nav class="case-nav" aria-label="Reflective display case study"><a href="/reflective-color-display/">Overview</a><a href="/reflective-color-display/pattern-behavior/" aria-current="page">Pattern behavior</a><a href="/reflective-color-display/prediction/">Prediction</a><a href="/reflective-color-display/renderer/">Renderer</a><a href="/reflective-color-display/icc/">Experimental ICC</a><a href="/reflective-color-display/measurements/">Measurement atlas</a></nav></div><main id="main-content" tabindex="-1">
 <header id="project"><p class="eyebrow">Reflective display · color science · software</p><h1>Measurements and pattern behavior</h1><p class="lede">How pixel organization and image surroundings changed readings, and what hold, redraw and return tests found.</p></header>
 <noscript><p class="note">The explanations, photographs and saved results remain available. Interactive spectra and the full color-pair table require JavaScript.</p></noscript>
-<section class="early-findings" aria-labelledby="early-findings-title"><h2 id="early-findings-title">What the measurements showed</h2><ul>
+<section class="early-findings" aria-labelledby="early-findings-title"><h2 id="early-findings-title">Which arrangements changed the measured color?</h2><ul>
 <li><strong>Arrangement sometimes mattered:</strong> exact patterns with the same native-color counts could measure far apart, while other rearrangements stayed close.</li>
 <li><strong>The effect was broader than horizontal and vertical stripes:</strong> grouping, patterned extent and surrounding imagery changed readings; holding, redrawing and returning to identical pixels exposed pattern-dependent movement.</li>
 <li><strong>No single cause was isolated:</strong> direct pixel control reduced the chance that RGB conversion created the result, and a second instrument saw selected spectral changes too.</li>
@@ -33,7 +33,7 @@
 <div class="process-node" id="process-target-check" data-process-node="R"><strong>Did we reproduce the goal?</strong><span>Desired color versus measured color.</span></div>
 </div>
 <div class="sr-only" id="process-map-text">
-<h3>Process relationships</h3>
+<h3>From native pixels to measured color</h3>
 <ol>
 <li>The source image and desired colors enter color conversion and the spatial renderer, which produces the exact native-state pixel map and payload.</li>
 <li>The payload, together with the update sequence, display history, and operating conditions, leads to the physical displayed state.</li>
@@ -45,7 +45,7 @@
 </div>
 <figcaption id="process-map-caption">Conceptual dependency map, not a diagnosis of the cause. Arrows connect stages and comparisons; they do not show which physical mechanism produced the differences.</figcaption>
 </figure>
-<p><strong>An exact pixel map is an instruction to a physical display, not a measurement of the color it will produce.</strong> The panel must form the image, and the meter samples the light it returns. A prediction is a forecast of that measured result, not another set of pixel instructions. These distinctions led to spatially informed prediction tests and comparisons of rendering methods.</p>
+<p><strong>The measured result depends on the display and the measurement setup.</strong> The panel forms an image from the native-state pixels, while the meter collects light from a finite area under the experiment's illumination and geometry. Arrangement, display history and measurement conditions could therefore matter to a color model. The tests below examine selected parts of that chain without isolating a single cause.</p>
 <p>Grouping pixels reduced some stripe differences, but it did not consistently make arrangements measure alike: a separate four-color comparison gave a larger difference with larger blocks. <a href="#grouping-counterexample">See that comparison.</a></p>
 <nav class="hero-actions" aria-label="Checks prompted by the unexpected readings"><a href="#renderer-check">Check the sent pixels</a><a href="#instrument-check">Compare measuring instruments</a><a href="#hypothesis-tests">Repeat and reverse the reading order</a></nav>
 </section><section class="story-chapter" id="test-layers" aria-labelledby="layers-title">
@@ -55,7 +55,7 @@
   <p class="payload-bypass" data-payload-route="VERIFIED-NATIVE-IDENTITY"><strong>For the controlled pattern tests, I chose the pixels directly.</strong> I specified the native color at every pixel instead of asking Pimoroni to choose a dithered pattern from an ordinary RGB image. I then checked that the pixel buffer produced by the vendor software matched the intended state map and color counts before displaying it. Because the saved buffer matched the pattern I had designed, the unexpected differences were not caused by the image converter choosing different pixel colors or rearranging them.</p>
   <p><a href="#other-constructions">See the tested pixel arrangements below.</a></p>
   <section class="technical-details" id="native-path-detail"><h2>How the exact patterns reached the display</h2><div class="technical-body">
-  <p>The Pimoroni software and hardware still packed, sent, and refreshed those exact patterns on the display. This check isolated the image-conversion choice, not every part of the system. The source used exact entries from the driver's palette; its <code>set_image</code> conversion still ran, but its output was checked to leave the intended native-state map unchanged. Native-state packing, the low-level driver, the refresh sequence and the panel itself were still involved. Verifying the sent pixels does not establish that every physical pixel reached its intended optical state.</p>
+  <p>The source used exact entries from the driver's palette. Its image conversion still ran, and I checked that the resulting buffer preserved the intended native-state map. Pimoroni's packing, low-level driver and refresh sequence then delivered those patterns to the panel. This narrows the image-conversion explanation; verifying the sent pixels does not establish that every physical pixel reached its intended optical state.</p>
   </div></section>
 </div>
 </section><section class="instrument-story" id="instrument-story" aria-labelledby="instrument-story-title">
@@ -79,7 +79,7 @@
   </ol>
   <p class="pattern-links"><a href="/reflective-color-display/measurements/?experiment=observer-history-section-1&amp;comparison=observer-history-section-1-CR&amp;pattern=FINE-H">CR-250 hold/redraw sequence →</a> · <a href="/reflective-color-display/measurements/?experiment=observer-history-section-1&amp;comparison=observer-history-section-1-i1pro&amp;pattern=FINE-H">i1Pro hold/redraw sequence →</a></p>
 </section>
-  <section class="technical-note"><h3>How the meter samples a patterned surface</h3><p>The i1Pro 3 used here is the standard model. <a href="https://www.xrite.com/-/media/xrite/files/literature/l7/l7-700_l7-799/l7-718-i1pro-3-spec-sheet/l7-718_i1pro3_spec-sheet_en.pdf" data-reference="i1pro-specification">X-Rite's specification sheet</a> lists 45°:0° ring illumination and a nominal 4.5 mm measurement aperture. At about 0.20 mm per display pixel, that diameter spans roughly 22.5 pixels. The meter combines light from many pixels. Moving it slightly or shifting the pattern can change which pixels contribute most to the reading. The acquisition record identifies reflective mode but does not explicitly record an ISO 13655 M0, M1 or M2 condition, so I do not assign one here.</p><p>Simulations that treated the spot as a circle and counted the pixels inside it equally did not explain the observations by themselves. They also did not measure how strongly different parts of the real spot contribute to the meter's signal.</p><p id="instrument-completed-check"><strong>Already measured:</strong> CR-250 → i1Pro 3 → CR-250 sequences on an unchanged display presentation. The i1Pro was already touching the panel, and the CR-250 observed another exposed spot.</p><p id="instrument-open-check"><strong>A remaining instrument question:</strong> repeat that sequence alongside a matched waiting period with no i1Pro reading. That would help distinguish change associated with using the i1Pro from change that also happens while waiting. The completed interleaving does not provide that matched control. Placing or moving the contact instrument would be a separate test; none of these comparisons alone identifies a single physical mechanism.</p><p>The CR-250's radiance and the i1Pro 3's reflectance factor are different quantities. Cross-route comparisons here concern spectral direction, not pooled numerical magnitudes.</p></section>
+  <section class="technical-note"><h3>How the meter samples a patterned surface</h3><p>The i1Pro 3 used here is the standard model. <a href="https://www.xrite.com/-/media/xrite/files/literature/l7/l7-700_l7-799/l7-718-i1pro-3-spec-sheet/l7-718_i1pro3_spec-sheet_en.pdf" data-reference="i1pro-specification">X-Rite's specification sheet</a> lists 45°:0° ring illumination and a nominal 4.5 mm measurement aperture. At about 0.20 mm per display pixel, that diameter spans roughly 22.5 pixels. The meter combines light from many pixels. Moving it slightly or shifting the pattern can change which pixels contribute most to the reading. The acquisition record identifies reflective mode but does not explicitly record an ISO 13655 M0, M1 or M2 condition, so I do not assign one here.</p><p>Simulations that treated the spot as a circle and counted the pixels inside it equally did not explain the observations by themselves. They also did not measure how strongly different parts of the real spot contribute to the meter's signal.</p><p id="instrument-completed-check"><strong>Interleaved readings:</strong> CR-250 → i1Pro 3 → CR-250 sequences on an unchanged display presentation. The i1Pro was already touching the panel, and the CR-250 observed another exposed spot.</p><p id="instrument-open-check"><strong>A remaining instrument question:</strong> repeat that sequence alongside a matched waiting period with no i1Pro reading. That would help distinguish change associated with using the i1Pro from change that also happens while waiting. The completed interleaving does not provide that matched control. Placing or moving the contact instrument would be a separate test; none of these comparisons alone identifies a single physical mechanism.</p><p>The CR-250's radiance and the i1Pro 3's reflectance factor are different quantities. Cross-route comparisons here concern spectral direction, not pooled numerical magnitudes.</p></section>
   </div></section>
 </div>
 </section><section class="story-chapter" id="hypothesis-tests" aria-labelledby="hypothesis-tests-title">
@@ -91,7 +91,7 @@
   <div class="reading-orders"><figure><figcaption>ABBA: horizontal at the ends</figcaption><ol aria-label="Horizontal, vertical, vertical, horizontal"><li data-pattern="H">H</li><li data-pattern="V">V</li><li data-pattern="V">V</li><li data-pattern="H">H</li></ol></figure><figure><figcaption>BAAB: vertical at the ends</figcaption><ol aria-label="Vertical, horizontal, horizontal, vertical"><li data-pattern="V">V</li><li data-pattern="H">H</li><li data-pattern="H">H</li><li data-pattern="V">V</li></ol></figure></div>
   <p class="caption" id="reading-order-key">A and B label the two patterns being compared. In this stripe example, A is horizontal and B is vertical. In other comparisons both patterns can be horizontal; the letters still describe reading order, not the pattern's orientation.</p>
   <section class="technical-details" id="reading-sequence-details"><h2>Measurement records and technical details</h2><div class="technical-body">
-  <section class="technical-note" id="reading-pixel-binding"><h3>How each reading stays connected to its pixels</h3><p>Each saved spectrum is tied to the exact source image, packed native buffer, instrument settings and presentation time. File fingerprints let me verify that repeated constructions really use identical pixels. Raw spectral files and the complete XYZ/Lab results remain available alongside the summaries.</p></section>
+  <section class="technical-note" id="reading-pixel-binding"><h3>How each reading stays connected to its pixels</h3><p>To compare identical patterns across readings, I needed to verify both the sent pixels and the measurement conditions. Each saved spectrum is tied to the exact source image, packed native buffer, instrument settings and presentation time. File fingerprints let me check pixel identity across presentations. Raw spectral files and the complete XYZ/Lab results accompany the summaries.</p></section>
 </div></section>
 </section>
 </section><section class="broader-overview" id="pattern-findings" aria-labelledby="broader-title">
@@ -278,7 +278,7 @@
   </figure>
 </div></section>
   <section class="technical-details" data-history-section="EXACT-PAYLOAD-ACROSS-OCCURRENCES">
-    <h2>Why a repeated difference is not yet a predictable color</h2>
+    <h2>Repeated contrasts and absolute color</h2>
     <div class="technical-body finding-grid">
       <article data-history-id="BLACK-YELLOW-EXACT-PAYLOAD">
         <h3>Black/yellow repeated a direction while its size changed</h3>
@@ -345,17 +345,9 @@
   </div></section>
 </div></section><section class="technical-details" id="triad-detail"><h2 id="triad-update-title">Exact row organization mattered even without changing orientation</h2><div class="technical-body">
 
-  <p>These comparisons extend the same investigation beyond horizontal versus
-  vertical. They keep the patterns horizontal and ask how the measured color
-  changes when the row sequence, starting position, and run grouping change.
-  Together, they show that orientation was only one way exact organization could
-  change the measurement.</p>
-  <h3>Same counts, different row order</h3>
-  <p>This comparison kept both patterns horizontal and used the same 96,000 black,
-  192,000 yellow, and 96,000 blue pixels. One four-row period alternated
-  yellow–blue–yellow–black; the other placed the two yellow rows together as
-  yellow–yellow–blue–black. The display received two exact pixel arrangements, not
-  two names for one image.</p>
+  <p>Would grouping neighboring rows change the measured color while their proportions stayed fixed? These comparisons kept the patterns horizontal and tested row sequence, starting position and run grouping while preserving the native-color counts. They help separate an orientation difference from other ways exact pixel organization can change a measurement.</p>
+  <h3>Does grouping the yellow rows change the measured color?</h3>
+  <p>This comparison kept both patterns horizontal and used the same 96,000 black, 192,000 yellow, and 96,000 blue pixels. One four-row period alternated yellow–blue–yellow–black; the other placed the two yellow rows together as yellow–yellow–blue–black.</p>
   <div class="triad-layout">
     <div class="triad-payloads" aria-label="Enlarged four-row periods for the two exact pixel arrangements">
       <figure>

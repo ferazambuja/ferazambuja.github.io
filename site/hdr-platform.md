@@ -2,90 +2,79 @@ A macOS application for authoring and running visual psychophysics studies on
 HDR and SDR displays, built as the instrument for an MS thesis in color
 science.
 
-**The question.** A psychophysics stimulus is specified in physical units —
-cd/m², CIE xy, degrees of visual angle — but a display pipeline accepts pixel
-values. Working space, extended-range activation, GPU composition, and OS tone
-mapping all sit between the two, and any of them can change what an observer
-sees while the authored numbers stay put.
+I built tools for designing stimuli, arranging participant tasks and generating
+repeatable trial sequences. Researchers can specify stimulus luminance, color
+and size, prepare a study, and inspect the display and measurement settings
+needed to run it.
 
-**What I built.** A platform that treats requested stimulus state, realized
-renderer state, and measured output as three separate objects, and keeps them
-separate from study authoring through run preparation.
-
-**The limitation that governs everything below.** Every value in these
-screenshots is an authored request value. None is a measurement, a threshold,
-or a fitted result.
+A study may request a stimulus in cd/m², CIE xy and degrees of visual angle,
+while the display accepts pixels. The working color space, GPU composition and
+OS tone mapping can change the light an observer sees. The app keeps the
+requested settings, renderer state and instrument measurements identifiable
+through that process so they can be compared.
 
 ## Authoring a stimulus in physical units
 
 <!-- STIMULUS_SHOT -->
 
-Each layer carries an explicit luminance in cd/m² rather than a code value —
-60.0 and 95.0 for the two disks here. The inspector exposes the size mode
-(normalized, degVA, or mm), the layer's study-card binding, and the display's
-reported extended-range context: a 0.95× ratio against a 100 cd/m² render
-white, on a panel reporting a 1,600-nit estimated cap.
+Each layer has a requested luminance in cd/m²: 60.0 and 95.0 for the two disks
+shown here. The inspector also exposes the size mode (normalized, degVA, or
+mm), the associated study card and the display context. This example's 95.0
+cd/m² request is 0.95× a 100 cd/m² render white; the panel reports a 1,600-nit
+estimated cap. These are authored settings and reported display information,
+not measured light output or participant results.
 
-That readout is on screen for a reason. On macOS, extended range is not a
-single switch. It takes a coordinated five-field surface contract, and setting
-the dynamic-range hint alone does not activate it — while leaving tone mapping
-automatic lets the OS reshape the very stimulus under test.
+For an HDR study, the renderer must enable extended range and control tone
+mapping so the OS does not reshape the intended luminance relationships. The
+app configures the five related surface fields together; their exact settings
+are shown in the technical detail below.
 
 ## From authored units to pixels
 
 <!-- SIGNAL_PATH -->
 
-Chromaticity ratios are normalized in Display P3 and packed into the GPU
-uniform contract separately from luminance magnitude; the two recombine only at
-final composition. Keeping that split intact this far down is what makes a
-requested value still identifiable when it reaches the display. A CR-250 spot
-measurement enters as a third state — its own run-linked record, not a
-confirmation of the first two.
+Color and luminance need separate control when a study changes one while
+holding the other fixed. The renderer normalizes chromaticity ratios in
+Display P3 and carries them separately from luminance through the GPU, combining
+them at final composition. A CR-250 spot measurement can then be compared with
+the requested stimulus and renderer state as its own run-linked observation.
 
-## Studies are data, not code
+## Design and repeat a trial sequence
 
 <!-- STUDY_AUTHORING -->
 
-A study is a deck of cards bound to a participant task. The spatial-frequency
-discrimination study shown is a spatial 2AFC: 200 trials expanded
-deterministically from seed 99999, side assignment balanced at 100 left and 100
-right, responses mapped to clicking a stimulus. The schedule is generated rather
-than hand-listed and carries a seed, a schedule ID, and a checksum, so the
-sequence a participant saw can be reconstructed from the run record instead of
-trusted from a description of it. Material marked *Training* is excluded from
-fitting, and that exclusion travels with the data.
+A study combines stimulus cards with a participant task. The spatial-frequency
+example uses a two-alternative forced-choice task, or 2AFC: the participant
+responds by clicking one of two stimuli. The app expands the cards into a
+schedule of 200 trials, balanced at 100 left and 100 right assignments.
+
+Saving the generated schedule and its random seed makes the trial sequence
+reconstructable from the run record. The example uses seed 99999. Trials marked
+*Training* are excluded from fitting participant responses, keeping practice
+separate from the analysis.
 
 <!-- STUDY_LIBRARY -->
 
-Studies are versioned records with a schema version and a declared perceptual
-model — CIELAB for the SDR color and spatial studies, JzCzHz for the HDR
-contrast study. The `Blocked` badge on a researcher-authored draft is the point
-of the shot: the same schema validation governs it and the three bundled thesis
-studies. There is no privileged path for the studies the author wrote first.
+The study library includes three bundled thesis studies and a researcher-authored
+draft. Each study declares its perceptual model: CIELAB for the SDR color and
+spatial studies, JzCzHz for the HDR contrast study. New studies use the same
+validation as the bundled ones, so their authoring and readiness checks remain
+part of the workflow.
 
-## Refusing to produce results it cannot back
+## Check stimulus calibration before a study
 
 <!-- RUN_READINESS -->
 
-Readiness is evaluated before a run, not diagnosed after one. Schema and
-template integrity are clear here, but the luminance envelope reads *Needs
-calibration*: the study declares nine measurement targets, eight of them at
-1000 cd/m², and none has a measured row behind it yet.
+Before formal capture, the app checks that the study's requested luminances
+have corresponding measurements. The example reads *Needs calibration*: it
+declares nine measurement targets, eight at 1000 cd/m², with no measured rows
+recorded yet. Formal capture remains blocked until those measurements are
+captured or imported. Preview and Pilot provide rehearsal without archiving a
+formal bundle.
 
-Three fields below that are deferred to capture rather than authored — the
-measurement footprint (aperture and working distance, which decide whether spot
-photometry resolves the target), the measurement method, and spatial-frequency
-resolution. Each is a property of the measurement, so the platform declines to
-let it be asserted in advance. Formal capture stays blocked until envelope
-measurements are captured or imported; Preview and Pilot are rehearsal postures
-that archive no bundle.
+The measurement footprint (aperture and working distance), measurement method
+and spatial-frequency resolution are supplied at capture. These describe how
+the instrument samples the stimulus and whether it can resolve the intended
+target, so the preparation view leaves them for the measurement setup.
 
 <!-- EDR_CONTRACT -->
-
-## What these screenshots do not show
-
-Every state above is a pre-formal-run state, deliberately — the gates are the
-subject. No measured results, thresholds, or fitted psychometric functions
-appear here, and none should be inferred from the interface values, which are
-requested values throughout. The thesis manuscript's public availability is not
-established here and is not claimed.

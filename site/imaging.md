@@ -1,11 +1,13 @@
-Each investigation below states its question, its result, and the limitation
-that governs that result. The study pages add the method and the experiment that
-would resolve what is still open.
+Does a sharpness score at the center describe the rest of the image? Can
+measured sensor sensitivities predict a camera's chart captures? What changes
+when colors must be mapped into a smaller RGB gamut? These investigations
+connect camera behavior, spectral measurements and color calculations to
+questions about how images are recorded and reproduced.
 
 Some studies reanalyse retained camera or instrument measurements; others use
-controlled synthetic inputs to isolate an algorithm or equation. Each result
-identifies the inputs behind it and what the available records cannot
-establish.
+controlled synthetic inputs to compare algorithms or isolate the terms of an
+equation. The measurement studies examine the recorded systems and conditions;
+the software experiments examine the specified numerical models.
 
 For display measurement and rendering, the separate
 [Reflective Color Display Engineering case study](/reflective-color-display/)

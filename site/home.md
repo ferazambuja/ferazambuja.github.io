@@ -24,9 +24,9 @@ now drive my camera, color, and display work.
 
 Eight public investigations connect camera sharpness, sensor-level uniformity,
 color characterization, spectral analysis, instrument measurement, and
-color-management algorithms. The studies lead with what was found; reports,
-formulas, aggregate data, and tested C++20 excerpts remain available one level
-deeper.
+color-management algorithms. I compare camera and instrument records to ask
+where image detail and color change, then use controlled software experiments
+to examine the tradeoffs in color calculations and gamut mapping.
 
 [Explore the imaging portfolio](/imaging/) or [inspect the technical
 repository](https://github.com/ferazambuja/imaging-color-measurement).
@@ -38,8 +38,7 @@ authoring, controlled execution, response and session records, HDR presentation
 state, measurement context, psychometric analysis, and structured export as
 part of my M.S. thesis under Dr. Mark D. Fairchild.
 
-[See how the platform separates requested state from measured
-output](/hdr-platform/).
+[Explore stimulus design and study authoring](/hdr-platform/).
 
 ## Camera and photographic practice
 

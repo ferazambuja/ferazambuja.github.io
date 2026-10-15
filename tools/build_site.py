@@ -173,7 +173,7 @@ HOME_SELECTIONS = (
         "spectral-sensitivity-and-color-fidelity",
         "spectral-color-fidelity.svg",
         "Dot plot comparing ISO-style color-fidelity scores for five cameras across three chart sets.",
-        "Four cameras closed against paired chart captures at 9.5–13.8% RMS per channel; the unpaired fifth remained unscored.",
+        "Measured spectral sensitivities predicted four cameras' paired chart captures to 9.5–13.8% RMS per channel; the fifth lacked a paired capture.",
     ),
 )
 
@@ -196,9 +196,8 @@ HDR_FIGURES = {
         "Six-stage flow from authored stimulus to measured display output, "
         "grouped into requested stimulus state, realized renderer state, and "
         "measured output.",
-        "Requested stimulus state, realized renderer state, and measured "
-        "output stay separate by construction: a meter reading joins as a "
-        "third record rather than as confirmation of the first two.",
+        "The signal path connects requested stimulus settings to rendered "
+        "pixels and an instrument reading, so the three can be compared.",
         vector=True,
     ),
     "STUDY_AUTHORING": HdrFigure(
@@ -219,8 +218,8 @@ HDR_FIGURES = {
         1004,
         "Study library listing four studies with identifiers, schema versions, "
         "perceptual models, and per-study readiness badges.",
-        "Three bundled thesis studies and one researcher-authored draft, all "
-        "on schema 1.15.0. The draft is the one marked Blocked.",
+        "Three bundled thesis studies and a researcher-authored draft, with "
+        "their perceptual models and readiness status.",
     ),
     "RUN_READINESS": HdrFigure(
         "run-readiness",
@@ -229,9 +228,8 @@ HDR_FIGURES = {
         "Run-readiness evaluation showing study validation state, "
         "luminance-envelope readiness with per-target measurement rows, and a "
         "rehearsal-only posture.",
-        "Validation is clear, but the luminance envelope needs calibration: "
-        "none of the declared targets has a measurement recorded against "
-        "it.",
+        "The study's requested luminances need calibration measurements "
+        "before formal capture can proceed.",
     ),
     "EDR_CONTRACT": HdrFigure(
         "edr-contract",
@@ -239,8 +237,8 @@ HDR_FIGURES = {
         940,
         "Reference table of the five surface fields that place a macOS layer "
         "in extended dynamic range, with the value each must hold.",
-        "All five fields have to agree. Setting the dynamic-range hint alone "
-        "leaves the surface in standard range.",
+        "Five surface settings used to enable extended range and control "
+        "tone mapping in the macOS renderer.",
         vector=True,
     ),
 }
@@ -275,22 +273,22 @@ IMAGING = Project(
     key="imaging",
     title="Imaging and color measurement",
     tagline=(
-        "Camera image quality, spectral measurement, and deterministic color "
-        "models, measured in C++20 against archived captures and instrument data."
+        "Camera image quality, spectral measurement and color-model calculations, "
+        "using retained captures, instrument data and controlled synthetic inputs."
     ),
     repo="ferazambuja/imaging-color-measurement",
     sections=(
         Section(
             "studies",
             "Studies",
-            "One question each, answered against measured data, with the "
-            "limitation that governs the answer stated in the same breath.",
+            "Investigations of camera and instrument measurements, alongside "
+            "controlled software experiments with color models.",
         ),
         Section(
             "reports",
             "Reports",
-            "The full numeric record behind each study: inputs, gates, "
-            "intermediate values, and every figure the study summarizes.",
+            "Measurement and calculation results with their inputs, conditions, "
+            "intermediate values and figures.",
         ),
         Section(
             "methods",
@@ -336,9 +334,9 @@ IMAGING = Project(
             end_contains="            refinement_iterations, converged};",
             start_offset=-1,
             caption=(
-                "Finding the first gamut exit rather than any nearby in-gamut "
-                "color. The distinction is what separates a defensible mapping "
-                "from one that quietly relocates hues."
+                "Locating the first exit from the RGB gamut along the chosen "
+                "color-coordinate path, then refining the boundary. The choice "
+                "of coordinates affects the mapping's color displacement."
             ),
         ),
         "closure": Excerpt(
@@ -1905,10 +1903,9 @@ def selected_work(cards: list[Card]) -> str:
         f'width="{hero.width}" height="{hero.height}">'
         "</picture></a>"
         f'<div><h3><a href="{HDR_ROUTE}">HDR psychophysics platform</a></h3>'
-        "<p>A macOS platform for authoring and running HDR and SDR "
-        "psychophysics studies, built to keep requested stimulus state, "
-        "realized renderer state, and measured output as three separate "
-        "records.</p></div>"
+        "<p>A macOS app for designing visual stimuli in physical units, "
+        "building counterbalanced trial sequences, and preparing HDR and SDR "
+        "psychophysics studies with display-calibration checks.</p></div>"
         "</article>"
     )
     # The interactive calculator and selected studies follow the two features.
@@ -2086,9 +2083,8 @@ def hdr_page(site_dir: Path) -> str:
     return page(
         title=f"HDR psychophysics platform · {AUTHOR}",
         description=(
-            "A macOS platform for authoring and running HDR and SDR "
-            "psychophysics studies, keeping requested stimulus state, renderer "
-            "state, and measured output separate."
+            "A macOS app for stimulus design, counterbalanced trial sequences "
+            "and HDR/SDR study preparation with display-calibration checks."
         ),
         body=(
             "<h1>HDR psychophysics platform</h1>"
