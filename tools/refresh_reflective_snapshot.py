@@ -17,8 +17,9 @@ EDITORIAL_FILES = (
     "renderer/index.html", "icc/index.html",
     "story.css", "story.js", "shell.css", "fragment-routes.json",
 )
-# Exact, separately reviewed renderer-v1 delivery. These are not editable prose.
-RENDERER_ASSET_PINS = {
+# Exact, visually reviewed presentation assets. These are not editable prose.
+REVIEWED_ASSET_PINS = {
+    "assets/inky-impression-7-3.jpg": "3d1271114b8d92170e5890220fd2f7c48239351f4d1e69a309933dba2c962055",
     "assets/renderer-v1-great-wave-source.png": "6aeac27e820325e7c87ce4c80d0d42fe90b49024ab8eaa6cb6a75c4af258e300",
     "assets/renderer-v1-great-wave-pimoroni.png": "f2b081c274145d8ac434b2ca7539c6a4e5d49c848dcbca509cf69ed90dc78b03",
     "assets/renderer-v1-great-wave-project.png": "81a1b4e7df6bb1983c357bd215f306f6fe2164cc660a289656f53d7534e5450b",
@@ -48,15 +49,15 @@ def prepare(source=SOURCE):
         if not path.is_relative_to(source.resolve()):
             raise ValueError("snapshot path escapes the selected project")
         if (name not in EDITORIAL_FILES
-                and name not in RENDERER_ASSET_PINS
+                and name not in REVIEWED_ASSET_PINS
                 and digest(path) != record["sha256"]):
             raise ValueError(f"non-editorial delivery changed: {name}")
     for name in EDITORIAL_FILES:
         sha = digest(source / name)
         files[name] = {"sha256": sha, "source_sha256": sha}
-    for name, sha in RENDERER_ASSET_PINS.items():
+    for name, sha in REVIEWED_ASSET_PINS.items():
         if digest(source / name) != sha:
-            raise ValueError(f"renderer asset differs from reviewed delivery: {name}")
+            raise ValueError(f"asset differs from reviewed delivery: {name}")
         files[name] = {"sha256": sha, "source_sha256": sha}
     manifest["presentation_source"] = "portfolio-owned"
     return json.dumps(manifest, indent=2) + "\n"
@@ -70,7 +71,7 @@ def main():
     path = SOURCE / "snapshot.json"
     if args.write:
         path.write_text(expected)
-        print("Updated editorial hashes and reviewed renderer-preview pins; measurement pins unchanged.")
+        print("Updated editorial hashes and reviewed presentation-asset pins; measurement pins unchanged.")
     elif path.read_text() != expected:
         raise SystemExit("Editorial snapshot differs. Review the changes, then use --write.")
     else:

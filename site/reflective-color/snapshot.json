@@ -1,8 +1,8 @@
 {
   "files": {
     "index.html": {
-      "sha256": "f6bc17672dd3aeed6a6fa90527289cee751e9544a5536304afcc94ee1d87b115",
-      "source_sha256": "f6bc17672dd3aeed6a6fa90527289cee751e9544a5536304afcc94ee1d87b115"
+      "sha256": "9b17ee06739ca210decb3492fda0adf5ea44fc68d9c4ee6dde319fd20430da55",
+      "source_sha256": "9b17ee06739ca210decb3492fda0adf5ea44fc68d9c4ee6dde319fd20430da55"
     },
     "measurement-investigation.json": {
       "sha256": "1ab2c8fa44ee7d0b6c38ab87f6d8346bc60b2c73b67dbe917b87c0ccd974cb18",
@@ -597,8 +597,8 @@
       "source_sha256": "bb67eadb60dc0fa45b3153fc2751ee232eb053388b36c534ae76ab0a9ab777d7"
     },
     "story.css": {
-      "sha256": "fcc4bbbdbaedbe5881db243566feb40d66aa69f05b9d034797fd462e1e63586c",
-      "source_sha256": "fcc4bbbdbaedbe5881db243566feb40d66aa69f05b9d034797fd462e1e63586c"
+      "sha256": "e78db24e44cf56b0ae5bfe99d0288e9eef9ab664cd7f6ac61833867682da5aee",
+      "source_sha256": "e78db24e44cf56b0ae5bfe99d0288e9eef9ab664cd7f6ac61833867682da5aee"
     },
     "story.js": {
       "sha256": "c0f509a0af09f7f4295c037e00a60d798dffeb811ea9d968b61a725d3c7a4698",
@@ -647,6 +647,10 @@
     "assets/renderer-gallery/chelsea-project.png": {
       "sha256": "a186b9dc0c7ffb4698e1be5db25da7d4a6afe4e487a4f013c9e9be26e28a2dbf",
       "source_sha256": "a186b9dc0c7ffb4698e1be5db25da7d4a6afe4e487a4f013c9e9be26e28a2dbf"
+    },
+    "assets/inky-impression-7-3.jpg": {
+      "sha256": "3d1271114b8d92170e5890220fd2f7c48239351f4d1e69a309933dba2c962055",
+      "source_sha256": "3d1271114b8d92170e5890220fd2f7c48239351f4d1e69a309933dba2c962055"
     }
   },
   "presentation_source": "portfolio-owned"

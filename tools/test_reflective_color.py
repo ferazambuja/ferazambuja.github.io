@@ -20,7 +20,7 @@ from build_site import (
     topbar,
 )
 from render_reflective_renderer_previews import GALLERY_CASES, MEDIA_RELATIVE_PALETTE, render_state_plane
-from refresh_reflective_snapshot import EDITORIAL_FILES, RENDERER_ASSET_PINS, prepare as prepare_snapshot
+from refresh_reflective_snapshot import EDITORIAL_FILES, REVIEWED_ASSET_PINS, prepare as prepare_snapshot
 from serve_site import PreviewHTTPServer, create_preview_server
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -292,8 +292,8 @@ class ReflectiveDeliveryTests(unittest.TestCase):
                 self.assertIn(f'data-comparison-sha256="{comparison_sha}"', page)
                 if name == "renderer/index.html":
                     self.assertIn(f'data-report-sha256="{report_sha}"', page)
-                for asset, sha in RENDERER_ASSET_PINS.items():
-                    if asset.startswith("assets/renderer-gallery/"):
+                for asset, sha in REVIEWED_ASSET_PINS.items():
+                    if not asset.startswith("assets/renderer-v1-"):
                         continue
                     self.assertIn(f'src="{REFLECTIVE_ROUTE}{asset}"', page)
                     self.assertEqual(hashlib.sha256((self.project / asset).read_bytes()).hexdigest(), sha)
@@ -323,7 +323,7 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         from PIL import Image
 
         expected = set(MEDIA_RELATIVE_PALETTE)
-        for name in (name for name in RENDERER_ASSET_PINS if name.endswith(("-pimoroni.png", "-project.png"))):
+        for name in (name for name in REVIEWED_ASSET_PINS if name.endswith(("-pimoroni.png", "-project.png"))):
             with self.subTest(asset=name):
                 image = Image.open(SOURCE / name).convert("RGB")
                 colors = {color for _, color in image.getcolors(maxcolors=image.width * image.height)}
@@ -663,7 +663,7 @@ class ReflectiveSnapshotTests(unittest.TestCase):
             "measurement-investigation.json": b'{"retained":true}',
             "assets/measurement.png": b"retained-image-payload",
         }
-        self.pinned.update({name: (SOURCE / name).read_bytes() for name in RENDERER_ASSET_PINS})
+        self.pinned.update({name: (SOURCE / name).read_bytes() for name in REVIEWED_ASSET_PINS})
         files = {}
         for name, payload in self.pinned.items():
             path = self.source / name
@@ -698,8 +698,8 @@ class ReflectiveSnapshotTests(unittest.TestCase):
             with self.subTest(file=name):
                 path = self.source / name
                 path.write_bytes(payload + b"changed")
-                if name in RENDERER_ASSET_PINS:
-                    expected = f"renderer asset differs from reviewed delivery: {re.escape(name)}"
+                if name in REVIEWED_ASSET_PINS:
+                    expected = f"asset differs from reviewed delivery: {re.escape(name)}"
                 else:
                     expected = f"non-editorial delivery changed: {re.escape(name)}"
                 with self.assertRaisesRegex(ValueError, expected):
@@ -724,13 +724,13 @@ class ReflectiveSnapshotTests(unittest.TestCase):
 
 
     def test_new_renderer_asset_admission_requires_the_reviewed_digest(self):
-        name = next(iter(RENDERER_ASSET_PINS))
+        name = "assets/renderer-v1-great-wave-source.png"
         del self.manifest["files"][name]
         self.snapshot.write_text(json.dumps(self.manifest))
         prepared = json.loads(prepare_snapshot(self.source))
-        self.assertEqual(prepared["files"][name]["source_sha256"], RENDERER_ASSET_PINS[name])
+        self.assertEqual(prepared["files"][name]["source_sha256"], REVIEWED_ASSET_PINS[name])
         (self.source / name).write_bytes(b"unreviewed replacement")
-        with self.assertRaisesRegex(ValueError, "renderer asset differs from reviewed delivery"):
+        with self.assertRaisesRegex(ValueError, "asset differs from reviewed delivery"):
             prepare_snapshot(self.source)
 
 
