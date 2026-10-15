@@ -19,7 +19,7 @@ from build_site import (
     sitemap,
     topbar,
 )
-from render_reflective_renderer_previews import MEDIA_RELATIVE_PALETTE, render_state_plane
+from render_reflective_renderer_previews import GALLERY_CASES, MEDIA_RELATIVE_PALETTE, render_state_plane
 from refresh_reflective_snapshot import EDITORIAL_FILES, RENDERER_ASSET_PINS, prepare as prepare_snapshot
 from serve_site import PreviewHTTPServer, create_preview_server
 
@@ -148,13 +148,12 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertNotIn("snapshot.json", {p.name for p in self.project.rglob("*")})
 
     def test_story_keeps_semantic_sections_and_visuals(self):
-        for anchor in ("display-primer-title", "first-icc", "featured-measurement", "prediction-result", "measured-prediction-example", "all-pair-explorer"):
+        for anchor in ("display-primer-title", "first-icc", "featured-measurement", "prediction-result", "all-pair-explorer"):
             with self.subTest(anchor=anchor):
                 self.assertIn(f'id="{anchor}"', self.article)
         for anchor in ("metric-comparison", "native-width-overview", "prediction-return-status", "image-context-result", "prediction-transfer"):
             with self.subTest(detail_anchor=anchor):
                 self.assertIn(f'id="{anchor}"', self.narrative)
-        self.assertIn("<noscript>", self.article)
         self.assertIn("function showDataFailure(readerState)", self.scripts)
         self.assertIn("function forwardAtlasSelection()", self.scripts)
         self.assertIn('new URLSearchParams(location.search)', self.scripts)
@@ -168,23 +167,24 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertNotIn("HASH_SCROLL_KEYS", self.scripts)
 
     def test_result_visuals_and_prediction_map_are_grounded(self):
-        self.assertIn('id="measured-prediction-example"', self.article)
+        prediction = self.pages["prediction/index.html"]
+        self.assertIn('id="measured-prediction-example"', prediction)
         self.assertIn(
             'data-result-sha256="224085c999428cd9476bebee02e764881a40f323910ff2f168eefd2a3d59a748"',
-            self.article,
+            prediction,
         )
-        self.assertIn('data-source-id="RENDERER-BC-WARM-LIGHT-C"', self.article)
+        self.assertIn('data-source-id="RENDERER-BC-WARM-LIGHT-C"', prediction)
         for xyz in (
             "16.48454729033974,15.564632033519056,7.727523807314165",
             "14.10692773053848,12.416873903444351,5.240211235593386",
             "14.29114,12.57847,5.426062",
         ):
-            self.assertIn(f'data-xyz-d50="{xyz}"', self.article)
+            self.assertIn(f'data-xyz-d50="{xyz}"', prediction)
         self.assertGreaterEqual(self.narrative.count("data-fresh-reading="), 4)
         for result in ("ΔE00 0.41", "ΔE00 5.96", "0.38–0.47", "5.81–5.96"):
-            self.assertIn(result, self.article)
+            self.assertIn(result, prediction)
         for fabricated in ("--example-color", "#d5b849", "#647e79", "#687e77", "Conceptual illustration"):
-            self.assertNotIn(fabricated, self.article)
+            self.assertNotIn(fabricated, prediction)
 
         patterns = self.pages["pattern-behavior/index.html"]
         self.assertIn('id="prediction-domain-map"', patterns)
@@ -297,8 +297,11 @@ class ReflectiveDeliveryTests(unittest.TestCase):
             with self.subTest(page=name):
                 page = self.pages[name]
                 self.assertIn(f'data-comparison-sha256="{comparison_sha}"', page)
-                self.assertIn(f'data-report-sha256="{report_sha}"', page)
+                if name == "renderer/index.html":
+                    self.assertIn(f'data-report-sha256="{report_sha}"', page)
                 for asset, sha in RENDERER_ASSET_PINS.items():
+                    if asset.startswith("assets/renderer-gallery/"):
+                        continue
                     self.assertIn(f'src="{REFLECTIVE_ROUTE}{asset}"', page)
                     self.assertEqual(hashlib.sha256((self.project / asset).read_bytes()).hexdigest(), sha)
                 self.assertIn('href="https://www.metmuseum.org/art/collection/search/45434"', page)
@@ -327,26 +330,44 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         from PIL import Image
 
         expected = set(MEDIA_RELATIVE_PALETTE)
-        for name in (
-            "assets/renderer-v1-great-wave-pimoroni.png",
-            "assets/renderer-v1-great-wave-project.png",
-        ):
+        for name in (name for name in RENDERER_ASSET_PINS if name.endswith(("-pimoroni.png", "-project.png"))):
             with self.subTest(asset=name):
                 image = Image.open(SOURCE / name).convert("RGB")
                 colors = {color for _, color in image.getcolors(maxcolors=image.width * image.height)}
-                self.assertEqual(colors, expected)
+                self.assertTrue(colors and colors.issubset(expected))
 
         synthetic = render_state_plane(bytes(range(6)), width=6, height=1)
         self.assertEqual(list(synthetic.get_flattened_data()), list(MEDIA_RELATIVE_PALETTE))
 
+    def test_gallery_keeps_matched_full_size_sources_and_outputs(self):
+        from PIL import Image
+
+        gallery = re.search(r'<section[^>]+id="renderer-gallery"[^>]*>(.*?)</section>',
+                            self.pages["renderer/index.html"], re.S).group(1)
+        source_pixel_hashes = {
+            "coffee": "95d9f4282ae407f7c1b3574f09a8e92d8b65b5f8e43f533f694c9bd7d8f96151",
+            "chelsea": "6e3da2ae3aa9290844ed56bb007fda12eae273a02e6c1e70891a38c8317d4f71",
+        }
+        for case in GALLERY_CASES:
+            for route in ("source", "pimoroni", "project"):
+                asset = f"assets/renderer-gallery/{case}-{route}.png"
+                with self.subTest(asset=asset):
+                    self.assertIn(f'href="{REFLECTIVE_ROUTE}{asset}"', gallery)
+                    self.assertIn(f'src="{REFLECTIVE_ROUTE}{asset}"', gallery)
+                    self.assertIn(asset, self.manifest)
+                    with Image.open(SOURCE / asset) as image:
+                        self.assertEqual(image.size, (800, 480))
+                        self.assertEqual(image.mode, "RGB")
+                        self.assertNotIn("icc_profile", image.info)
+                        if route == "source":
+                            self.assertEqual(hashlib.sha256(image.tobytes()).hexdigest(), source_pixel_hashes[case])
+
     def test_pale_red_return_is_presented_as_the_stable_counterexample(self):
         patterns = self.pages["pattern-behavior/index.html"]
-        for page in (self.article, patterns):
-            with self.subTest(page="overview" if page is self.article else "patterns"):
-                self.assertIn("within 0.21 ΔE00", page)
-                self.assertIn("Not every pattern showed a large return effect", page)
-                self.assertNotIn("did not return to one fixed value", page)
-                self.assertNotIn("Absolute color changed across returns", page)
+        self.assertIn("within 0.21 ΔE00", patterns)
+        self.assertIn("Not every pattern showed a large return effect", patterns)
+        self.assertNotIn("did not return to one fixed value", patterns)
+        self.assertNotIn("Absolute color changed across returns", patterns)
 
     def test_history_results_are_quantified_without_claiming_a_cause(self):
         patterns = self.pages["pattern-behavior/index.html"]
@@ -379,14 +400,6 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("the other four differed by 0.32–0.99 ΔE00", patterns)
         self.assertIn('href="/reflective-color-display/prediction/#prediction-return-status"', patterns)
 
-        overview_start = self.article.index('<section class="story-chapter" id="other-constructions">')
-        overview_end = self.article.index('<section class="story-chapter" id="renderer-result">')
-        overview = self.article[overview_start:overview_end]
-        self.assertIn("Other identical pixel maps did move", overview)
-        self.assertIn("blue/green stripes changed by 0.31–0.60 ΔE00 after redraw", overview)
-        self.assertIn("black/yellow stripes changed by 0.29–0.30 while held", overview)
-        self.assertIn("two near-neutral cyan maps differed from their earlier-session means by 1.44–1.56 ΔE00", overview)
-        self.assertIn('href="/reflective-color-display/pattern-behavior/#unchanged-pattern-returns"', overview)
         for overclaim in (
             "presentation history changed readings",
             "presentation history all produced useful comparisons",
@@ -425,10 +438,12 @@ class ReflectiveDeliveryTests(unittest.TestCase):
 
     def test_color_science_conventions_are_named_where_results_appear(self):
         self.assertIn("nominal perfect-diffuser D50", self.article)
-        self.assertIn("panel white as its reference", self.article)
-        self.assertIn("percentage points of reflectance factor", self.article)
-        self.assertIn("1-pixel-wide black/yellow stripes", self.article)
-        self.assertIn("two target colors, a warm tone and a neutral gray", self.article)
+        self.assertIn("panel white as the Lab reference", self.article)
+        pattern_text = " ".join(re.sub(r"<[^>]+>", " ", self.pages["pattern-behavior/index.html"]).split())
+        self.assertIn("percentage points", pattern_text)
+        self.assertIn("reflectance factor", pattern_text)
+        self.assertIn("one-pixel black/yellow comparison", self.article)
+        self.assertIn("two target colors, a warm tone and a neutral gray", self.pages["prediction/index.html"])
 
         renderer = self.pages["renderer/index.html"]
         self.assertIn("complete 16 × 16 pixel tiles", renderer)
@@ -470,9 +485,12 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         patterns = self.pages["pattern-behavior/index.html"]
         self.assertNotIn("<h4>How each reading stays connected to its pixels</h4>", patterns)
         self.assertNotIn("<h4>Why waiting, redrawing, and changing the previous image are separate tests</h4>", patterns)
-        card = " ".join(re.sub(r"<[^>]+>", " ", reflective_feature()).split())
-        for result in ("133-color", "pixel arrangement", "offline renderer"):
-            self.assertIn(result, card)
+        card = reflective_feature()
+        text = " ".join(re.sub(r"<[^>]+>", " ", card).split())
+        self.assertIn(f'href="{REFLECTIVE_ROUTE}"', card)
+        self.assertIn(f'src="{REFLECTIVE_ROUTE}assets/renderer-v1-great-wave-project.png"', card)
+        for result in ("133-color", "19.99", "11.20", "ΔE00"):
+            self.assertIn(result, text)
 
     def test_markup_detector_distinguishes_script_text_and_nested_disclosures(self):
         parsed = PageStructure(

@@ -119,8 +119,6 @@ class Excerpt:
 @dataclass(frozen=True)
 class HomeSelection:
     slug: str
-    figure: str
-    alt: str
     summary: str
 
 
@@ -159,20 +157,14 @@ class ProfileAsset:
 HOME_SELECTIONS = (
     HomeSelection(
         "sfr-aperture-and-field",
-        "sfr-aperture-field.svg",
-        "Line chart comparing Nikon D800 and D810 MTF50 across aperture, with center-to-corner margin bars.",
         "Across 299 accepted regions, a center-only score missed important field behavior in the D800 series.",
     ),
     HomeSelection(
         "gamut-mapping",
-        "gamut-mapping.svg",
-        "CIELAB color plane showing Display-P3 colors mapped toward sRGB, beside method-comparison plots.",
         "Local MINDE lowered mean CIEDE2000 to 2.323, but no method won across average error, worst case, and hue behavior.",
     ),
     HomeSelection(
         "spectral-sensitivity-and-color-fidelity",
-        "spectral-color-fidelity.svg",
-        "Dot plot comparing ISO-style color-fidelity scores for five cameras across three chart sets.",
         "Measured spectral sensitivities predicted four cameras' paired chart captures to 9.5–13.8% RMS per channel; the fifth lacked a paired capture.",
     ),
 )
@@ -458,9 +450,8 @@ IMAGING = Project(
     },
     # Figures shown at full reading width on the landing page. Thumbnails of
     # dense multi-panel plots are decoration at card size, not useful previews.
-    # Deliberately disjoint from HOME_SELECTIONS. The home page carries four
-    # results; this page adds two legible figures rather than repeating the
-    # same plots or turning the overview into a figure inventory.
+    # The home page links selected findings in text. This page adds two
+    # legible figures at reading width rather than using dense chart thumbnails.
     social_image="/assets/figures/context/colorchecker-sg-patch-grid.jpg",
     social_image_alt=(
         "Grid of matte color patches on a dark ground from a ColorChecker "
@@ -1865,7 +1856,7 @@ def profile_art(asset: ProfileAsset) -> str:
 
 def selected_work(cards: list[Card]) -> str:
     by_slug = {card.slug: card for card in cards}
-    items = []
+    findings = []
     for selection in HOME_SELECTIONS:
         card = by_slug.get(selection.slug)
         if card is None:
@@ -1883,68 +1874,52 @@ def selected_work(cards: list[Card]) -> str:
                     "its study-index result"
                 )
         route = f"/imaging/studies/{selection.slug}/"
-        items.append(
-            '<article class="home-work-card">'
-            f'<a class="home-work-figure" href="{route}">'
-            f'<img src="/assets/figures/{selection.figure}" '
-            f'alt="{html.escape(selection.alt, quote=True)}"></a>'
-            f'<div><h3><a href="{route}">{html.escape(card.title)}</a></h3>'
-            f"<p>{html.escape(selection.summary)}</p></div>"
-            "</article>"
+        findings.append(
+            f'<li><a href="{route}">{html.escape(card.title)}</a>'
+            f'<p>{html.escape(selection.summary)}</p></li>'
         )
-    # The application and display case study lead as larger features.
     hero = HDR_FIGURES["STIMULUS_SHOT"]
-    feature = (
-        '<article class="home-work-card home-work-feature home-work-flagship">'
+    hdr = (
+        '<article class="home-work-card home-work-feature">'
         f'<a class="home-work-figure" href="{HDR_ROUTE}">'
         "<picture>"
         f'<source srcset="/assets/hdr/{hero.stem}.webp" type="image/webp">'
         f'<img src="{hero.display}" alt="{html.escape(hero.alt, quote=True)}" '
-        f'width="{hero.width}" height="{hero.height}">'
+        f'width="{hero.width}" height="{hero.height}" loading="lazy">'
         "</picture></a>"
-        f'<div><h3><a href="{HDR_ROUTE}">HDR psychophysics platform</a></h3>'
-        "<p>A macOS app for designing visual stimuli in physical units, "
-        "building counterbalanced trial sequences, and preparing HDR and SDR "
-        "psychophysics studies with display-calibration checks.</p></div>"
-        "</article>"
+        '<div><p class="project-kind">Swift · Metal · visual experiments</p>'
+        f'<h3><a href="{HDR_ROUTE}">HDR/SDR research platform</a></h3>'
+        "<p>I built a macOS app spanning stimulus design, trial scheduling, "
+        "controlled presentation, psychometric analysis and structured export.</p>"
+        f'<p class="project-action"><a href="{HDR_ROUTE}">Explore the platform →</a></p>'
+        "</div></article>"
     )
-    # The interactive calculator and selected studies follow the two features.
-    calculator = (
+    imaging = (
         '<article class="home-work-card home-work-feature">'
-        f'<a class="home-work-figure" href="{COMPARATOR_ROUTE}">'
-        f'<img src="{CALCULATOR_PREVIEW}" '
-        f'alt="{html.escape(CALCULATOR_PREVIEW_ALT, quote=True)}" '
-        'width="1200" height="630"></a>'
-        f'<div><h3><a href="{COMPARATOR_ROUTE}">CAM16 and Hellwig\u2013Fairchild '
-        "calculator</a></h3>"
-        "<p>Enter an XYZ value and viewing conditions to compare how CAM16 and "
-        "the 2022 proposal describe appearance. The calculation runs in the "
-        "browser without installation.</p></div>"
-        "</article>"
+        '<a class="home-work-figure" href="/imaging/">'
+        '<img src="/assets/figures/context/colorchecker-sg-patch-grid.jpg" '
+        f'alt="{html.escape(IMAGING.social_image_alt, quote=True)}" '
+        'loading="lazy"></a>'
+        '<div><p class="project-kind">C++20 · camera and color analysis</p>'
+        '<h3><a href="/imaging/">Imaging and color measurement</a></h3>'
+        '<p>Eight studies connect camera sharpness, sensor uniformity, color '
+        'characterization and spectral analysis with the calculations that '
+        'explain their results.</p>'
+        '<p class="project-action"><a href="/imaging/">Explore the studies →</a></p>'
+        '</div></article>'
     )
     return (
         '<div class="home-work-grid">'
-        + feature
+        + hdr
         + reflective_feature()
-        + calculator
-        + atlas_card()
-        + "".join(items)
-        + "</div>"
-    )
-
-
-def atlas_card() -> str:
-    return (
-        '<article class="home-work-card home-work-feature color-atlas-card">'
-        f'<a class="home-work-figure" href="{ATLAS_ROUTE}">'
-        f'<img src="{ATLAS_PREVIEW}" '
-        f'alt="{html.escape(ATLAS_PREVIEW_ALT, quote=True)}" '
-        'width="2160" height="1500" loading="lazy"></a>'
-        f'<div><h3><a href="{ATLAS_ROUTE}">{ATLAS_TITLE}</a></h3>'
-        '<p>An interactive MATLAB app for exploring hue, lightness and chroma. '
-        'Move through color planes, adjust viewing conditions, and distinguish '
-        'the selected RGB gamut from the limits of an sRGB preview.</p>'
-        '</div></article>'
+        + imaging
+        + '</div><h2 id="tools-and-findings">Tools and selected findings</h2>'
+        + '<div class="home-tools">'
+        + f'<p><a href="{COMPARATOR_ROUTE}">CAM16 and Hellwig–Fairchild calculator</a>'
+        + '<span>Compare color appearance under editable viewing conditions in your browser.</span></p>'
+        + f'<p><a href="{ATLAS_ROUTE}">{ATLAS_TITLE}</a>'
+        + '<span>Explore hue, lightness, chroma and RGB gamut in a MATLAB app.</span></p></div>'
+        + '<ul class="home-study-links">' + ''.join(findings) + '</ul>'
     )
 
 
@@ -2013,16 +1988,15 @@ def atlas_page(site_dir: Path, docs: dict) -> str:
 
 def reflective_feature() -> str:
     return (
-        '<article class="home-work-card home-work-feature home-work-flagship reflective-feature">'
+        '<article class="home-work-card home-work-feature reflective-feature">'
         f'<a class="home-work-figure" href="{REFLECTIVE_ROUTE}">'
-        f'<img src="{REFLECTIVE_ROUTE}assets/cr250-display.jpeg" width="768" height="1024" '
-        'alt="A non-contact spectroradiometer aimed at a reflective display, with a reference disk nearby." loading="lazy"></a>'
-        '<div><p class="project-kind">Display color · measurement · rendering</p>'
-        f'<h3><a href="{REFLECTIVE_ROUTE}">Reflective Color Display Engineering</a></h3>'
-        '<p>An experimental ICC route lowered average color error on a 133-color test grid. '
-        'Exact pattern measurements then showed how pixel arrangement, image surroundings and '
-        'display history could change measured color. I tested when those effects could be '
-        'predicted and built an offline renderer with explicit color and halftoning choices.</p>'
+        f'<img src="{REFLECTIVE_ROUTE}assets/renderer-v1-great-wave-project.png" '
+        'width="800" height="480" loading="lazy" '
+        'alt="Software pixel-map preview of The Great Wave using six measured display colors."></a>'
+        '<div><p class="project-kind">Display measurement · prediction · rendering</p>'
+        f'<h3><a href="{REFLECTIVE_ROUTE}">Color on a six-state e-paper display</a></h3>'
+        '<p>An experimental ICC profile cut mean measured error from 19.99 to 11.20 ΔE00 '
+        'on a 133-color grid. I also built a renderer and tested where color predictions fail.</p>'
         f'<p class="project-action"><a href="{REFLECTIVE_ROUTE}">Read the visual case study →</a></p>'
         '</div></article>'
     )
@@ -2110,8 +2084,6 @@ def home_page(site_dir: Path, cards: list[Card]) -> str:
     replacements = {
         "<!-- PIPELINE_ART -->": profile_art(PROFILE_ASSETS["PIPELINE_ART"]),
         "<!-- SELECTED_WORK -->": selected_work(cards),
-        "<!-- SPECTRAL_ART -->": profile_art(PROFILE_ASSETS["SPECTRAL_ART"]),
-        "<!-- SPATIAL_ART -->": profile_art(PROFILE_ASSETS["SPATIAL_ART"]),
     }
     for marker, replacement in replacements.items():
         if marker not in body_html:

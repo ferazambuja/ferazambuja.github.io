@@ -1,8 +1,8 @@
 {
   "files": {
     "index.html": {
-      "sha256": "4f308fdefa0b0ac67fa743c13bceb53604cc6d422ff0e51e36b9273b6071f912",
-      "source_sha256": "4f308fdefa0b0ac67fa743c13bceb53604cc6d422ff0e51e36b9273b6071f912"
+      "sha256": "bcaf160ce477cd08c8747db06d8866adc16ea7243098ca9a9a6a6fd5bad3931e",
+      "source_sha256": "bcaf160ce477cd08c8747db06d8866adc16ea7243098ca9a9a6a6fd5bad3931e"
     },
     "measurement-investigation.json": {
       "sha256": "1ab2c8fa44ee7d0b6c38ab87f6d8346bc60b2c73b67dbe917b87c0ccd974cb18",
@@ -613,8 +613,8 @@
       "source_sha256": "f52ca499a04a18795e4006357b0676b8ef5f50e614f7264b66a6f503f19058d6"
     },
     "renderer/index.html": {
-      "sha256": "db37bc4c1b0311d7146a016b67ca33e5ffbf4c065f8a7b0f221473577c384ecd",
-      "source_sha256": "db37bc4c1b0311d7146a016b67ca33e5ffbf4c065f8a7b0f221473577c384ecd"
+      "sha256": "a014ea78d0b88be4494d295af24c6f6a1e512c9429b387ac7b49be95f1e6475b",
+      "source_sha256": "a014ea78d0b88be4494d295af24c6f6a1e512c9429b387ac7b49be95f1e6475b"
     },
     "icc/index.html": {
       "sha256": "729c17e23885895ca4ac4d521915a0e84a559757c8f0ea5458e27c3c60ac34ca",
@@ -629,8 +629,8 @@
       "source_sha256": "28ec31c2a9642f334812cedcc81376af3fa574cc00d0c01303b95c65299a3a28"
     },
     "fragment-routes.json": {
-      "sha256": "43b3cb4f69dddfc2f6a2b85cc627ede2bdb722fa08c29303ed8a1d220fb2aa71",
-      "source_sha256": "43b3cb4f69dddfc2f6a2b85cc627ede2bdb722fa08c29303ed8a1d220fb2aa71"
+      "sha256": "6ad9472bae04a46319fb71a426205573667be4920db8d3a8630f0cccfe3ee2fd",
+      "source_sha256": "6ad9472bae04a46319fb71a426205573667be4920db8d3a8630f0cccfe3ee2fd"
     },
     "shell.css": {
       "sha256": "26298eacee5f100828a7f74ada53cff907b57705d919129c2b0280d2001c8566",
@@ -647,6 +647,30 @@
     "assets/renderer-v1-great-wave-project.png": {
       "sha256": "81a1b4e7df6bb1983c357bd215f306f6fe2164cc660a289656f53d7534e5450b",
       "source_sha256": "81a1b4e7df6bb1983c357bd215f306f6fe2164cc660a289656f53d7534e5450b"
+    },
+    "assets/renderer-gallery/coffee-source.png": {
+      "sha256": "0a90ff20220488705b6d11e25d83d33ea096d35a4da6294240e6b518541c7960",
+      "source_sha256": "0a90ff20220488705b6d11e25d83d33ea096d35a4da6294240e6b518541c7960"
+    },
+    "assets/renderer-gallery/coffee-pimoroni.png": {
+      "sha256": "447d9fcf39e29663d7adb738d9c5eff4a38486a923f9e4767c3705a633162df3",
+      "source_sha256": "447d9fcf39e29663d7adb738d9c5eff4a38486a923f9e4767c3705a633162df3"
+    },
+    "assets/renderer-gallery/coffee-project.png": {
+      "sha256": "449f9ce21f6b0d0527f104454187005cd9690b6ffdf2c07d8e27f0539cd33d86",
+      "source_sha256": "449f9ce21f6b0d0527f104454187005cd9690b6ffdf2c07d8e27f0539cd33d86"
+    },
+    "assets/renderer-gallery/chelsea-source.png": {
+      "sha256": "81f4be215b20287ff8aebe7b73a540280d1511980073860ff22f6b0405651122",
+      "source_sha256": "81f4be215b20287ff8aebe7b73a540280d1511980073860ff22f6b0405651122"
+    },
+    "assets/renderer-gallery/chelsea-pimoroni.png": {
+      "sha256": "f72b8ab27907630e3e5ea56d4be46e02a55cc8aa4b1f043d39ea09d49ae82d60",
+      "source_sha256": "f72b8ab27907630e3e5ea56d4be46e02a55cc8aa4b1f043d39ea09d49ae82d60"
+    },
+    "assets/renderer-gallery/chelsea-project.png": {
+      "sha256": "a186b9dc0c7ffb4698e1be5db25da7d4a6afe4e487a4f013c9e9be26e28a2dbf",
+      "source_sha256": "a186b9dc0c7ffb4698e1be5db25da7d4a6afe4e487a4f013c9e9be26e28a2dbf"
     }
   },
   "presentation_source": "portfolio-owned"

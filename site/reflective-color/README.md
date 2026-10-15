@@ -41,6 +41,13 @@ reviewing the selected inputs:
   --comparison-dir /path/to/retained-comparison --write
 ```
 
+The Coffee and Chelsea gallery uses the interpreted source frames and matched
+Floyd–Steinberg outputs from the existing eight-image comparison, with the same
+visualization palette. To include it in either verification or regeneration,
+add `--gallery-completion-dir /path/to/completion` and
+`--gallery-analysis-dir /path/to/analysis`. The tool verifies the saved reports
+and input files before exporting the images; it does not rerun the renderers.
+
 ## Local verification
 
 From the repository root:

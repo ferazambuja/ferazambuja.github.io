@@ -1,9 +1,7 @@
 # Imaging Engineering & Color Science
 
-I build C++20, Python, and Swift/Metal tools for camera and display image quality, color
-science, and HDR/SDR research. My work combines sensor-level analysis,
-numerical methods, and hands-on color measurement with professional studio
-experience as a Photographic Assistant and Digital Capture Technician.
+I build tools and experiments that connect camera and display measurements
+to the images we see, using C++20, Python and Swift/Metal.
 
 <!-- PIPELINE_ART -->
 
@@ -13,48 +11,15 @@ experience as a Photographic Assistant and Digital Capture Technician.
 
 ## From photography to imaging systems
 
-My B.F.A. in Professional Photographic Illustration included the Advertising
-Photography option and a minor in Applied Imaging Systems. That background
-joined lighting, capture, and visual judgment with the technical questions that
-now drive my camera, color, and display work.
+My B.F.A. in Professional Photographic Illustration and minor in Applied
+Imaging Systems brought lighting, capture and visual judgment into my
+engineering work. I later built my HDR/SDR research platform as part of my
+M.S. thesis under Dr. Mark D. Fairchild.
 
-<!-- SPECTRAL_ART -->
-
-### Imaging and color measurement
-
-Eight public investigations connect camera sharpness, sensor-level uniformity,
-color characterization, spectral analysis, instrument measurement, and
-color-management algorithms. I compare camera and instrument records to ask
-where image detail and color change, then use controlled software experiments
-to examine the tradeoffs in color calculations and gamut mapping.
-
-[Explore the imaging portfolio](/imaging/) or [inspect the technical
-repository](https://github.com/ferazambuja/imaging-color-measurement).
-
-### HDR/SDR psychophysics research platform
-
-I built an end-to-end Swift/Metal macOS research application for study
-authoring, controlled execution, response and session records, HDR presentation
-state, measurement context, psychometric analysis, and structured export as
-part of my M.S. thesis under Dr. Mark D. Fairchild.
-
-[Explore stimulus design and study authoring](/hdr-platform/).
-
-## Camera and photographic practice
-
-My experience includes color-managed capture and output, digital and film
-systems, studio lighting, video, camera and image-quality evaluation, and color
-measurement. In an advertising studio I supported professional capture,
-lighting, and color-managed workflows. At RIT I spent four continuous years as
-a Photographic Equipment Student Manager, supporting a 3,000+ item facility
-and supervising 35+ student employees.
-
-<!-- SPATIAL_ART -->
-
-## Current focus
-
-Camera and display measurement, color prediction and rendering, spectral
-analysis, HDR/SDR experimentation, and modern C++.
+I worked as a Photographic Assistant and Digital Capture Technician in an
+advertising studio. At RIT, I spent four continuous years as a Photographic
+Equipment Student Manager, supporting a 3,000+ item facility and supervising
+35+ student employees.
 
 [GitHub](https://github.com/ferazambuja) ·
 [LinkedIn](https://www.linkedin.com/in/fernando-voltolini-de-azambuja)

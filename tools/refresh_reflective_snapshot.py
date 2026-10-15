@@ -22,6 +22,12 @@ RENDERER_ASSET_PINS = {
     "assets/renderer-v1-great-wave-source.png": "6aeac27e820325e7c87ce4c80d0d42fe90b49024ab8eaa6cb6a75c4af258e300",
     "assets/renderer-v1-great-wave-pimoroni.png": "f2b081c274145d8ac434b2ca7539c6a4e5d49c848dcbca509cf69ed90dc78b03",
     "assets/renderer-v1-great-wave-project.png": "81a1b4e7df6bb1983c357bd215f306f6fe2164cc660a289656f53d7534e5450b",
+    "assets/renderer-gallery/coffee-source.png": "0a90ff20220488705b6d11e25d83d33ea096d35a4da6294240e6b518541c7960",
+    "assets/renderer-gallery/coffee-pimoroni.png": "447d9fcf39e29663d7adb738d9c5eff4a38486a923f9e4767c3705a633162df3",
+    "assets/renderer-gallery/coffee-project.png": "449f9ce21f6b0d0527f104454187005cd9690b6ffdf2c07d8e27f0539cd33d86",
+    "assets/renderer-gallery/chelsea-source.png": "81f4be215b20287ff8aebe7b73a540280d1511980073860ff22f6b0405651122",
+    "assets/renderer-gallery/chelsea-pimoroni.png": "f72b8ab27907630e3e5ea56d4be46e02a55cc8aa4b1f043d39ea09d49ae82d60",
+    "assets/renderer-gallery/chelsea-project.png": "a186b9dc0c7ffb4698e1be5db25da7d4a6afe4e487a4f013c9e9be26e28a2dbf",
 }
 
 

@@ -20,6 +20,23 @@
   <p class="caption">Katsushika Hokusai, <a href="https://www.metmuseum.org/art/collection/search/45434"><em>Under the Wave off Kanagawa (The Great Wave)</em></a>, ca. 1830–32. The Metropolitan Museum of Art, JP1847. Public domain. Only the frame's side padding is hidden here; the artwork is not cropped.</p>
 </div>
 </section>
+<section class="story-chapter" id="renderer-gallery"><h2>More image comparisons</h2>
+<p class="caption">Rendered previews share one six-color palette. Select an image to view it at full size.</p>
+<h3>Coffee</h3>
+<div class="artwork-triptych" role="group" aria-label="Coffee: source, Pimoroni and project renderer">
+<figure><div class="context-pixels"><a href="/reflective-color-display/assets/renderer-gallery/coffee-source.png"><img src="/reflective-color-display/assets/renderer-gallery/coffee-source.png" width="800" height="480" loading="lazy" alt="Source photograph of a coffee cup on a wooden table"></a></div><figcaption>Source</figcaption></figure>
+<figure><div class="context-pixels"><a href="/reflective-color-display/assets/renderer-gallery/coffee-pimoroni.png"><img src="/reflective-color-display/assets/renderer-gallery/coffee-pimoroni.png" width="800" height="480" loading="lazy" alt="Coffee rendered with Pimoroni's six-color method"></a></div><figcaption>Pimoroni</figcaption></figure>
+<figure><div class="context-pixels"><a href="/reflective-color-display/assets/renderer-gallery/coffee-project.png"><img src="/reflective-color-display/assets/renderer-gallery/coffee-project.png" width="800" height="480" loading="lazy" alt="Coffee rendered with my measured-color method"></a></div><figcaption>My renderer</figcaption></figure>
+</div>
+<p class="caption">Photograph: Rachel Michetti, courtesy of Pikolo Espresso Bar. <a href="https://scikit-image.org/docs/stable/api/skimage.data.html#skimage.data.coffee">scikit-image sample, CC0.</a></p>
+<h3>Chelsea</h3>
+<div class="artwork-triptych" role="group" aria-label="Chelsea: source, Pimoroni and project renderer">
+<figure><div class="context-pixels"><a href="/reflective-color-display/assets/renderer-gallery/chelsea-source.png"><img src="/reflective-color-display/assets/renderer-gallery/chelsea-source.png" width="800" height="480" loading="lazy" alt="Source photograph of Chelsea, a tabby cat"></a></div><figcaption>Source</figcaption></figure>
+<figure><div class="context-pixels"><a href="/reflective-color-display/assets/renderer-gallery/chelsea-pimoroni.png"><img src="/reflective-color-display/assets/renderer-gallery/chelsea-pimoroni.png" width="800" height="480" loading="lazy" alt="Chelsea rendered with Pimoroni's six-color method"></a></div><figcaption>Pimoroni</figcaption></figure>
+<figure><div class="context-pixels"><a href="/reflective-color-display/assets/renderer-gallery/chelsea-project.png"><img src="/reflective-color-display/assets/renderer-gallery/chelsea-project.png" width="800" height="480" loading="lazy" alt="Chelsea rendered with my measured-color method"></a></div><figcaption>My renderer</figcaption></figure>
+</div>
+<p class="caption">Photograph: Stefan van der Walt. <a href="https://scikit-image.org/docs/stable/api/skimage.data.html#skimage.data.chelsea">scikit-image sample, CC0.</a></p>
+</section>
 <section class="story-chapter" id="renderer-vendor-comparison" data-analysis-sha256="53f7f1704a5862f4adf05b761f7d4f87253aeaa046a876cc490a593ada400718"><h2>Lower computed color error, with local losses</h2>
 <p>I compared both renderers on eight development images: four real images and four synthetic targets. Each received the same interpreted image and framing. I divided the image content into complete 16 × 16 pixel tiles, averaged each tile's source color in D50 XYZ, and compared it with the average color implied by its selected native states.</p>
 <p>The calculation weights the six measured native colors by their pixel counts. CIEDE2000 (ΔE00) expresses the distance between that reference mixture and the source color; lower is closer. My renderer had a lower mean on every image. Giving each image equal weight produced the comparison below.</p>
