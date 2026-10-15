@@ -145,6 +145,13 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertEqual({p.relative_to(self.project).as_posix() for p in self.project.rglob("*") if p.is_file()}, set(self.manifest))
         self.assertNotIn("snapshot.json", {p.name for p in self.project.rglob("*")})
 
+    def test_stylesheet_url_versions_the_selected_css_payload(self):
+        css_digest = hashlib.sha256((SOURCE / "story.css").read_bytes()).hexdigest()
+        expected = f"{REFLECTIVE_ROUTE}story.css?v={css_digest[:12]}"
+        for name, structure in self.structures.items():
+            with self.subTest(page=name):
+                self.assertIn(expected, structure.links)
+
     def test_story_keeps_semantic_sections_and_visuals(self):
         for anchor in ("display-primer-title", "first-icc", "featured-measurement", "prediction-result"):
             with self.subTest(anchor=anchor):

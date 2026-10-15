@@ -1097,6 +1097,12 @@ def build_reflective_color(site_dir: Path, output: Path) -> int:
         target.parent.mkdir(parents=True, exist_ok=True)
         if name.endswith(".html"):
             text = (source / name).read_text()
+            stylesheet = f'{REFLECTIVE_ROUTE}story.css'
+            if f'href="{stylesheet}"' in text:
+                text = text.replace(
+                    f'href="{stylesheet}"',
+                    f'href="{stylesheet}?v={files["story.css"]["sha256"][:12]}"',
+                )
             route = REFLECTIVE_ROUTE + name.removesuffix("index.html")
             # The delivery owns URL metadata. A selected source may have been
             # previewed elsewhere; never carry its old canonical into this site.
