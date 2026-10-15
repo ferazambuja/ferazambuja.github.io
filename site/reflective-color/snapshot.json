@@ -1,8 +1,8 @@
 {
   "files": {
     "index.html": {
-      "sha256": "df8148ea8c0de929482959694e12a5b096ef09932eceabafa0c671fb3e822f31",
-      "source_sha256": "df8148ea8c0de929482959694e12a5b096ef09932eceabafa0c671fb3e822f31"
+      "sha256": "f6bc17672dd3aeed6a6fa90527289cee751e9544a5536304afcc94ee1d87b115",
+      "source_sha256": "f6bc17672dd3aeed6a6fa90527289cee751e9544a5536304afcc94ee1d87b115"
     },
     "measurement-investigation.json": {
       "sha256": "1ab2c8fa44ee7d0b6c38ab87f6d8346bc60b2c73b67dbe917b87c0ccd974cb18",
@@ -597,8 +597,8 @@
       "source_sha256": "bb67eadb60dc0fa45b3153fc2751ee232eb053388b36c534ae76ab0a9ab777d7"
     },
     "story.css": {
-      "sha256": "06e259fe2fe03f6e0598870195d1d05de38c8530f2ae6993cde2ac0d543cc358",
-      "source_sha256": "06e259fe2fe03f6e0598870195d1d05de38c8530f2ae6993cde2ac0d543cc358"
+      "sha256": "fcc4bbbdbaedbe5881db243566feb40d66aa69f05b9d034797fd462e1e63586c",
+      "source_sha256": "fcc4bbbdbaedbe5881db243566feb40d66aa69f05b9d034797fd462e1e63586c"
     },
     "story.js": {
       "sha256": "c0f509a0af09f7f4295c037e00a60d798dffeb811ea9d968b61a725d3c7a4698",

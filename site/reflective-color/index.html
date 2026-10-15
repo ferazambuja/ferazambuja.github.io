@@ -21,13 +21,22 @@
 <p class="detail-link"><a href="/reflective-color-display/renderer/">See more rendered images and the comparison →</a></p>
 </section>
 <section class="story-chapter" id="pattern-findings"><h2>Same color counts, different measured colors</h2>
-<p>Could the amounts of each native color describe a pattern's output? I compared exact pixel maps with the same color counts and different arrangements. Some rearrangements measured far apart; others stayed close.</p>
-<div class="pattern-gallery" id="featured-measurement">
-<figure class="tested-pattern"><a href="/reflective-color-display/assets/pattern-previews/black_yellow-c1-h-full.png" aria-label="Full horizontal black/yellow digital pattern"><img src="/reflective-color-display/assets/pattern-previews/black_yellow-c1-h-crop.png" width="48" height="32" loading="lazy" alt="Enlarged crop of one-pixel horizontal black and yellow stripes"></a><figcaption>Horizontal black/yellow pixels</figcaption></figure>
-<figure class="tested-pattern"><a href="/reflective-color-display/assets/pattern-previews/black_yellow-c1-v-full.png" aria-label="Full vertical black/yellow digital pattern"><img src="/reflective-color-display/assets/pattern-previews/black_yellow-c1-v-crop.png" width="48" height="32" loading="lazy" alt="Enlarged crop of one-pixel vertical black and yellow stripes"></a><figcaption>Vertical black/yellow pixels</figcaption></figure>
+<p>Both patterns use <strong>50% black and 50% yellow pixels</strong>. I changed the stripe direction and measured the display. Horizontal stripes measured lighter; vertical stripes measured darker.</p>
+<div class="pattern-comparison" id="featured-measurement" data-comparison-id="BLACK-YELLOW-C1-ABBA-H-MINUS-V" role="group" aria-label="Same color counts: digital patterns and their measured-color previews" aria-describedby="pattern-preview-limit">
+<article class="pattern-result"><h3>Horizontal stripes</h3><div class="pattern-to-color">
+<figure class="tested-pattern"><a href="/reflective-color-display/assets/pattern-previews/black_yellow-c1-h-full.png" aria-label="Full horizontal black/yellow digital pattern"><img src="/reflective-color-display/assets/pattern-previews/black_yellow-c1-h-crop.png" width="48" height="32" loading="lazy" alt="Enlarged crop of one-pixel horizontal black and yellow stripes"></a><figcaption>Digital pattern</figcaption></figure>
+<b class="pattern-result-arrow" aria-hidden="true">→</b>
+<figure class="measured-color-card" data-orientation="H" data-xyz-d50="28.647665,31.16511,8.8837185" style="--measured-preview:#a0994d"><i role="img" aria-label="Approximate measured horizontal color: lighter olive yellow"></i><figcaption>Measured lighter</figcaption></figure>
+</div></article>
+<article class="pattern-result"><h3>Vertical stripes</h3><div class="pattern-to-color">
+<figure class="tested-pattern"><a href="/reflective-color-display/assets/pattern-previews/black_yellow-c1-v-full.png" aria-label="Full vertical black/yellow digital pattern"><img src="/reflective-color-display/assets/pattern-previews/black_yellow-c1-v-crop.png" width="48" height="32" loading="lazy" alt="Enlarged crop of one-pixel vertical black and yellow stripes"></a><figcaption>Digital pattern</figcaption></figure>
+<b class="pattern-result-arrow" aria-hidden="true">→</b>
+<figure class="measured-color-card" data-orientation="V" data-xyz-d50="12.68354,13.79376,3.0523955" style="--measured-preview:#6f6927"><i role="img" aria-label="Approximate measured vertical color: darker olive yellow"></i><figcaption>Measured darker</figcaption></figure>
+</div></article>
 </div>
-<p>In this one-pixel black/yellow comparison, the mean measured colors differed by <strong>18.24 ΔE00</strong>. Color counts alone could not describe both results. The comparison does not isolate a physical cause.</p>
-<p class="caption">The enlarged patterns show digital instructions, not measured appearance. Four i1Pro 3 readings, two per pattern; D50, CIE 1931 2° observer and nominal perfect-diffuser D50 Lab. ΔE00 expresses the distance between the two measured mean colors.</p>
+<p class="pattern-takeaway"><strong>Same amounts of black and yellow. Different measured colors.</strong> The two mean colors were <strong>18.24 ΔE00</strong> apart, so color counts alone could not describe both results.</p>
+<p class="caption" id="pattern-preview-limit">Left in each pair: enlarged digital pixels. Right: approximate sRGB previews from measured XYZ, not panel photographs. These show the direction of the color difference; your screen cannot reproduce the display's exact appearance.</p>
+<details class="pattern-method"><summary>Measurement details and limits</summary><p class="caption">In this one-pixel black/yellow comparison, four i1Pro 3 readings were taken, two per pattern; D50, CIE 1931 2° observer and nominal perfect-diffuser D50 Lab. ΔE00 expresses the distance between the two measured mean colors. The comparison does not isolate a physical cause, and other color pairs showed smaller differences.</p></details>
 <p class="detail-link"><a href="/reflective-color-display/pattern-behavior/">Explore arrangements, surroundings and repeated readings →</a></p>
 </section>
 <section class="story-chapter" id="first-icc"><h2>Color management reduced error on a measured grid</h2>

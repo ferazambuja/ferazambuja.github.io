@@ -448,6 +448,18 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn("Alternative renderings of two target colors", prediction)
         self.assertIn("Desired colors are image colors scaled to the panel's measured white", prediction)
 
+    def test_overview_previews_match_the_featured_measured_orientations(self):
+        data = json.loads((SOURCE / "measurement-investigation.json").read_text())
+        comparison_id = re.search(r'id="featured-measurement" data-comparison-id="([^"]+)"', self.article).group(1)
+        row = next(row for row in data["rows"] if row["comparison_id"] == comparison_id)
+        previews = re.findall(r'class="measured-color-card" data-orientation="([HV])" data-xyz-d50="([^"]+)"', self.article)
+        self.assertEqual({orientation for orientation, _ in previews}, {"H", "V"})
+        for orientation, xyz in previews:
+            with self.subTest(orientation=orientation):
+                for actual, measured in zip(map(float, xyz.split(",")), row[orientation]["xyz_d50"], strict=True):
+                    self.assertAlmostEqual(actual, measured)
+        self.assertGreater(row["H"]["lab_d50"][0], row["V"]["lab_d50"][0])
+
     def test_public_copy_avoids_internal_workflow_language_and_completes_credits(self):
         readme = (SOURCE / "README.md").read_text()
         private_home_fragment = "/" + "Users" + "/"
