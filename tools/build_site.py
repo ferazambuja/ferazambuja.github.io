@@ -119,6 +119,8 @@ class Excerpt:
 @dataclass(frozen=True)
 class HomeSelection:
     slug: str
+    figure: str
+    alt: str
     summary: str
 
 
@@ -157,14 +159,20 @@ class ProfileAsset:
 HOME_SELECTIONS = (
     HomeSelection(
         "sfr-aperture-and-field",
+        "sfr-aperture-field.svg",
+        "Line chart comparing Nikon D800 and D810 MTF50 across aperture, with center-to-corner margin bars.",
         "Across 299 accepted regions, a center-only score missed important field behavior in the D800 series.",
     ),
     HomeSelection(
         "gamut-mapping",
+        "gamut-mapping.svg",
+        "CIELAB color plane showing Display-P3 colors mapped toward sRGB, beside method-comparison plots.",
         "Local MINDE lowered mean CIEDE2000 to 2.323, but no method won across average error, worst case, and hue behavior.",
     ),
     HomeSelection(
         "spectral-sensitivity-and-color-fidelity",
+        "spectral-color-fidelity.svg",
+        "Dot plot comparing ISO-style color-fidelity scores for five cameras across three chart sets.",
         "Measured spectral sensitivities predicted four cameras' paired chart captures to 9.5–13.8% RMS per channel; the fifth lacked a paired capture.",
     ),
 )
@@ -450,8 +458,8 @@ IMAGING = Project(
     },
     # Figures shown at full reading width on the landing page. Thumbnails of
     # dense multi-panel plots are decoration at card size, not useful previews.
-    # The home page links selected findings in text. This page adds two
-    # legible figures at reading width rather than using dense chart thumbnails.
+    # The home page shows three selected findings. This page adds two other
+    # figures at reading width rather than repeating that selection.
     social_image="/assets/figures/context/colorchecker-sg-patch-grid.jpg",
     social_image_alt=(
         "Grid of matte color patches on a dark ground from a ColorChecker "
@@ -1844,13 +1852,16 @@ def project_landing(
     )
 
 
-def profile_art(asset: ProfileAsset) -> str:
-    return (
-        f'<figure class="{asset.css_class}">'
+def photography_banner() -> str:
+    images = ''.join(
+        f'<a href="/assets/profile/{asset.filename}">'
         f'<img src="/assets/profile/{asset.filename}" '
-        f'alt="{html.escape(asset.alt, quote=True)}">'
-        f"<figcaption>{html.escape(asset.caption)}</figcaption>"
-        "</figure>"
+        f'alt="{html.escape(asset.alt, quote=True)}"></a>'
+        for asset in PROFILE_ASSETS.values()
+    )
+    return (
+        f'<figure class="home-photo-banner"><div class="home-photo-strip">{images}</div>'
+        '<figcaption>Original photographs and digital composites by Fernando</figcaption></figure>'
     )
 
 
@@ -1875,8 +1886,12 @@ def selected_work(cards: list[Card]) -> str:
                 )
         route = f"/imaging/studies/{selection.slug}/"
         findings.append(
-            f'<li><a href="{route}">{html.escape(card.title)}</a>'
-            f'<p>{html.escape(selection.summary)}</p></li>'
+            '<article class="home-work-card home-result-card">'
+            f'<a class="home-work-figure" href="{route}">'
+            f'<img src="/assets/figures/{selection.figure}" '
+            f'alt="{html.escape(selection.alt, quote=True)}" loading="lazy"></a>'
+            f'<div><h3><a href="{route}">{html.escape(card.title)}</a></h3>'
+            f'<p>{html.escape(selection.summary)}</p></div></article>'
         )
     hero = HDR_FIGURES["STIMULUS_SHOT"]
     hdr = (
@@ -1913,13 +1928,24 @@ def selected_work(cards: list[Card]) -> str:
         + hdr
         + reflective_feature()
         + imaging
-        + '</div><h2 id="tools-and-findings">Tools and selected findings</h2>'
-        + '<div class="home-tools">'
-        + f'<p><a href="{COMPARATOR_ROUTE}">CAM16 and Hellwig–Fairchild calculator</a>'
-        + '<span>Compare color appearance under editable viewing conditions in your browser.</span></p>'
-        + f'<p><a href="{ATLAS_ROUTE}">{ATLAS_TITLE}</a>'
-        + '<span>Explore hue, lightness, chroma and RGB gamut in a MATLAB app.</span></p></div>'
-        + '<ul class="home-study-links">' + ''.join(findings) + '</ul>'
+        + '</div><h2 id="tools-and-findings">Interactive color tools</h2>'
+        + '<div class="home-work-grid home-tool-grid">'
+        + '<article class="home-work-card home-work-feature">'
+        + f'<a class="home-work-figure" href="{COMPARATOR_ROUTE}">'
+        + f'<img src="{CALCULATOR_PREVIEW}" width="1200" height="630" '
+        + f'alt="{html.escape(CALCULATOR_PREVIEW_ALT, quote=True)}" loading="lazy"></a>'
+        + f'<div><h3><a href="{COMPARATOR_ROUTE}">CAM16 and Hellwig–Fairchild calculator</a></h3>'
+        + '<p>I built a browser calculator to compare the two models. Change XYZ, '
+        + 'the adopted white or viewing conditions and see the appearance values update.</p></div></article>'
+        + '<article class="home-work-card home-work-feature">'
+        + f'<a class="home-work-figure" href="{ATLAS_ROUTE}">'
+        + f'<img src="{ATLAS_PREVIEW}" width="2160" height="1500" '
+        + f'alt="{html.escape(ATLAS_PREVIEW_ALT, quote=True)}" loading="lazy"></a>'
+        + f'<div><h3><a href="{ATLAS_ROUTE}">Color Atlas</a></h3>'
+        + '<p>My MATLAB app turns color models into explorable planes. Move through '
+        + 'hue, lightness and chroma, and compare RGB gamut with screen-preview limits.</p></div></article>'
+        + '</div><h2 id="selected-findings">What the studies found</h2>'
+        + '<div class="home-results">' + ''.join(findings) + '</div>'
     )
 
 
@@ -2082,7 +2108,7 @@ def home_page(site_dir: Path, cards: list[Card]) -> str:
         home_md, doc_dir=PurePosixPath("."), project=IMAGING
     )
     replacements = {
-        "<!-- PIPELINE_ART -->": profile_art(PROFILE_ASSETS["PIPELINE_ART"]),
+        "<!-- PHOTOGRAPHY_BANNER -->": photography_banner(),
         "<!-- SELECTED_WORK -->": selected_work(cards),
     }
     for marker, replacement in replacements.items():

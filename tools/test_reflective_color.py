@@ -32,7 +32,6 @@ NARRATIVE_PAGES = (
     "renderer/index.html",
     "icc/index.html",
 )
-CASE_STUDY_PAGES = (*NARRATIVE_PAGES, "measurements/index.html")
 
 
 class PageStructure(HTMLParser):
@@ -120,10 +119,9 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         (cls.output / "assets").mkdir()
         cls.page_count = build_reflective_color(ROOT / "site", cls.output)
         cls.project = cls.output / REFLECTIVE_ROUTE.strip("/")
-        cls.pages = {name: (cls.project / name).read_text() for name in CASE_STUDY_PAGES}
+        cls.pages = {name: (cls.project / name).read_text() for name in NARRATIVE_PAGES}
         cls.structures = {name: PageStructure(text) for name, text in cls.pages.items()}
         cls.article = (cls.project / "index.html").read_text()
-        cls.atlas = (cls.project / "measurements/index.html").read_text()
         cls.narrative = "\n".join(cls.pages[name] for name in NARRATIVE_PAGES)
         cls.scripts = "\n".join(path.read_text() for path in cls.project.rglob("*.js"))
         cls.manifest = json.loads((SOURCE / "snapshot.json").read_text())["files"]
@@ -139,7 +137,7 @@ class ReflectiveDeliveryTests(unittest.TestCase):
                 if not name.endswith(".html"):
                     self.assertEqual((SOURCE / name).read_bytes(), (self.project / name).read_bytes())
                 if name.endswith(".png") or name in {
-                    "measurement-investigation.json", "measurements/atlas-experiments.json"
+                    "measurement-investigation.json"
                 }:
                     self.assertEqual(record["sha256"], record["source_sha256"])
 
@@ -148,15 +146,13 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertNotIn("snapshot.json", {p.name for p in self.project.rglob("*")})
 
     def test_story_keeps_semantic_sections_and_visuals(self):
-        for anchor in ("display-primer-title", "first-icc", "featured-measurement", "prediction-result", "all-pair-explorer"):
+        for anchor in ("display-primer-title", "first-icc", "featured-measurement", "prediction-result"):
             with self.subTest(anchor=anchor):
                 self.assertIn(f'id="{anchor}"', self.article)
         for anchor in ("metric-comparison", "native-width-overview", "prediction-return-status", "image-context-result", "prediction-transfer"):
             with self.subTest(detail_anchor=anchor):
                 self.assertIn(f'id="{anchor}"', self.narrative)
         self.assertIn("function showDataFailure(readerState)", self.scripts)
-        self.assertIn("function forwardAtlasSelection()", self.scripts)
-        self.assertIn('new URLSearchParams(location.search)', self.scripts)
         self.assertIn("function captureReaderState()", self.scripts)
         self.assertIn("function realignHashAfterDynamicContent(readerState)", self.scripts)
         self.assertEqual(self.scripts.count("realignHashAfterDynamicContent(readerState);"), 2)
@@ -201,7 +197,6 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         for anchor in ("pattern-findings", "renderer-check", "instrument-check", "patterns-to-prediction"):
             self.assertIn(f'id="{anchor}"', self.narrative)
         self.assertIn('id="unchanged-pattern-returns"', patterns)
-        self.assertIn("comparison=return-stability39&amp;pattern=FIXED-RENDERER-NEXT-COVERAGE39-B-PALE-RED-LIGHT", patterns)
         for identifier in ("pair-comparison-table", "other-constructions"):
             self.assertIn(f'id="{identifier}"', patterns)
         for scope in ('data-scope-unit="native-pairs" data-count="15"',
@@ -220,12 +215,10 @@ class ReflectiveDeliveryTests(unittest.TestCase):
         self.assertIn('id="fixed-adjustment-example"', prediction)
         for case in ("warm-light", "neutral128"):
             self.assertIn(f'data-correction-case="{case}"', prediction)
-        self.assertIn('href="/reflective-color-display/measurements/?experiment=bcd&amp;comparison=bcd"', prediction)
         patterns = self.pages["pattern-behavior/index.html"]
         self.assertEqual(patterns.count('id="context-pixel-examples"'), 1)
         for filename in ("cypresses-image.png", "cypresses-control.png"):
             self.assertEqual(patterns.count(f'src="/reflective-color-display/assets/{filename}"'), 1)
-        self.assertIn('href="/reflective-color-display/measurements/?experiment=center-context8&amp;comparison=CYPRESSES_IMAGE_MINUS_CONTROL"', patterns)
 
     def test_icc_grid_identifies_the_renderer_at_the_result(self):
         # A reader may arrive at this result directly, bypassing the introduction.
@@ -261,7 +254,7 @@ class ReflectiveDeliveryTests(unittest.TestCase):
                 self.assertFalse(structure.case_nav_in_main)
 
     def test_single_document_landmarks_and_current_navigation(self):
-        routes = {REFLECTIVE_ROUTE + name.removesuffix("index.html") for name in CASE_STUDY_PAGES}
+        routes = {REFLECTIVE_ROUTE + name.removesuffix("index.html") for name in NARRATIVE_PAGES}
         titles = set()
         descriptions = set()
         for name, text in self.pages.items():
@@ -562,18 +555,25 @@ class ReflectiveDeliveryTests(unittest.TestCase):
                     self.assertEqual(resolved.netloc, "portfolio.example")
                     self.assertTrue((self.output / resolved.path.lstrip("/")).is_file())
 
-    def test_all_existing_experiment_choices_stay_available(self):
-        data = json.loads((self.project / "measurements/atlas-experiments.json").read_text())
-        ids = [e["id"] for e in data["experiments"]]
-        self.assertEqual(len(ids), len(set(ids)))
-        self.assertTrue({"unseen-images-local12", "return-stability39", "center-context8", "coverage39-complete"}.issubset(ids))
-        self.assertIn("atlas-family", self.atlas)
-        self.assertIn("atlas-experiment", self.atlas)
-        self.assertIn("atlas-reading-pattern", self.atlas)
-        returns = next(e for e in data["experiments"] if e["id"] == "return-stability39")
-        self.assertIn(
-            "Patterns were selected using earlier results, so this was not a test on new inputs "
-            "and does not demonstrate a general learning curve.", returns["condition"])
+    def test_retired_explorer_is_excluded_while_curated_charts_keep_their_input(self):
+        retired = REFLECTIVE_ROUTE + "measurements/"
+        is_retired = lambda url: urlparse(urljoin(SITE_URL, url)).path.startswith(retired)
+        self.assertTrue(is_retired(retired + "?pair=BLUE_GREEN"))
+        self.assertFalse(is_retired(REFLECTIVE_ROUTE + "pattern-behavior/"))
+        self.assertIn(retired, 'const oldLink="' + retired + '?pair=BLUE_GREEN";')
+        self.assertFalse((self.project / "measurements").exists())
+        self.assertFalse(any(name.startswith("measurements/") for name in self.manifest))
+        self.assertNotIn("atlas-site.css", self.manifest)
+        self.assertFalse((self.project / "atlas-site.css").exists())
+        for name, structure in self.structures.items():
+            with self.subTest(page=name):
+                self.assertFalse(any(is_retired(url) for url in structure.links))
+        self.assertNotIn(retired, self.scripts)
+        data = json.loads((self.project / "measurement-investigation.json").read_text())
+        self.assertTrue(data["rows"])
+        self.assertTrue(data["wavelengths_nm"])
+        self.assertTrue(data["exact_payload_history"])
+        self.assertIn('fetch("/reflective-color-display/measurement-investigation.json")', self.scripts)
 
     def test_photographs_contain_no_exif_xmp_or_iptc(self):
         for path in (self.project / "assets").glob("*.jpeg"):
@@ -593,8 +593,7 @@ class ReflectiveDeliveryTests(unittest.TestCase):
             else:
                 self.fail("photograph has no compressed image data")
 
-    def test_public_case_study_is_indexable_while_atlas_stays_unlisted(self):
-        self.assertIn('content="noindex,nofollow"', self.atlas)
+    def test_public_case_study_is_indexable_without_the_retired_explorer(self):
         site_map = sitemap(self.output)
         for name in NARRATIVE_PAGES:
             with self.subTest(page=name):
@@ -650,7 +649,6 @@ class ReflectiveSnapshotTests(unittest.TestCase):
         self.source = Path(self.temp.name)
         self.pinned = {
             "measurement-investigation.json": b'{"retained":true}',
-            "measurements/atlas-experiments.json": b'{"experiments":[]}',
             "assets/measurement.png": b"retained-image-payload",
         }
         self.pinned.update({name: (SOURCE / name).read_bytes() for name in RENDERER_ASSET_PINS})
@@ -696,6 +694,21 @@ class ReflectiveSnapshotTests(unittest.TestCase):
                     prepare_snapshot(self.source)
                 self.assertEqual(self.snapshot.read_bytes(), self.original_snapshot)
                 path.write_bytes(payload)
+
+    def test_refresh_retires_the_explorer_without_deleting_its_sources(self):
+        retired = self.source / "measurements/index.html"
+        retired.parent.mkdir()
+        retired.write_text("Original explorer source")
+        self.manifest["files"]["measurements/index.html"] = {"sha256": hashlib.sha256(retired.read_bytes()).hexdigest()}
+        stylesheet = self.source / "atlas-site.css"
+        stylesheet.write_text(".archived-explorer{}")
+        self.manifest["files"]["atlas-site.css"] = {"sha256": hashlib.sha256(stylesheet.read_bytes()).hexdigest()}
+        self.snapshot.write_text(json.dumps(self.manifest))
+        prepared = json.loads(prepare_snapshot(self.source))
+        self.assertNotIn("measurements/index.html", prepared["files"])
+        self.assertNotIn("atlas-site.css", prepared["files"])
+        self.assertEqual(retired.read_text(), "Original explorer source")
+        self.assertEqual(stylesheet.read_text(), ".archived-explorer{}")
 
 
     def test_new_renderer_asset_admission_requires_the_reviewed_digest(self):

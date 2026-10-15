@@ -326,39 +326,10 @@ h1 {
 }
 
 .home h1 {
-  max-width: 20ch;
-  font-size: clamp(2.6rem, 1.8rem + 3vw, 4rem);
-  line-height: 1.02;
-  margin-top: 1.7rem;
-}
-
-/* Keep the opening artwork as part of the introduction without making anyone
-   scroll past a full-page image before reaching the work. At
-   desktop widths the positioning statement and artwork share the opening;
-   the document returns to one column before either side becomes cramped. */
-.home {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(15rem, 0.6fr);
-  column-gap: clamp(2rem, 4vw, 4.5rem);
-  align-items: start;
-}
-.home > * { grid-column: 1 / -1; }
-.home > h1 {
-  grid-column: 1;
-  grid-row: 1;
-}
-.home > p:first-of-type {
-  grid-column: 1;
-  grid-row: 2;
-  margin-bottom: 0;
-}
-.home > .profile-art-hero {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: center;
-  margin: 1.7rem 0 0;
-  max-width: 18rem;
-  justify-self: end;
+  max-width: none;
+  font-size: clamp(2.35rem, 1.7rem + 2vw, 3.4rem);
+  line-height: 1.05;
+  margin: 1.3rem 0 0.8rem;
 }
 
 .home > p:first-of-type {
@@ -847,27 +818,27 @@ pre code { background: none; padding: 0; }
 }
 .landing-figure figcaption a { white-space: nowrap; }
 
-/* ---------- profile home ---------- */
+/* ---------- portfolio home ---------- */
 
-.profile-art {
-  margin: 2.8rem 0 0;
-}
-.profile-art img {
-  margin: 0;
-  width: 100%;
-  object-fit: contain;
-  background: #080b0f;
-  border: 1px solid var(--rule);
+.home-photo-banner { margin: 0 0 1.3rem; }
+.home-photo-strip {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 0.85fr;
+  gap: 0.4rem;
+  height: clamp(6rem, 12vw, 9rem);
+  overflow: hidden;
   border-radius: 10px;
 }
-.profile-art figcaption {
-  margin-top: 0.65rem;
+.home-photo-strip a { display: block; min-width: 0; overflow: hidden; }
+.home-photo-strip img { width: 100%; height: 100%; object-fit: cover; margin: 0; }
+.home-photo-strip a:nth-child(1) img { object-position: 50% 25%; }
+.home-photo-strip a:nth-child(2) img { object-position: 50% 20%; }
+.home-photo-strip a:nth-child(3) img { object-position: 50% 52%; }
+.home-photo-banner figcaption {
+  margin-top: 0.4rem;
   color: var(--ink-faint);
-  font-size: 0.86rem;
+  font-size: 0.8rem;
 }
-.profile-art-hero { max-width: 52rem; }
-.profile-art-wide { max-width: 54rem; }
-.profile-art-portrait { max-width: 27rem; }
 
 .home-work-grid {
   display: grid;
@@ -907,17 +878,15 @@ pre code { background: none; padding: 0; }
   line-height: 1.55;
 }
 
-.home-tools {
+.home-tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.home-results { display: grid; gap: 1.25rem; margin-top: 0.5rem; }
+.home-result-card {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: center;
 }
-.home-tools p { margin: 0; padding: 1rem 0; border-block: 1px solid var(--rule); }
-.home-tools a, .home-study-links > li > a { font-weight: 600; }
-.home-tools span { display: block; margin-top: 0.4rem; color: var(--ink-soft); }
-.home-study-links { list-style: none; padding: 0; margin: 1.4rem 0 0; }
-.home-study-links li { padding: 0.8rem 0; border-bottom: 1px solid var(--rule-soft); max-width: none; }
-.home-study-links p { margin: 0.35rem 0 0; max-width: none; color: var(--ink-soft); }
+.home-result-card .home-work-figure { border-bottom: 0; border-right: 1px solid var(--rule); }
+.home-result-card .home-work-figure img { aspect-ratio: auto; }
 
 /* ---------- excerpts ---------- */
 
@@ -1104,19 +1073,16 @@ pre code { background: none; padding: 0; }
   .tool-feature { grid-template-columns: minmax(0, 1fr); }
   .calculator-grid { grid-template-columns: minmax(0, 1fr); }
   .calculator-explanation { grid-template-columns: minmax(0, 1fr); }
-  .home { display: block; }
   .home-work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .home > .profile-art-hero { display: none; }
+  .home-result-card { grid-template-columns: 1fr; }
+  .home-result-card .home-work-figure { border-right: 0; border-bottom: 1px solid var(--rule); }
 }
 
 @media (max-width: 42rem) {
   .topbar-inner { padding-inline: 1rem; }
   .layout-plain, .layout-with-sidebar { padding-inline: 1rem; }
   .home-work-grid { grid-template-columns: 1fr; }
-  .home-tools { grid-template-columns: 1fr; gap: 0; }
-  .home-tools p + p { border-top: 0; }
-  .home h1 { font-size: clamp(2.4rem, 10vw, 3.2rem); }
-  .profile-art { margin-top: 2rem; }
+  .home h1 { font-size: clamp(2.35rem, 8vw, 3rem); }
 }
 
 /* ---------- HDR platform ---------- */

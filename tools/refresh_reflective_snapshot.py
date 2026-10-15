@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "site/reflective-color"
 EDITORIAL_FILES = (
     "index.html", "pattern-behavior/index.html", "prediction/index.html",
-    "renderer/index.html", "icc/index.html", "measurements/index.html",
+    "renderer/index.html", "icc/index.html",
     "story.css", "story.js", "shell.css", "fragment-routes.json",
 )
 # Exact, separately reviewed renderer-v1 delivery. These are not editable prose.
@@ -38,7 +38,12 @@ def digest(path):
 def prepare(source=SOURCE):
     manifest = json.loads((source / "snapshot.json").read_text())
     files = manifest["files"]
-    for name, record in files.items():
+    for name, record in list(files.items()):
+        # The public measurement explorer is retired; retain its source files
+        # without copying its page, scripts or full experiment records.
+        if name.startswith("measurements/") or name == "atlas-site.css":
+            del files[name]
+            continue
         path = (source / name).resolve()
         if not path.is_relative_to(source.resolve()):
             raise ValueError("snapshot path escapes the selected project")

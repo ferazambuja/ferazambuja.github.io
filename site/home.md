@@ -1,9 +1,9 @@
+<!-- PHOTOGRAPHY_BANNER -->
+
 # Imaging Engineering & Color Science
 
 I build tools and experiments that connect camera and display measurements
 to the images we see, using C++20, Python and Swift/Metal.
-
-<!-- PIPELINE_ART -->
 
 ## Selected work
 

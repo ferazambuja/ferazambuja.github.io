@@ -2,8 +2,7 @@
 
 This directory contains the curated source for the reflective color-display
 portfolio project. The overview introduces the full story; the topic pages
-provide progressively deeper explanations and the measurement atlas exposes
-individual readings and spectra.
+provide progressively deeper explanations and representative figures.
 
 ## Content map
 
@@ -14,12 +13,14 @@ individual readings and spectra.
 | `prediction/` | Defined forecast tests, transfer limits and prediction versus requested color |
 | `renderer/` | Offline image-to-native-state pipeline and software comparisons |
 | `icc/` | Experimental profile method, artwork examples and measured 133-color comparison |
-| `measurements/` | Interactive atlas of individual spectra, colors, forecasts and readings |
 
 ## Editing and generated files
 
 - Edit the narrative HTML files and shared `story.css` / `story.js` here.
 - Do not hand-edit measurement JSON or `snapshot.json`.
+- The retired `measurements/` explorer and its data stay in source history but
+  are excluded from the published snapshot. The shared
+  `measurement-investigation.json` remains an input to the curated pattern charts.
 - `fragment-routes.json` preserves useful bookmarks from the earlier
   single-page version.
 - Build into a separate output directory. `_site/` is generated output, not an
@@ -66,5 +67,5 @@ preview_dir=$(mktemp -d /tmp/reflective-portfolio-review.XXXXXX)
 ```
 
 Open `http://127.0.0.1:8012/reflective-color-display/` and check the overview,
-topic navigation, renderer images, measurement-atlas links, desktop layout and
-phone layout.
+topic navigation, renderer images, pattern charts, desktop layout and phone
+layout.

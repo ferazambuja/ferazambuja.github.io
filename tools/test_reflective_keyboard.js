@@ -1,7 +1,7 @@
 async (page) => {
   // Run with playwright-cli run-code against an already opened local preview.
   const origin = await page.evaluate(() => location.origin);
-  const routes = ["", "pattern-behavior/", "prediction/", "renderer/", "icc/", "measurements/"];
+  const routes = ["", "pattern-behavior/", "prediction/", "renderer/", "icc/"];
   const results = [];
   for (const route of routes) {
     await page.goto(`${origin}/reflective-color-display/${route}`);
@@ -23,9 +23,9 @@ async (page) => {
     await page.keyboard.press("Tab");
     const next = await page.evaluate(() => {
       const el = document.activeElement;
-      return {insideMain: !!el.closest("main#main-content"), insideNav: !!el.closest("nav"), label: el.textContent.trim()};
+      return {insideMain: !!el.closest("main#main-content"), insideCaseNav: !!el.closest(".case-nav"), label: el.textContent.trim()};
     });
-    if (!next.insideMain || next.insideNav) throw new Error(`${route || "overview"}: next Tab returned to navigation`);
+    if (!next.insideMain || next.insideCaseNav) throw new Error(`${route || "overview"}: next Tab returned to case navigation`);
     results.push({route: route || "overview", skip: true, main: true, aligned, next: next.label.slice(0, 80)});
   }
   return results;
