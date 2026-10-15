@@ -1387,6 +1387,7 @@ def build(
     pages_written += 1
     shutil.copy2(site_dir / "site.css", output / "assets" / "site.css")
     shutil.copy2(site_dir / "theme.js", output / "assets" / "theme.js")
+    shutil.copy2(site_dir / "photo-viewer.js", output / "assets" / "photo-viewer.js")
     shutil.copytree(site_dir / "social", output / "assets" / "social")
     shutil.copy2(site_dir / "favicon.svg", output / "assets" / "favicon.svg")
     shutil.copy2(
@@ -1853,15 +1854,27 @@ def project_landing(
 
 
 def photography_banner() -> str:
+    artwork = (PROFILE_ASSETS["PIPELINE_ART"], PROFILE_ASSETS["SPECTRAL_ART"])
     images = ''.join(
         f'<a href="/assets/profile/{asset.filename}">'
         f'<img src="/assets/profile/{asset.filename}" '
         f'alt="{html.escape(asset.alt, quote=True)}"></a>'
-        for asset in PROFILE_ASSETS.values()
+        for asset in artwork
     )
+    first = artwork[0]
     return (
         f'<figure class="home-photo-banner"><div class="home-photo-strip">{images}</div>'
-        '<figcaption>Original photographs and digital composites by Fernando</figcaption></figure>'
+        '<figcaption>Original photographs and digital composites by Fernando. '
+        'Select an image to view it full size.</figcaption></figure>'
+        '<dialog class="photo-viewer" id="photo-viewer" aria-label="Full-size photograph" '
+        'aria-describedby="photo-viewer-caption">'
+        '<form method="dialog" class="photo-viewer-controls">'
+        '<button autofocus aria-label="Close photograph">Close ×</button></form>'
+        '<figure><img id="photo-viewer-image" '
+        f'src="/assets/profile/{first.filename}" alt="{html.escape(first.alt, quote=True)}">'
+        '<figcaption id="photo-viewer-caption">Original photograph and digital composite '
+        'by Fernando Voltolini de Azambuja</figcaption></figure></dialog>'
+        '<script src="/assets/photo-viewer.js" defer></script>'
     )
 
 
