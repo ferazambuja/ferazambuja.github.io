@@ -2,8 +2,10 @@
   const dialog = document.getElementById("photo-viewer");
   if (!dialog || typeof dialog.showModal !== "function") return;
   const image = document.getElementById("photo-viewer-image");
+  const caption = document.getElementById("photo-viewer-caption");
+  const defaultCaption = caption.textContent;
 
-  for (const link of document.querySelectorAll(".home-photo-strip a")) {
+  for (const link of document.querySelectorAll(".home-photo-strip a, a[data-photo-viewer]")) {
     link.setAttribute("aria-haspopup", "dialog");
     link.setAttribute("aria-controls", dialog.id);
     link.addEventListener("click", event => {
@@ -11,6 +13,7 @@
       event.preventDefault();
       image.src = link.href;
       image.alt = link.querySelector("img").alt;
+      caption.textContent = link.dataset.photoCaption || defaultCaption;
       dialog.showModal();
     });
   }

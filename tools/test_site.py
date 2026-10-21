@@ -24,6 +24,7 @@ from build_site import (
     ATLAS_ROUTE,
     ATLAS_URL,
     ATLAS_TITLE,
+    CAMERA_CONTROL_ROUTE,
     IMAGING,
     PROFILE_ASSETS,
     SITE_URL,
@@ -126,6 +127,12 @@ def main() -> int:
         rel = page.relative_to(root)
         text = page.read_text(encoding="utf-8")
         page_ids = set(ID.findall(text))
+        for asset in ("site.css", "photo-viewer.js"):
+            route = f"/assets/{asset}"
+            if route in text:
+                version = hashlib.sha256((root / route.lstrip("/")).read_bytes()).hexdigest()[:12]
+                if f'"{route}?v={version}"' not in text:
+                    failures.append(f"{rel}: {asset} URL does not match its current payload")
 
         if len(re.findall(r"<h1(?:\s|>)", text)) != 1:
             failures.append(f"{rel}: page must contain exactly one H1")
@@ -582,6 +589,22 @@ def main() -> int:
             encoding="utf-8"
         ):
             failures.append(f"{related_route}: does not link the calculator")
+
+    app = route_to_file(root, CAMERA_CONTROL_ROUTE)
+    if not app.is_file():
+        failures.append("Capture Control page is missing")
+    else:
+        home_text = route_to_file(root, "/").read_text(encoding="utf-8")
+        if not re.search(
+            rf'<a class="home-work-figure" href="{re.escape(CAMERA_CONTROL_ROUTE)}">\s*<img\b',
+            home_text,
+        ):
+            failures.append("Homepage does not introduce Capture Control through a linked project image")
+        if SITE_URL + CAMERA_CONTROL_ROUTE not in (root / "sitemap.xml").read_text():
+            failures.append("Capture Control page is missing from the sitemap")
+        app_text = app.read_text(encoding="utf-8")
+        if re.search(r"/(?:Users|home)/", app_text):
+            failures.append("Capture Control exposes a local home-directory path")
 
     atlas = route_to_file(root, ATLAS_ROUTE)
     if not atlas.is_file():

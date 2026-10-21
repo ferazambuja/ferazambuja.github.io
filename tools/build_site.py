@@ -35,6 +35,24 @@ AUTHOR = "Fernando Voltolini de Azambuja"
 COMPARATOR_REPO = "ferazambuja/cam16-hellwig-comparator"
 COMPARATOR_URL = f"https://github.com/{COMPARATOR_REPO}"
 HDR_ROUTE = "/hdr-platform/"
+CAMERA_CONTROL_ROUTE = "/camera-control/"
+CAMERA_CONTROL_FIGURES = {
+    "ANALYSIS_APP_SHOT": {
+        "file": "response-analysis.webp", "width": 2480, "height": 1000,
+        "alt": "Capture Control Output Series with a populated exposure-response plot, numerical results and reference controls.",
+        "caption": "A reopened Output Series result links exposure-response plots, numerical tables and reference settings. This illustrates the analysis interface, not a new camera-performance finding.",
+    },
+    "EXPORT_APP_SHOT": {
+        "file": "export-results.webp", "width": 1280, "height": 688,
+        "alt": "Export Results offers Report + Data, Report Only and Data Only, with optional source files and report preview.",
+        "caption": "The export dialog separates a readable report from complete numerical records. Including the original source files is an explicit choice.",
+    },
+    "SEQUENCE_APP_SHOT": {
+        "file": "capture-sequence.webp", "width": 1580, "height": 950,
+        "alt": "Capture Sequence step controls for the physical lens, Bayer RAW plus HEIC output, shutter time and ISO.",
+        "caption": "A capture-sequence step stores its own camera, output and exposure settings. This disconnected view shows the editor; available camera controls depend on the connected phone and lens.",
+    },
+}
 REFLECTIVE_ROUTE = "/reflective-color-display/"
 COMPARATOR_ROUTE = "/imaging/cam16-hellwig-comparator/"
 ATLAS_ROUTE = "/imaging/color-atlas/"
@@ -880,6 +898,7 @@ def topbar(canonical: str, nav_active: str, sidebar: bool = False) -> str:
         ("/", "Home", "home"),
         (f"/{IMAGING.key}/", "Imaging", "imaging"),
         (HDR_ROUTE, "HDR platform", "hdr"),
+        (CAMERA_CONTROL_ROUTE, "Imaging app", "camera-control"),
         (REFLECTIVE_ROUTE, "Reflective display", "reflective"),
     ]
     nav_links = []
@@ -1377,6 +1396,12 @@ def build(
     pages_written += 1
     write(output / HDR_ROUTE.strip("/") / "index.html", hdr_page(site_dir))
     pages_written += 1
+    write(output / CAMERA_CONTROL_ROUTE.strip("/") / "index.html", camera_control_page(site_dir))
+    pages_written += 1
+    camera_assets = output / "assets" / "camera-control"
+    camera_assets.mkdir(parents=True)
+    for figure in CAMERA_CONTROL_FIGURES.values():
+        shutil.copy2(site_dir / "assets" / "camera-control" / figure["file"], camera_assets / figure["file"])
     pages_written += build_reflective_color(site_dir, output)
     hdr_output = output / "assets" / "hdr"
     shutil.copytree(site_dir / "hdr", hdr_output)
@@ -1407,6 +1432,17 @@ def build(
     (output / "assets" / "highlight.css").write_text(
         pygments_css(), encoding="utf-8"
     )
+    asset_versions = {
+        f"/assets/{name}": hashlib.sha256((output / "assets" / name).read_bytes()).hexdigest()[:12]
+        for name in ("site.css", "photo-viewer.js")
+    }
+    for path in output.rglob("*.html"):
+        text = path.read_text(encoding="utf-8")
+        versioned = text
+        for asset, version in asset_versions.items():
+            versioned = versioned.replace(f'"{asset}"', f'"{asset}?v={version}"')
+        if versioned != text:
+            path.write_text(versioned, encoding="utf-8")
     (output / ".nojekyll").write_text("", encoding="utf-8")
     write(output / "robots.txt", f"User-agent: *\nAllow: /\nSitemap: {SITE_URL}/sitemap.xml\n")
     write(output / "sitemap.xml", sitemap(output))
@@ -1859,6 +1895,19 @@ def project_landing(
     )
 
 
+def photo_viewer(src: str, alt: str, caption: str) -> str:
+    return (
+        '<dialog class="photo-viewer" id="photo-viewer" aria-label="Full-size image" '
+        'aria-describedby="photo-viewer-caption">'
+        '<form method="dialog" class="photo-viewer-controls">'
+        '<button autofocus aria-label="Close image">Close ×</button></form>'
+        '<figure><img id="photo-viewer-image" '
+        f'src="{html.escape(src, quote=True)}" alt="{html.escape(alt, quote=True)}">'
+        f'<figcaption id="photo-viewer-caption">{html.escape(caption)}</figcaption>'
+        '</figure></dialog><script src="/assets/photo-viewer.js" defer></script>'
+    )
+
+
 def photography_banner() -> str:
     artwork = (PROFILE_ASSETS["PIPELINE_ART"], PROFILE_ASSETS["SPECTRAL_ART"])
     images = ''.join(
@@ -1872,15 +1921,10 @@ def photography_banner() -> str:
         f'<figure class="home-photo-banner"><div class="home-photo-strip">{images}</div>'
         '<figcaption>Original photographs and digital composites by Fernando. '
         'Select an image to view it full size.</figcaption></figure>'
-        '<dialog class="photo-viewer" id="photo-viewer" aria-label="Full-size photograph" '
-        'aria-describedby="photo-viewer-caption">'
-        '<form method="dialog" class="photo-viewer-controls">'
-        '<button autofocus aria-label="Close photograph">Close ×</button></form>'
-        '<figure><img id="photo-viewer-image" '
-        f'src="/assets/profile/{first.filename}" alt="{html.escape(first.alt, quote=True)}">'
-        '<figcaption id="photo-viewer-caption">Original photograph and digital composite '
-        'by Fernando Voltolini de Azambuja</figcaption></figure></dialog>'
-        '<script src="/assets/photo-viewer.js" defer></script>'
+        + photo_viewer(
+            f"/assets/profile/{first.filename}", first.alt,
+            "Original photograph and digital composite by Fernando Voltolini de Azambuja",
+        )
     )
 
 
@@ -1944,6 +1988,7 @@ def selected_work(cards: list[Card]) -> str:
     )
     return (
         '<div class="home-work-grid">'
+        + camera_control_feature()
         + hdr
         + reflective_feature()
         + imaging
@@ -2044,6 +2089,65 @@ def reflective_feature() -> str:
         'on a 133-color grid. I also built a renderer and tested where color predictions fail.</p>'
         f'<p class="project-action"><a href="{REFLECTIVE_ROUTE}">Read the visual case study →</a></p>'
         '</div></article>'
+    )
+
+
+def camera_control_feature() -> str:
+    figure = CAMERA_CONTROL_FIGURES["ANALYSIS_APP_SHOT"]
+    return (
+        '<article class="home-work-card home-work-feature">'
+        f'<a class="home-work-figure" href="{CAMERA_CONTROL_ROUTE}">'
+        f'<img src="/assets/camera-control/{figure["file"]}" '
+        f'width="{figure["width"]}" height="{figure["height"]}" loading="lazy" '
+        f'alt="{html.escape(figure["alt"], quote=True)}"></a>'
+        '<div><p class="project-kind">Swift · image analysis · optional iPhone capture</p>'
+        f'<h3><a href="{CAMERA_CONTROL_ROUTE}">Capture Control</a></h3>'
+        "<p>I built a Mac imaging workspace for source-pixel inspection, image "
+        "comparison, RAW and repeated-output analysis, and reports. An optional "
+        "iPhone companion adds live camera control and reusable capture sequences.</p>"
+        f'<p class="project-action"><a href="{CAMERA_CONTROL_ROUTE}">'
+        "Explore the imaging app →</a></p></div></article>"
+    )
+
+
+def camera_control_page(site_dir: Path) -> str:
+    body_html = render_markdown(
+        (site_dir / "camera-control.md").read_text(encoding="utf-8"),
+        doc_dir=PurePosixPath("."),
+        project=IMAGING,
+    )
+    for marker, figure in CAMERA_CONTROL_FIGURES.items():
+        src = f'/assets/camera-control/{figure["file"]}'
+        caption = figure["caption"] + " Development UI, build 515."
+        body_html = body_html.replace(
+            f"<!-- {marker} -->",
+            '<figure class="hdr-shot">'
+            f'<a href="{src}" data-photo-viewer data-photo-caption="{html.escape(caption, quote=True)}">'
+            f'<img src="{src}" width="{figure["width"]}" height="{figure["height"]}" '
+            f'alt="{html.escape(figure["alt"], quote=True)}" loading="lazy"></a>'
+            f'<figcaption>{html.escape(caption)} Select the image to enlarge it.</figcaption></figure>',
+        )
+    first = CAMERA_CONTROL_FIGURES["ANALYSIS_APP_SHOT"]
+    return page(
+        title=f"Capture Control: Mac imaging workspace · {AUTHOR}",
+        description=(
+            "Native Mac image inspection, RAW and output-series analysis, "
+            "comparisons and reports, with optional iPhone capture."
+        ),
+        body=(
+            '<p class="eyebrow">Native Mac imaging workspace</p>'
+            "<h1>Capture Control</h1>"
+            '<p class="lede">Capture, inspect, compare and measure images '
+            'in one Mac workspace.</p>'
+            f'<div class="prose">{body_html}</div>'
+            + photo_viewer(
+                f'/assets/camera-control/{first["file"]}', first["alt"],
+                first["caption"] + " Development UI, build 515.",
+            )
+        ),
+        canonical=CAMERA_CONTROL_ROUTE,
+        nav_active="camera-control",
+        depth_class="hdr-page",
     )
 
 

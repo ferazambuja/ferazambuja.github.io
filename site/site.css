@@ -877,7 +877,7 @@ html:has(.photo-viewer[open]) { overflow: hidden; scrollbar-gutter: stable; }
 
 .home-work-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
   margin: 0.5rem 0 0;
 }
@@ -1165,7 +1165,7 @@ html:has(.photo-viewer[open]) { overflow: hidden; scrollbar-gutter: stable; }
    page reads as a document rather than as prose pinned to one edge. */
 .hdr-page .layout-plain { max-width: 54rem; }
 
-/* Three project previews share one row at wide widths. */
+/* Project previews use the same image treatment. */
 .home-work-feature .home-work-figure { background: transparent; }
 .home-work-feature .home-work-figure img {
   aspect-ratio: 5 / 3;

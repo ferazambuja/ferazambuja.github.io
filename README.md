@@ -3,6 +3,10 @@
 Source for [ferazambuja.github.io](https://ferazambuja.github.io), a portfolio
 of imaging engineering, color science, photography, and research-tool work.
 
+[Capture Control](https://ferazambuja.github.io/camera-control/) presents the
+native Mac imaging workspace for inspection, analysis, comparisons and reports,
+with optional iPhone capture through CameraPilot.
+
 The site presents technical studies from
 [imaging-color-measurement](https://github.com/ferazambuja/imaging-color-measurement),
 the interactive [CAM16 and Hellwig–Fairchild comparator](https://github.com/ferazambuja/cam16-hellwig-comparator),
