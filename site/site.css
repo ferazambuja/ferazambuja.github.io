@@ -1165,6 +1165,11 @@ html:has(.photo-viewer[open]) { overflow: hidden; scrollbar-gutter: stable; }
    page reads as a document rather than as prose pinned to one edge. */
 .hdr-page .layout-plain { max-width: 54rem; }
 
+/* Full app windows need room for their toolbars, sidebar and inspectors. */
+.camera-control-page .layout-plain { max-width: 67rem; }
+.camera-control-page .hdr-shot { max-width: none; }
+.camera-control-page .app-report-shot { max-width: 32rem; }
+
 /* Project previews use the same image treatment. */
 .home-work-feature .home-work-figure { background: transparent; }
 .home-work-feature .home-work-figure img {

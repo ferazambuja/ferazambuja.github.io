@@ -37,20 +37,35 @@ COMPARATOR_URL = f"https://github.com/{COMPARATOR_REPO}"
 HDR_ROUTE = "/hdr-platform/"
 CAMERA_CONTROL_ROUTE = "/camera-control/"
 CAMERA_CONTROL_FIGURES = {
+    "CAMERA_APP_SHOT": {
+        "file": "remote-live-view.webp", "width": 4064, "height": 2324,
+        "alt": "Capture Control showing a live iPhone view of a ColorChecker beside lens, shutter, ISO, white balance and focus controls.",
+        "caption": "Remote iPhone live view with lens, exposure, white balance and focus controls.",
+    },
+    "INSPECTION_APP_SHOT": {
+        "file": "image-inspection.webp", "width": 2720, "height": 1824,
+        "alt": "Full image-inspection workspace with the tool sidebar, a ColorChecker photograph, a selected region and its coordinate inspector.",
+        "caption": "Inspect a photograph, position a measurement region and keep its coordinates and tools in view.",
+    },
+    "COMPARE_APP_SHOT": {
+        "file": "image-comparison.webp", "width": 2480, "height": 1624,
+        "alt": "Compare Images with two colour-chart views, linked navigation and independent HDR and SDR viewing controls.",
+        "caption": "Two views of the same photograph, with linked navigation and separate viewing-range controls.",
+    },
     "ANALYSIS_APP_SHOT": {
-        "file": "response-analysis.webp", "width": 2480, "height": 1000,
-        "alt": "Capture Control Output Series with a populated exposure-response plot, numerical results and reference controls.",
-        "caption": "A reopened Output Series result links exposure-response plots, numerical tables and reference settings. This illustrates the analysis interface, not a new camera-performance finding.",
+        "file": "colour-analysis.webp", "width": 2720, "height": 1824,
+        "alt": "Full colour-measurement workspace with a Lab plot, regional results table, export controls and source details.",
+        "caption": "Regional colour measurements bring plots, tables and exports together. Shown with a synthetic image example.",
     },
     "EXPORT_APP_SHOT": {
-        "file": "export-results.webp", "width": 1280, "height": 688,
-        "alt": "Export Results offers Report + Data, Report Only and Data Only, with optional source files and report preview.",
-        "caption": "The export dialog separates a readable report from complete numerical records. Including the original source files is an explicit choice.",
+        "file": "report-preview.webp", "width": 850, "height": 1100,
+        "alt": "Exported report page with a red-channel response plot and a table of chart-patch results.",
+        "caption": "A report page pairs the response plot with numerical results from a synthetic chart example.",
     },
     "SEQUENCE_APP_SHOT": {
-        "file": "capture-sequence.webp", "width": 1580, "height": 950,
-        "alt": "Capture Sequence step controls for the physical lens, Bayer RAW plus HEIC output, shutter time and ISO.",
-        "caption": "A capture-sequence step stores its own camera, output and exposure settings. This disconnected view shows the editor; available camera controls depend on the connected phone and lens.",
+        "file": "capture-sequence-full.webp", "width": 2720, "height": 1824,
+        "alt": "Full Capture Sequences editor with the task sidebar, ordered step list, camera setup, per-photo exposure controls and Add Step action.",
+        "caption": "Each sequence step carries its own lens, output and exposure settings.",
     },
 }
 REFLECTIVE_ROUTE = "/reflective-color-display/"
@@ -2093,18 +2108,18 @@ def reflective_feature() -> str:
 
 
 def camera_control_feature() -> str:
-    figure = CAMERA_CONTROL_FIGURES["ANALYSIS_APP_SHOT"]
+    figure = CAMERA_CONTROL_FIGURES["CAMERA_APP_SHOT"]
     return (
         '<article class="home-work-card home-work-feature">'
         f'<a class="home-work-figure" href="{CAMERA_CONTROL_ROUTE}">'
         f'<img src="/assets/camera-control/{figure["file"]}" '
         f'width="{figure["width"]}" height="{figure["height"]}" loading="lazy" '
         f'alt="{html.escape(figure["alt"], quote=True)}"></a>'
-        '<div><p class="project-kind">Swift · image analysis · optional iPhone capture</p>'
+        '<div><p class="project-kind">Remote capture · image analysis · Mac + iPhone</p>'
         f'<h3><a href="{CAMERA_CONTROL_ROUTE}">Capture Control</a></h3>'
-        "<p>I built a Mac imaging workspace for source-pixel inspection, image "
-        "comparison, RAW and repeated-output analysis, and reports. An optional "
-        "iPhone companion adds live camera control and reusable capture sequences.</p>"
+        "<p>Control an iPhone with live view, build reusable capture sequences, "
+        "and inspect the originals on the Mac. Compare RAW developments, "
+        "explore noise and colour, and turn results into reports.</p>"
         f'<p class="project-action"><a href="{CAMERA_CONTROL_ROUTE}">'
         "Explore the imaging app →</a></p></div></article>"
     )
@@ -2118,36 +2133,37 @@ def camera_control_page(site_dir: Path) -> str:
     )
     for marker, figure in CAMERA_CONTROL_FIGURES.items():
         src = f'/assets/camera-control/{figure["file"]}'
-        caption = figure["caption"] + " Development UI, build 515."
+        caption = figure["caption"]
+        figure_class = "hdr-shot app-report-shot" if marker == "EXPORT_APP_SHOT" else "hdr-shot"
         body_html = body_html.replace(
             f"<!-- {marker} -->",
-            '<figure class="hdr-shot">'
+            f'<figure class="{figure_class}">'
             f'<a href="{src}" data-photo-viewer data-photo-caption="{html.escape(caption, quote=True)}">'
             f'<img src="{src}" width="{figure["width"]}" height="{figure["height"]}" '
             f'alt="{html.escape(figure["alt"], quote=True)}" loading="lazy"></a>'
             f'<figcaption>{html.escape(caption)} Select the image to enlarge it.</figcaption></figure>',
         )
-    first = CAMERA_CONTROL_FIGURES["ANALYSIS_APP_SHOT"]
+    first = CAMERA_CONTROL_FIGURES["CAMERA_APP_SHOT"]
     return page(
         title=f"Capture Control: Mac imaging workspace · {AUTHOR}",
         description=(
-            "Native Mac image inspection, RAW and output-series analysis, "
-            "comparisons and reports, with optional iPhone capture."
+            "Remote iPhone capture with live view, reusable capture sequences, "
+            "image inspection, RAW analysis, comparisons and reports on the Mac."
         ),
         body=(
-            '<p class="eyebrow">Native Mac imaging workspace</p>'
+            '<p class="eyebrow">Remote capture. Closer inspection. Clearer results.</p>'
             "<h1>Capture Control</h1>"
-            '<p class="lede">Capture, inspect, compare and measure images '
-            'in one Mac workspace.</p>'
+            '<p class="lede">From the live view to the final report. '
+            'One imaging workspace for Mac and iPhone.</p>'
             f'<div class="prose">{body_html}</div>'
             + photo_viewer(
                 f'/assets/camera-control/{first["file"]}', first["alt"],
-                first["caption"] + " Development UI, build 515.",
+                first["caption"],
             )
         ),
         canonical=CAMERA_CONTROL_ROUTE,
         nav_active="camera-control",
-        depth_class="hdr-page",
+        depth_class="camera-control-page",
     )
 
 

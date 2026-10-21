@@ -4,8 +4,8 @@ Source for [ferazambuja.github.io](https://ferazambuja.github.io), a portfolio
 of imaging engineering, color science, photography, and research-tool work.
 
 [Capture Control](https://ferazambuja.github.io/camera-control/) presents the
-native Mac imaging workspace for inspection, analysis, comparisons and reports,
-with optional iPhone capture through CameraPilot.
+Mac imaging workspace for remote iPhone capture with live view, reusable capture
+sequences, inspection, analysis, comparisons and reports.
 
 The site presents technical studies from
 [imaging-color-measurement](https://github.com/ferazambuja/imaging-color-measurement),

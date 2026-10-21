@@ -1,93 +1,86 @@
-I built Capture Control to connect photographic capture with the work that
-comes after it: inspecting original pixels, comparing images, choosing an
-analysis and explaining the result. The Mac app works with compatible saved
-images on its own. CameraPilot, its optional iPhone companion, adds remote
-camera control and capture sequences.
+Frame and capture iPhone photographs from the Mac with live view and reusable
+sequences. Inspect, compare and analyse the originals, or bring in images from
+another camera.
 
-<!-- ANALYSIS_APP_SHOT -->
+## Control the camera. See the shot.
 
-## Inspect the image behind the number
+<!-- CAMERA_APP_SHOT -->
 
-Open compatible saved images without connecting a phone. Inspect individual
-pixels, register readings and define exact regions. Histograms, channel
-statistics, row and column profiles, line profiles, block maps and field
-measurements help locate a difference within the image.
+CameraPilot, the iPhone companion, streams live view to the Mac. Frame the
+scene, place focus and inspect peaking while adjusting the physical lens,
+shutter, ISO, white balance and focus. Take a photograph from the Mac and open
+the saved original for a closer look.
 
-The app identifies the image representation used for each measurement. Decoded
-Bayer RAW samples, LinearRAW/Apple ProRAW, and developed RGB have different
-meanings and are kept distinct. Changing HDR/SDR viewing does not change the
-selected numerical measurement plane.
+## Build a sequence once. Repeat it when needed.
 
-## Compare images and RAW developments
+Capture Sequences turn a series of photographs into a reusable plan. Combine
+different camera setups, per-photo exposures and repeats. Add instructions and
+pauses for changing the scene, then continue from the Mac. Save and exchange
+plans for another session.
 
-Side by Side, Blink and Wipe provide visual comparison with linked navigation.
-Compare two images, or supported developments of one RAW original. Each side
-can have its own HDR/SDR viewing choice. Eligible inputs also support numerical
-differences and selected-region comparisons.
-
-These tools connect a visible difference with its source and region. A screen
-preview remains a viewing result; it does not establish calibrated brightness
-or colour accuracy.
-
-## Choose the analysis that answers the question
-
-| Question | Implemented tools | Inputs matter |
-| --- | --- | --- |
-| Does the output repeat consistently, or change with exposure? | Repeated Output Series, exposure/ISO response and reference-response views | Compatible repeated images and their exposure information |
-| How do Bayer RAW values vary across frames or the field? | Bayer temporal noise, dark signal, flat field and response/PTC | Suitable Bayer RAW sequences and method-specific capture conditions |
-| What happens at an edge, or between colours? | Edge/MTF, Lab comparisons and regional colour measurements | Appropriate edges, references and sampling geometry |
-
-The result workspace links plots and tables with the selected inputs, regions
-and interpretation. Saved analyses preserve their settings; compatible saved
-results can be reopened for review without repeating acquisition.
-
-## Turn results into a report and reusable data
-
-Supported tools offer **Report + Data**, **Report Only** and **Data Only**.
-Readable reports bring together images, plots, tables and method context;
-numerical exports retain the fuller records and reusable jobs where supported.
-Individual tables and plots can also be copied or saved.
-
-Source images are included only when **Include Source Files** is selected and
-supported. A report alone does not replace the complete data or original files.
-
-<!-- EXPORT_APP_SHOT -->
-
-## Add iPhone capture when the work needs it
-
-CameraPilot lets the Mac inspect live framing, select a supported physical
-lens and set exposure, white balance and focus. Take one photo directly, or
-prepare a reusable Capture Sequence with per-step settings, repeats,
-instructions and deliberate pauses. Single-photo settings remain separate
-from sequence editing.
-
-Prepare Capture can turn a compatible analysis method into an editable
-single-photo setup or sequence. Completed originals can return to the
-originating analysis draft with its method, regions and references intact.
+**Prepare Capture** connects analysis to acquisition: it prepares a camera
+setup or sequence for the chosen method, then brings completed originals back
+to the analysis with its regions and references.
 
 <!-- SEQUENCE_APP_SHOT -->
 
-Original JPEG, HEIC or DNG files are saved locally with capture metadata.
-SHA-256 transfer checks verify the delivered bytes. Stop and interrupted-file
-recovery help retain available originals without repeating a photograph to
-recover its files.
+## Look closer than the preview
 
-## Native implementation and development scope
+Inspect individual pixels, register readings and draw precise regions.
+Histograms, channel statistics, line profiles and spatial maps reveal where
+an image changes, from a single edge to variation across the frame.
 
-The app uses Swift, SwiftUI and AVFoundation, with native C/C++ components.
-RAW support combines [LibRaw](https://www.libraw.org/) decoding with Apple's
+Decoded Bayer RAW samples, LinearRAW/Apple ProRAW and developed RGB retain
+their own measurement meaning. HDR/SDR viewing stays separate from the
+values being measured.
+
+<!-- INSPECTION_APP_SHOT -->
+
+## Put differences side by side
+
+Side by Side, Blink and Wipe make changes easy to find, with linked navigation
+to keep the same detail in view. Compare photographs or Apple and LibRaw
+developments of a RAW original. Independent HDR/SDR viewing, numerical
+differences and regional comparisons connect what you see with what changed.
+
+<!-- COMPARE_APP_SHOT -->
+
+## Explore noise, response, detail and colour
+
+The analysis workspace brings together Bayer RAW noise, dark signal, flat
+field and response/PTC tools; repeated-output and exposure/ISO analysis;
+edge/MTF measurements; and Lab colour comparisons. Plots and tables stay
+connected to the source images and selected regions, so a result can be
+examined alongside the pixels behind it.
+
+<!-- ANALYSIS_APP_SHOT -->
+
+## Bring the result with you
+
+Create a readable report with images, plots and tables, export numerical
+records, or save both together. Copy individual tables and plots, preserve
+reusable analysis settings and include original files when needed. Saved
+results can be reopened for review.
+
+<!-- EXPORT_APP_SHOT -->
+
+## Program a workflow
+
+Create capture plans in the app or import them as JSON. Structured commands
+let scripts and coding agents inspect application state, prepare sequences,
+work with saved images and export results through the same app controller.
+The interface and command workflows share settings and validation.
+
+## Built for the Mac
+
+I built the capture, inspection, comparison, analysis and reporting workflows
+with Swift, SwiftUI, AVFoundation and native C/C++ components. RAW development
+builds on [LibRaw](https://www.libraw.org/), Apple's
 [Core Image](https://developer.apple.com/documentation/coreimage) and
-[Image I/O](https://developer.apple.com/documentation/imageio) frameworks.
-I built the capture, inspection, measurement, comparison and reporting
-workflows around those foundations. Format and method support depend on the
-actual image representation and selected development route.
+[Image I/O](https://developer.apple.com/documentation/imageio).
 
-Saved-image workflows run locally without Python, a separate LibRaw
-installation or an iPhone connection. The app also provides structured
-commands and bundled offline help.
-
-Capture Control is a development project with no packaged download currently
-provided. The Mac deployment target is **macOS 14 or later**; optional remote
-capture needs **iOS 17 or later**. Available camera formats and controls depend
-on the phone and physical lens. Screenshots show development UI from build 515,
-not qualification of every device, format or OS combination.
+Saved-image work runs locally without a phone or Python. Structured commands
+and built-in offline guides support repeatable work alongside the interface.
+Capture Control runs on **macOS 14 or later**; remote capture uses CameraPilot
+on **iOS 17 or later**, with formats and controls supplied by the connected
+phone and lens.
